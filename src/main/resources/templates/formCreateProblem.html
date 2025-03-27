@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ajouter un problème</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<!-- Navbar -->
+<nav class="bg-gray-800 fixed w-full z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <div>
+                <a th:href="@{/}" class="text-white font-bold text-xl">Système de gestion des problèmes</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenu principal -->
+<div class="container mx-auto px-4 pt-20">
+    <h2 class="text-2xl font-bold mb-4">Ajout d'un nouveau problème</h2>
+    <div class="bg-white shadow rounded p-6">
+        <form method="post" th:action="@{/problems/save}" th:object="${problem}">
+            <div class="mb-4">
+                <label for="problemInput" class="block text-gray-700 font-bold mb-2">Description du problème</label>
+                <textarea th:field="*{problem}" id="problemInput" placeholder="Décrivez en détail le problème rencontré"
+                          class="w-full border border-gray-300 p-2 rounded"></textarea>
+            </div>
+            <!-- Champ caché pour solved fixé à 0 par défaut -->
+            <input type="hidden" th:field="*{solved}" value="0"/>
+            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Créer
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
