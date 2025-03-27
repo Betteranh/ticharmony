@@ -16,7 +16,7 @@ répondre aux signalements.
 - **Interface Technicien**  
   Les techniciens se connectent pour consulter la liste des problèmes et y apporter une solution.
 - **Documentation du Projet**  
-  Le document d'analyse du projet, nommé **Analyse_Projet.docx**, est inclus dans le dossier `/docs`.
+  Le document d'analyse du projet, nommé **Projet TIC Harmony.docx**, est inclus dans le dossier `/docs`.
 
 ## Technologies et Outils Utilisés
 
@@ -27,7 +27,7 @@ répondre aux signalements.
 - **Base de Données :**
     - MySQL via Wampserver
 - **Frontend :**
-    - (Précisez ici les technologies front-end si applicable, par exemple HTML, CSS, JavaScript)
+    - HTML, CSS, Tailwind CSS
 
 ## Installation et Exécution
 
