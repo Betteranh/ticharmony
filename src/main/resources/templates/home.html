@@ -1,64 +1,32 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Liste des problèmes</title>
+    <title>Accueil</title>
+    <!-- Inclusion de Tailwind CSS via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-<!-- Navbar -->
-<nav class="bg-gray-800 fixed w-full z-50">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
-            <div>
-                <a th:href="@{/}" class="text-white font-bold text-xl">Système de gestion des problèmes</a>
-            </div>
-        </div>
+<div layout:fragment="content" class="container mx-auto px-4 py-8">
+    <!-- Logo TIC Harmony en haut -->
+    <div class="text-center mb-8">
+        <img th:src="@{/images/logo-tic-harmony.png}" alt="TIC Harmony" class="mx-auto w-64 h-auto mb-4"/>
+        <h2 class="text-3xl font-bold text-gray-800">Bienvenue chez TIC Harmony</h2>
     </div>
-</nav>
 
-<!-- Contenu principal -->
-<div class="container mx-auto px-4 pt-20">
-    <h2 class="text-2xl font-bold mb-4">Liste des problèmes</h2>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white shadow rounded">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Utilisateur</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Problème</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Créé le</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Résolu</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-            <tr th:if="${#lists.isEmpty(problems)}">
-                <td class="px-4 py-2" colspan="6">Aucun problème en base de données</td>
-            </tr>
-            <tr th:each="problem : ${problems}">
-                <td class="px-4 py-2" th:text="${problem.id}">1</td>
-                <td class="px-4 py-2" th:text="${problem.user.id}">Utilisateur</td>
-                <td class="px-4 py-2" th:text="${problem.problem}">Description du problème</td>
-                <td class="px-4 py-2"
-                    th:text="${problem.created_at != null ? #temporals.format(problem.created_at, 'dd/MM/yyyy HH:mm') : ''}">
-                    Date
-                </td>
-                <td class="px-4 py-2" th:text="${problem.solved == 1 ? 'Oui' : 'Non'}">Non</td>
-                <td class="px-4 py-2 space-x-2">
-                    <a th:href="@{/problems/update/{id}(id=${problem.id})}"
-                       class="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded">Modifier</a>
-                    <a th:href="@{/deleteProblem/{id}(id=${problem.id})}"
-                       class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-2 rounded">Supprimer</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-4">
-        <a th:href="@{/problems/create}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Ajouter
-            un nouveau problème</a>
+    <!-- Court texte de présentation -->
+    <p class="max-w-2xl mx-auto text-center text-gray-700 leading-relaxed mb-8">
+        Chez TIC Harmony, nous mettons tout en œuvre pour faciliter la gestion de vos problèmes informatiques.
+        Notre équipe de professionnels expérimentés est à votre disposition pour assurer un service rapide et
+        efficace. De la maintenance préventive à l’assistance personnalisée, nous avons la solution adaptée
+        à chaque situation. Laissez-nous prendre en main votre parc informatique, et concentrez-vous sur
+        l’essentiel : votre activité.
+    </p>
+
+    <!-- Logo BXL en bas de page -->
+    <div class="text-center mt-8">
+        <img th:src="@{/images/BXL_logo.jpg}" alt="Ville de BXL" class="mx-auto w-32 h-auto"/>
     </div>
 </div>
 </body>

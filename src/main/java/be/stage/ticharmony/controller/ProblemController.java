@@ -25,7 +25,7 @@ public class ProblemController {
     public String getAllProblems(Model model) {
         Iterable<Problem> problems = service.getProblems();
         model.addAttribute("problems", problems);
-        return "home"; // home.html se trouve dans src/main/resources/templates
+        return "listProblems"; // home.html se trouve dans src/main/resources/templates
     }
 
     /**

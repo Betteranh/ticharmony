@@ -30,6 +30,8 @@
                 <div sec:authorize="!isAuthenticated()" class="text-gray-300 text-sm">
                     Vous n'êtes pas connecté.
                     <a th:href="@{/login}" class="text-blue-400 hover:text-blue-500 ml-2">Se connecter</a>
+                    <span class="mx-2 text-gray-300">|</span>
+                    <a th:href="@{/registration}" class="text-blue-400 hover:text-blue-500 ml-2">S'inscrire</a>
                 </div>
                 <div sec:authorize="isAuthenticated()" class="text-gray-300 text-sm flex items-center">
                     Bonjour, <span sec:authentication="principal.username" class="ml-1 font-semibold"></span>!
