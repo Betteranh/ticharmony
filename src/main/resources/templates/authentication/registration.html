@@ -4,43 +4,96 @@
       layout:decorate="~{layouts/main}">
 <head>
     <title>Inscription</title>
-    <!-- Inclusion de Tailwind CSS via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
 <div layout:fragment="content" class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+    <div class="w-full max-w-lg bg-white rounded-lg shadow-md p-8">
         <h1 class="text-2xl font-bold text-center mb-6">Inscription</h1>
         <form th:action="@{/registration}" method="post" th:object="${user}">
+            <!-- Login et mot de passe -->
             <div class="mb-4">
                 <label for="login" class="block text-gray-700 text-sm font-bold mb-2">Login :</label>
                 <input type="text" id="login" th:field="*{login}" maxlength="60" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                       class="shadow appearance-none border rounded w-full py-2 px-3">
             </div>
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Mot de passe :</label>
                 <input type="password" id="password" th:field="*{password}" maxlength="60" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                       class="shadow appearance-none border rounded w-full py-2 px-3">
             </div>
-            <!-- Vous pouvez ajouter d'autres champs (par exemple prénom, nom, email) -->
+            <!-- Prénom et Nom -->
+            <div class="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label for="firstname" class="block text-gray-700 text-sm font-bold mb-2">Prénom :</label>
+                    <input type="text" id="firstname" th:field="*{firstname}" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+                <div>
+                    <label for="lastname" class="block text-gray-700 text-sm font-bold mb-2">Nom :</label>
+                    <input type="text" id="lastname" th:field="*{lastname}" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+            </div>
+            <!-- Email -->
             <div class="mb-4">
-                <label for="firstname" class="block text-gray-700 text-sm font-bold mb-2">Prénom :</label>
-                <input type="text" id="firstname" th:field="*{firstname}" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="lastname" class="block text-gray-700 text-sm font-bold mb-2">Nom :</label>
-                <input type="text" id="lastname" th:field="*{lastname}" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-6">
                 <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email :</label>
                 <input type="email" id="email" th:field="*{email}" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                       class="shadow appearance-none border rounded w-full py-2 px-3">
+            </div>
+            <!-- Type de client -->
+            <div class="mb-4">
+                <label for="typeClient" class="block text-gray-700 text-sm font-bold mb-2">Type de client :</label>
+                <select id="typeClient" th:field="*{typeClient}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3">
+                    <option value="particulier">Particulier</option>
+                    <option value="entreprise">Entreprise</option>
+                </select>
+            </div>
+            <!-- Nom de l'entreprise et TVA (affichés si entreprise) -->
+            <div id="entrepriseFields" class="mb-4">
+                <!-- Nom de l'entreprise -->
+                <div class="mb-4">
+                    <label for="nomEntreprise" class="block text-gray-700 text-sm font-bold mb-2">
+                        Nom d'entreprise :
+                        <span class="text-xs text-gray-500">(laissez vide si vous êtes particulier)</span>
+                    </label>
+                    <input type="text" id="nomEntreprise" th:field="*{nomEntreprise}"
+                           placeholder="Nom de l'entreprise (facultatif)"
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+
+                <!-- TVA -->
+                <div class="mb-4">
+                    <label for="tva" class="block text-gray-700 text-sm font-bold mb-2">
+                        TVA :
+                        <span class="text-xs text-gray-500">(laissez vide si vous êtes particulier)</span>
+                    </label>
+                    <input type="text" id="tva" th:field="*{tva}"
+                           placeholder="TVA (facultatif)"
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+            </div>
+            <!-- Téléphone et Adresse -->
+            <div class="mb-4">
+                <label for="telephone" class="block text-gray-700 text-sm font-bold mb-2">Téléphone :</label>
+                <input type="text" id="telephone" th:field="*{telephone}"
+                       class="shadow appearance-none border rounded w-full py-2 px-3">
+            </div>
+            <div class="mb-6">
+                <label for="adresse" class="block text-gray-700 text-sm font-bold mb-2">Adresse :</label>
+                <input type="text" id="adresse" th:field="*{adresse}"
+                       class="shadow appearance-none border rounded w-full py-2 px-3">
+            </div>
+            <!-- Langue -->
+            <div class="mb-6">
+                <label for="langue" class="block text-gray-700 text-sm font-bold mb-2">Langue :</label>
+                <input type="text" id="langue" th:field="*{langue}" required
+                       class="shadow appearance-none border rounded w-full py-2 px-3">
             </div>
             <div class="flex items-center justify-center">
                 <button type="submit"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     S'inscrire
                 </button>
             </div>
@@ -50,5 +103,36 @@
         </form>
     </div>
 </div>
+
+<!-- Script pour afficher/cacher les champs entreprise en fonction du type de client -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const typeSelect = document.getElementById('typeClient');
+        const entrepriseFields = document.getElementById('entrepriseFields');
+
+        if (!typeSelect) {
+            console.error('Élément avec id "typeClient" introuvable.');
+            return;
+        }
+        if (!entrepriseFields) {
+            console.error('Élément avec id "entrepriseFields" introuvable.');
+            return;
+        }
+
+        function toggleEntrepriseFields() {
+            console.log("Valeur sélectionnée :", typeSelect.value);
+            if (typeSelect.value.trim().toLowerCase() === 'entreprise') {
+                entrepriseFields.classList.remove('hidden');
+                console.log("Les champs entreprise sont affichés.");
+            } else {
+                entrepriseFields.classList.add('hidden');
+                console.log("Les champs entreprise sont masqués.");
+            }
+        }
+
+        typeSelect.addEventListener('change', toggleEntrepriseFields);
+        toggleEntrepriseFields();
+    });
+</script>
 </body>
 </html>

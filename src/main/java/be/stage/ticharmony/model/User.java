@@ -14,11 +14,25 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String login;
     private String password;
     private String firstname;
     private String lastname;
     private String email;
+
+    @Column(name = "type_client", nullable = false)
+    private String typeClient;
+
+    @Column(name = "nom_entreprise")
+    private String nomEntreprise;
+
+    @Column(name = "tva")
+    private String tva;
+
+    private String telephone;
+    private String adresse;
+
     private String langue;
 
     @Enumerated(EnumType.STRING)

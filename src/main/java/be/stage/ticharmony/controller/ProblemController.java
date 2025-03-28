@@ -19,12 +19,13 @@ public class ProblemController {
 
     /**
      * Affiche la liste des problèmes.
-     * Correspond à la vue home.html (listProblem).
+     * Correspond à la vue listProblems.html.
      */
     @GetMapping
     public String getAllProblems(Model model) {
         Iterable<Problem> problems = service.getProblems();
         model.addAttribute("problems", problems);
+        model.addAttribute("module", "problems");
         return "listProblems"; // home.html se trouve dans src/main/resources/templates
     }
 

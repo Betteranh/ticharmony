@@ -1,25 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Liste des problèmes</title>
+    <!-- Inclusion de Tailwind CSS via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-<!-- Navbar -->
-<nav class="bg-gray-800 fixed w-full z-50">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
-            <div>
-                <a th:href="@{/}" class="text-white font-bold text-xl">Système de gestion des problèmes</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<!-- Contenu principal -->
-<div class="container mx-auto px-4 pt-20">
+<div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-24">
     <h2 class="text-2xl font-bold mb-4">Liste des problèmes</h2>
     <div class="overflow-x-auto">
         <table class="min-w-full bg-white shadow rounded">

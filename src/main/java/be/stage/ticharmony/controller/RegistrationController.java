@@ -36,8 +36,16 @@ public class RegistrationController {
     @PostMapping
     public String registerUser(@ModelAttribute("user") User user, Model model) {
         // Vérifier que l'user n'existe pas déjà
-        if (userService.getAllUsers().stream().anyMatch(u -> u.getLogin().equalsIgnoreCase(user.getLogin()))) {
-            model.addAttribute("errorMessage", "Cet utilisateur existe déjà.");
+        /**if (userService.getAllUsers().stream().anyMatch(u -> u.getLogin().equalsIgnoreCase(user.getLogin()))) {
+         model.addAttribute("errorMessage", "Cet utilisateur existe déjà.");
+         return "authentication/registration";
+         }*/
+        boolean userExists = userService.getAllUsers().stream()
+                .anyMatch(u -> u.getLogin().equalsIgnoreCase(user.getLogin())
+                        || u.getEmail().equalsIgnoreCase(user.getEmail()));
+
+        if (userExists) {
+            model.addAttribute("errorMessage", "Un utilisateur avec ce login ou cet email existe déjà.");
             return "authentication/registration";
         }
 

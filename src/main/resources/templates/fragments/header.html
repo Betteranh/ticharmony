@@ -21,7 +21,15 @@
                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
                             Accueil
                         </a>
-                        <!-- Ajoutez d'autres liens si nécessaire -->
+                        <!-- Lien affiché si utilisateur connecté -->
+                        <a sec:authorize="isAuthenticated()"
+                           th:if="${module != 'problems'}"
+                           th:href="@{/problems}"
+                           th:classappend="${module == 'problems' ? 'text-white' : 'text-gray-300'}"
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
+                            Liste des problèmes
+                        </a>
+                        <!-- Ajouter d'autres liens si nécessaire -->
                     </div>
                 </div>
             </div>
