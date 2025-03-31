@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
@@ -31,7 +32,8 @@ public class SpringSecurityConfig {
                         .loginPage("/login")
                         .usernameParameter("login")
                         .failureUrl("/login?loginError=true")
-                        .defaultSuccessUrl("/problems", true))
+                        .successHandler(customAuthenticationSuccessHandler())
+                )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logoutSuccess=true")
                         .deleteCookies("JSESSIONID"))
@@ -39,6 +41,11 @@ public class SpringSecurityConfig {
                         .authenticationEntryPoint(
                                 new LoginUrlAuthenticationEntryPoint("/login?loginRequired=true")))
                 .build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        return new CustomAuthenticationSuccessHandler();
     }
 
     @Bean

@@ -3,31 +3,96 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Accueil</title>
+    <title>Accueil - TIC Harmony</title>
     <!-- Inclusion de Tailwind CSS via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style th:inline="css">
+        .hero-bg {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+            url([[ @{/images/Equipe-TIC-Harmony.jpg} ]]);
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
-<div layout:fragment="content" class="container mx-auto px-4 py-8">
-    <!-- Logo TIC Harmony en haut -->
-    <div class="text-center mb-8">
-        <img th:src="@{/images/logo-tic-harmony.png}" alt="TIC Harmony" class="mx-auto w-64 h-auto mb-4"/>
-        <h2 class="text-3xl font-bold text-gray-800">Bienvenue chez TIC Harmony</h2>
-    </div>
+<div layout:fragment="content">
+    <!-- Logo en haut -->
+    <header class="py-6">
+        <div class="text-center">
+            <img th:src="@{/images/logo-tic-harmony.png}" alt="Logo TIC Harmony" class="mx-auto w-72 h-auto">
+        </div>
+    </header>
 
-    <!-- Court texte de présentation -->
-    <p class="max-w-2xl mx-auto text-center text-gray-700 leading-relaxed mb-8">
-        Chez TIC Harmony, nous mettons tout en œuvre pour faciliter la gestion de vos problèmes informatiques.
-        Notre équipe de professionnels expérimentés est à votre disposition pour assurer un service rapide et
-        efficace. De la maintenance préventive à l’assistance personnalisée, nous avons la solution adaptée
-        à chaque situation. Laissez-nous prendre en main votre parc informatique, et concentrez-vous sur
-        l’essentiel : votre activité.
-    </p>
+    <!-- Section Hero avec services -->
+    <section class="hero-bg py-20">
+        <div class="max-w-4xl mx-auto text-center text-white px-4">
+            <h2 class="text-4xl font-extrabold mb-4">Services informatiques pour les ASBL</h2>
+            <p class="text-xl">
+                Nous offrons des solutions informatiques sur mesure pour accompagner les ASBL dans leur transformation
+                digitale.
+            </p>
+            <a th:href="@{/contact}"
+               class="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300">
+                Contactez-nous
+            </a>
+        </div>
+    </section>
 
-    <!-- Logo BXL en bas de page -->
-    <div class="text-center mt-8">
-        <img th:src="@{/images/BXL_logo.jpg}" alt="Ville de BXL" class="mx-auto w-32 h-auto"/>
-    </div>
+    <!-- Section Qui sommes-nous ? -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-6">Qui sommes-nous ?</h2>
+            <p class="text-gray-700 text-lg leading-relaxed text-center">
+                TIC Harmony ASBL est agréée en tant qu'entreprise sociale d'insertion par le Gouvernement de la Région
+                de Bruxelles-Capitale.
+                <br class="hidden md:block">
+                Nous exerçons des activités continues de production de biens et de services dans le domaine de
+                l’informatique qui consistent principalement en la fourniture
+                des ordinateurs reconditionnés et des services de support et maintenance des parcs informatiques.
+            </p>
+        </div>
+    </section>
+
+    <!-- Section Offre actuelle -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-6">Notre offre actuelle</h2>
+            <p class="text-gray-700 text-center text-lg mb-4">
+                Mise à disposition gratuite des ordinateurs reconditionnés*
+                <br>
+                <span class="text-sm text-gray-500">
+                    *Offre réservée aux associations bruxelloises - Composition du Package Gratuit
+                </span>
+            </p>
+            <div class="mb-8">
+                <ol class="list-decimal list-inside text-gray-700 text-lg space-y-2">
+                    <li>Desktop Intel i3/i5 complet et prêt à l’emploi.</li>
+                    <li>L’aide pour la mise en place d’un système de travail collaboratif (Cloud) sécurisé et rapidement
+                        accessible.
+                    </li>
+                </ol>
+            </div>
+            <p class="text-gray-700 text-center text-lg">
+                Si votre ASBL a besoin d'aide ou de conseils dans votre situation spécifique, n'hésitez pas à nous
+                contacter via
+                <a href="mailto:info@tic-harmony.be" class="text-blue-600 hover:underline">info@tic-harmony.be</a>.
+            </p>
+        </div>
+    </section>
+
+    <!-- Section Nos partenaires -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Nos partenaires</h2>
+            <div class="flex flex-col md:flex-row items-center justify-around space-y-6 md:space-y-0">
+                <img th:src="@{/images/BXL_logo.jpg}" alt="BXL Logo" class="w-32 h-auto">
+                <img th:src="@{/images/Region-de-Bruxelles-Capitale-1.jpg}" alt="Région de Bruxelles Capitale"
+                     class="w-32 h-auto">
+                <img th:src="@{/images/rbc-logo.png}" alt="RBC Logo" class="w-32 h-auto">
+            </div>
+        </div>
+    </section>
 </div>
 </body>
 </html>

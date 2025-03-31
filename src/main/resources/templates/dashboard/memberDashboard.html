@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Tableau de bord Membre</title>
+    <!-- Inclusion de Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div layout:fragment="content" class="container mx-auto py-12">
+    <!-- Message de bienvenue -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-extrabold text-gray-800">Bienvenue sur votre tableau de bord</h1>
+        <p class="mt-4 text-lg text-gray-600">
+            Gérez vos actions et accédez rapidement aux services.
+        </p>
+    </div>
+
+    <!-- Grid avec deux cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Card Consulter les problèmes -->
+        <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Consulter les problèmes</h2>
+            <p class="text-gray-600 mb-6">
+                Accédez à la liste complète des problèmes et suivez leur évolution.
+            </p>
+            <a th:href="@{/problems}"
+               class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">
+                Voir les problèmes
+            </a>
+        </div>
+        <!-- Card Inscrire nouveau partenaire, affichée uniquement pour ADMIN/MEMBER -->
+        <div sec:authorize="hasAnyRole('ADMIN','MEMBER')"
+             class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Inscrire nouveau partenaire</h2>
+            <p class="text-gray-600 mb-6">
+                Ajoutez une nouvelle entreprise comme partenaire.
+            </p>
+            <a th:href="@{/registration}"
+               class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
+                Inscrire partenaire
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Tableau de bord Client</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div layout:fragment="content" class="container mx-auto py-12">
+    <!-- Message de bienvenue -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-extrabold text-gray-800">Tableau de bord - Client</h1>
+        <p class="mt-4 text-lg text-gray-600">
+            Gérez vos demandes et suivez l'évolution de vos problèmes.
+        </p>
+    </div>
+
+    <!-- Grille avec deux cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Card: Consulter mes problèmes -->
+        <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Consulter mes problèmes</h2>
+            <p class="text-gray-600 mb-6">
+                Consultez la liste de vos problèmes soumis et suivez leur progression.
+            </p>
+            <a th:href="@{/problems}"
+               class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">
+                Voir mes problèmes
+            </a>
+        </div>
+        <!-- Card: Créer un nouveau problème -->
+        <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Créer un nouveau problème</h2>
+            <p class="text-gray-600 mb-6">
+                Soumettez une nouvelle demande et notre équipe vous répondra rapidement.
+            </p>
+            <a th:href="@{/problems/create}"
+               class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
+                Nouveau problème
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

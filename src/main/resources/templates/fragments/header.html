@@ -12,12 +12,15 @@
             <!-- Logo / Brand -->
             <div class="flex items-center">
                 <a th:href="@{/}" class="text-white font-bold text-xl">
-                    Système de gestion
+                    TIC Harmony <!--Système de gestion-->
                 </a>
                 <!-- Menu principal -->
                 <div class="hidden md:block ml-10">
                     <div class="flex space-x-4">
-                        <a th:href="@{/}" th:classappend="${module == 'home' ? 'text-white' : 'text-gray-300'}"
+                        <!-- Le lien "Accueil" est affiché seulement si module != 'home' -->
+                        <a th:if="${module != 'home'}"
+                           th:href="@{/}"
+                           th:classappend="${module == 'home' ? 'text-white' : 'text-gray-300'}"
                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
                             Accueil
                         </a>
