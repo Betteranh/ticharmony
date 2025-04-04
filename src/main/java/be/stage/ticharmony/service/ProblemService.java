@@ -1,11 +1,15 @@
 package be.stage.ticharmony.service;
 
+import be.stage.ticharmony.model.Priority;
 import be.stage.ticharmony.model.Problem;
+import be.stage.ticharmony.model.Status;
+import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.repository.ProblemRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Slf4j
@@ -80,5 +84,25 @@ public class ProblemService {
     public void deleteProblem(Long id) {
         repository.deleteById(id);
         log.debug("Problem deleted with id " + id);
+    }
+
+    public Iterable<Problem> getProblemsByStatus(Status status) {
+        return repository.findByStatus(status);
+    }
+
+    public Iterable<Problem> getProblemsByPriority(Priority priority) {
+        return repository.findByPriority(priority);
+    }
+
+    public Iterable<Problem> getProblemsByTicketEmail(String email) {
+        return repository.findByTicketUserInfoEmail(email);
+    }
+
+    public Iterable<Problem> getProblemsByTechnician(User technician) {
+        return repository.findByTechnician(technician);
+    }
+
+    public Iterable<Problem> getProblemsByUser(User user) {
+        return repository.findByUser(user);
     }
 }

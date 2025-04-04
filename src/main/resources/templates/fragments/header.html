@@ -12,19 +12,19 @@
             <!-- Logo / Brand -->
             <div class="flex items-center">
                 <a th:href="@{/}" class="text-white font-bold text-xl">
-                    TIC Harmony <!--Système de gestion-->
+                    TIC Harmony
                 </a>
                 <!-- Menu principal -->
                 <div class="hidden md:block ml-10">
                     <div class="flex space-x-4">
-                        <!-- Le lien "Accueil" est affiché seulement si module != 'home' -->
+                        <!-- Lien "Accueil" (affiché si module != 'home') -->
                         <a th:if="${module != 'home'}"
                            th:href="@{/}"
                            th:classappend="${module == 'home' ? 'text-white' : 'text-gray-300'}"
                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
                             Accueil
                         </a>
-                        <!-- Lien affiché si utilisateur connecté -->
+                        <!-- Lien "Liste des problèmes" (affiché si module != 'problems') -->
                         <a sec:authorize="isAuthenticated()"
                            th:if="${module != 'problems'}"
                            th:href="@{/problems}"
@@ -32,7 +32,22 @@
                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
                             Liste des problèmes
                         </a>
-                        <!-- Ajouter d'autres liens si nécessaire -->
+                        <!-- Lien pour les clients -->
+                        <a sec:authorize="hasRole('CLIENT')"
+                           th:if="${module != 'dashboard'}"
+                           th:href="@{/clientDashboard}"
+                           th:classappend="${module == 'dashboard' ? 'text-white' : 'text-gray-300'}"
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
+                            Dashboard
+                        </a>
+                        <!-- Lien pour les admins et membres -->
+                        <a sec:authorize="hasAnyRole('ADMIN','MEMBER')"
+                           th:if="${module != 'dashboard'}"
+                           th:href="@{/memberDashboard}"
+                           th:classappend="${module == 'dashboard' ? 'text-white' : 'text-gray-300'}"
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
+                            Dashboard
+                        </a>
                     </div>
                 </div>
             </div>
@@ -42,7 +57,7 @@
                     Vous n'êtes pas connecté.
                     <a th:href="@{/login}" class="text-blue-400 hover:text-blue-500 ml-2">Se connecter</a>
                     <span class="mx-2 text-gray-300">|</span>
-                    <a th:href="@{/registration}" class="text-blue-400 hover:text-blue-500 ml-2">S'inscrire</a>
+                    <a th:href="@{/employeeSignup}" class="text-blue-400 hover:text-blue-500 ml-2">S'inscrire</a>
                 </div>
                 <div sec:authorize="isAuthenticated()" class="text-gray-300 text-sm flex items-center">
                     Bonjour, <span sec:authentication="principal.username" class="ml-1 font-semibold"></span>!

@@ -1,37 +1,87 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ajouter un problème</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-<!-- Navbar -->
-<nav class="bg-gray-800 fixed w-full z-50">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
-            <div>
-                <a th:href="@{/}" class="text-white font-bold text-xl">Système de gestion des problèmes</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
 <!-- Contenu principal -->
-<div class="container mx-auto px-4 pt-20">
+<div layout:fragment="content" class="container mx-auto px-4 pt-20">
     <h2 class="text-2xl font-bold mb-4">Ajout d'un nouveau problème</h2>
     <div class="bg-white shadow rounded p-6">
         <form method="post" th:action="@{/problems/save}" th:object="${problem}">
+            <!-- Informations du demandeur (TicketUserInfo) -->
+            <div class="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label for="ticketFirstName" class="block text-gray-700 text-sm font-bold mb-2">
+                        Prénom :
+                    </label>
+                    <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+                <div>
+                    <label for="ticketLastName" class="block text-gray-700 text-sm font-bold mb-2">
+                        Nom :
+                    </label>
+                    <input type="text" id="ticketLastName" th:field="*{ticketUserInfo.lastName}" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+            </div>
+            <div class="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label for="ticketEmail" class="block text-gray-700 text-sm font-bold mb-2">
+                        Email :
+                    </label>
+                    <input type="email" id="ticketEmail" th:field="*{ticketUserInfo.email}" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+                <div>
+                    <label for="ticketPhone" class="block text-gray-700 text-sm font-bold mb-2">
+                        Téléphone :
+                    </label>
+                    <input type="text" id="ticketPhone" th:field="*{ticketUserInfo.phone}" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                </div>
+            </div>
+            <!-- Champs spécifiques du ticket -->
+            <!-- Titre -->
             <div class="mb-4">
-                <label for="problemInput" class="block text-gray-700 font-bold mb-2">Description du problème</label>
-                <textarea th:field="*{problem}" id="problemInput" placeholder="Décrivez en détail le problème rencontré"
+                <label for="title" class="block text-gray-700 text-sm font-bold mb-2">
+                    Titre :
+                </label>
+                <input type="text" id="title" th:field="*{title}" required
+                       class="shadow appearance-none border rounded w-full py-2 px-3">
+            </div>
+            <!-- Catégorie -->
+            <div class="mb-4">
+                <label for="category" class="block text-gray-700 text-sm font-bold mb-2">
+                    Catégorie :
+                </label>
+                <input type="text" id="category" th:field="*{category}"
+                       class="shadow appearance-none border rounded w-full py-2 px-3"
+                       placeholder="Ex : Réseau, Logiciel...">
+            </div>
+            <!-- Description du problème -->
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 font-bold mb-2">
+                    Description du problème :
+                </label>
+                <textarea id="description" th:field="*{description}" required
+                          placeholder="Décrivez en détail le problème rencontré"
                           class="w-full border border-gray-300 p-2 rounded"></textarea>
             </div>
-            <!-- Champ caché pour solved fixé à 0 par défaut -->
-            <input type="hidden" th:field="*{solved}" value="0"/>
-            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Créer
-            </button>
+            <!-- Bouton de soumission -->
+            <div class="flex items-center justify-center">
+                <button type="submit"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Créer
+                </button>
+            </div>
+            <div th:if="${errorMessage}" class="mt-4 text-center text-red-500">
+                <p th:text="${errorMessage}"></p>
+            </div>
         </form>
     </div>
 </div>

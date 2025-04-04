@@ -3,51 +3,59 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Liste des problèmes</title>
-    <!-- Inclusion de Tailwind CSS via CDN -->
+    <title>Liste des Tickets</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-<div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-24">
-    <h2 class="text-2xl font-bold mb-4">Liste des problèmes</h2>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white shadow rounded">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Utilisateur</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Problème</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Créé le</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Résolu</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-            <tr th:if="${#lists.isEmpty(problems)}">
-                <td class="px-4 py-2" colspan="6">Aucun problème en base de données</td>
-            </tr>
-            <tr th:each="problem : ${problems}">
-                <td class="px-4 py-2" th:text="${problem.id}">1</td>
-                <td class="px-4 py-2" th:text="${problem.user.id}">Utilisateur</td>
-                <td class="px-4 py-2" th:text="${problem.problem}">Description du problème</td>
-                <td class="px-4 py-2"
-                    th:text="${problem.created_at != null ? #temporals.format(problem.created_at, 'dd/MM/yyyy HH:mm') : ''}">
-                    Date
-                </td>
-                <td class="px-4 py-2" th:text="${problem.solved == 1 ? 'Oui' : 'Non'}">Non</td>
-                <td class="px-4 py-2 space-x-2">
-                    <a th:href="@{/problems/update/{id}(id=${problem.id})}"
-                       class="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded">Modifier</a>
-                    <a th:href="@{/deleteProblem/{id}(id=${problem.id})}"
-                       class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-2 rounded">Supprimer</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+<div layout:fragment="content" class="container mx-auto px-4 pt-20">
+    <h2 class="text-3xl font-bold mb-8 text-center">Liste des Tickets</h2>
+    <div th:if="${#lists.isEmpty(problems)}" class="text-center text-gray-600 mb-6">
+        Aucun ticket en base de données.
     </div>
-    <div class="mt-4">
-        <a th:href="@{/problems/create}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Ajouter
-            un nouveau problème</a>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="problem : ${problems}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <!-- Titre du ticket -->
+            <h3 class="text-xl font-bold text-gray-800 mb-2" th:text="${problem.title}">Titre du ticket</h3>
+            <!-- Informations du demandeur -->
+            <div class="text-gray-600 mb-4">
+                <p><span class="font-semibold">Demandeur :</span>
+                    <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}">Nom Complet</span>
+                </p>
+                <p><span class="font-semibold">Email :</span>
+                    <span th:text="${problem.ticketUserInfo.email}">email@example.com</span>
+                </p>
+                <p><span class="font-semibold">Téléphone :</span>
+                    <span th:text="${problem.ticketUserInfo.phone}">0123456789</span>
+                </p>
+            </div>
+            <!-- Informations complémentaires -->
+            <div class="mb-4">
+                <p><span class="font-semibold">Catégorie :</span>
+                    <span th:text="${problem.category}">Catégorie</span>
+                </p>
+                <p><span class="font-semibold">Statut :</span>
+                    <span th:text="${problem.status}">Statut</span>
+                </p>
+                <p><span class="font-semibold">Priorité :</span>
+                    <span th:text="${problem.priority}">Priorité</span>
+                </p>
+            </div>
+            <!-- Date de création -->
+            <div class="text-gray-500 text-sm mb-4">
+                <p th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy HH:mm')}">Date de création</p>
+            </div>
+            <!-- Actions -->
+            <div class="flex justify-between">
+                <a th:href="@{'/problems/update/' + ${problem.id}}"
+                   class="text-blue-500 hover:underline text-sm">
+                    Modifier
+                </a>
+                <a th:href="@{'/problems/delete/' + ${problem.id}}"
+                   class="text-red-500 hover:underline text-sm">
+                    Supprimer
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 </body>

@@ -2,7 +2,6 @@ package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.service.UserService;
-import be.stage.ticharmony.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -15,58 +14,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDateTime;
 
 @Controller
-@RequestMapping("/registration")
-public class RegistrationController {
-
+@RequestMapping("/employeeSignup")
+public class EmployeeSignupController {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public RegistrationController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    public EmployeeSignupController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
-    public String showRegistrationForm(Model model) {
+    public String showEmployeeSignupForm(Model model) {
         model.addAttribute("user", new User());
-        return "authentication/registration"; // Le template registration.html
+        return "authentication/employeeSignup"; // Correspond à employeeSignup.html
     }
 
     @PostMapping
-    public String registerUser(@ModelAttribute("user") User user, Model model) {
-        // Vérifier que l'user n'existe pas déjà
-        /**if (userService.getAllUsers().stream().anyMatch(u -> u.getLogin().equalsIgnoreCase(user.getLogin()))) {
-         model.addAttribute("errorMessage", "Cet utilisateur existe déjà.");
-         return "authentication/registration";
-         }*/
+    public String registerEmployee(@ModelAttribute("user") User user, Model model) {
         boolean userExists = userService.getAllUsers().stream()
                 .anyMatch(u -> u.getLogin().equalsIgnoreCase(user.getLogin())
                         || u.getEmail().equalsIgnoreCase(user.getEmail()));
-
         if (userExists) {
             model.addAttribute("errorMessage", "Un utilisateur avec ce login ou cet email existe déjà.");
-            return "authentication/registration";
+            return "authentication/employeeSignup";
         }
-
-        // Encoder le mdp avant la sauvegarde
+        // Encoder le mot de passe
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // Initialiser created_at avec la date et l'heure actuelles
+        // Initialiser created_at
         user.setCreated_at(LocalDateTime.now());
-        // Définir le rôle par défaut
-        user.setRole(UserRole.CLIENT);
-        // Vous pouvez également définir d'autres valeurs par défaut (langue, etc.)
+        // Définir le rôle selon le choix dans le formulaire (ADMIN ou MEMBER)
+        // L'objet user reçoit le rôle sélectionné par l'employé.
+        // On laisse typeClient par défaut pour les employés : par exemple "employee"
+        user.setTypeClient("employee");
+        // Définir la langue par défaut si non renseignée
         if (user.getLangue() == null || user.getLangue().isEmpty()) {
-            user.setLangue("fr"); // ou une autre valeur par défaut
+            user.setLangue("fr");
         }
-        // on force le typeClient à "entreprise" pour l'inscription d'un partenaire
-        user.setTypeClient("entreprise");
-        // Sauvegarder l'user
         userService.addUser(user);
-
-        // Rediriger vers la page de login
-        return "redirect:/login?registrationSuccess=true";
+        return "redirect:/login?employeeRegistrationSuccess=true";
     }
-
-
 }

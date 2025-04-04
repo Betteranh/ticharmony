@@ -1,8 +1,14 @@
 package be.stage.ticharmony.controller;
 
+import be.stage.ticharmony.model.Priority;
 import be.stage.ticharmony.model.Problem;
+import be.stage.ticharmony.model.Status;
+import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.service.ProblemService;
+import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 public class ProblemController {
     @Autowired
     private ProblemService service;
+    @Autowired
+    private UserService userService;
 
     public ProblemController(ProblemService service) {
         this.service = service;
@@ -60,6 +68,25 @@ public class ProblemController {
      */
     @PostMapping("/save")
     public String saveProblem(@ModelAttribute("problem") Problem problem) {
+        if (problem.getId() == null) {
+            // Définit les valeurs par défaut
+            problem.setStatus(Status.OPEN);
+            problem.setPriority(Priority.MEDIUM);
+
+            // Récupérer l'utilisateur connecté via le nom d'utilisateur
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null) {
+                String username = auth.getName();
+                User currentUser = userService.findByLogin(username);
+                if (currentUser == null) {
+                    throw new IllegalStateException("Utilisateur non trouvé pour le login: " + username);
+                }
+                problem.setUser(currentUser);
+            } else {
+                throw new IllegalStateException("Aucun utilisateur connecté trouvé pour créer un ticket.");
+            }
+        }
+        // Sauvegarde ou mise à jour du problème
         if (problem.getId() != null) {
             service.updateProblem(problem);
         } else {
