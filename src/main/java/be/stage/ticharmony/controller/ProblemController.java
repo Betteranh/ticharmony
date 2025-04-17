@@ -1,12 +1,10 @@
 package be.stage.ticharmony.controller;
 
-import be.stage.ticharmony.model.Priority;
-import be.stage.ticharmony.model.Problem;
-import be.stage.ticharmony.model.Status;
-import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.service.ProblemService;
 import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -102,6 +100,40 @@ public class ProblemController {
     public String deleteProblem(@PathVariable Long id) {
         service.deleteProblem(id);
         return "redirect:/problems";
+    }
+
+    /**
+     * Détail d’un ticket + liste des techniciens (ROLE_MEMBER) pour l’admin
+     */
+    @GetMapping("/{id}")
+    public String showDetails(@PathVariable Long id, Model model) {
+        Problem problem = service.getProblem(id);
+        if (problem == null) {
+            return "redirect:/problems";
+        }
+        model.addAttribute("problem", problem);
+        model.addAttribute("module", "problems");
+        // si l’admin consulte, on veut lui passer la liste des membres
+        model.addAttribute("technicians",
+                userService.getUsersByRole(UserRole.MEMBER)
+        );
+        return "problemDetails";
+    }
+
+    /**
+     * POST pour assigner un technicien — accessible *seulement* aux ADMIN
+     */
+    @PostMapping("/{id}/assignTechnician")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String assignTechnician(@PathVariable Long id,
+                                   @RequestParam Long technicianId) {
+        Problem problem = service.getProblem(id);
+        if (problem != null) {
+            User tech = userService.getUser(technicianId);
+            problem.setTechnician(tech);
+            service.updateProblem(problem);
+        }
+        return "redirect:/problems/" + id;
     }
 }
 

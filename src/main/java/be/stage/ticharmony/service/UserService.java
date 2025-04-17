@@ -1,6 +1,7 @@
 package be.stage.ticharmony.service;
 
 import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.UserRole;
 import be.stage.ticharmony.repository.UserRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,10 @@ public class UserService {
 
     public void deleteUser(long id) {
         userRepository.deleteById(id);
+    }
+
+    public List<User> getUsersByRole(UserRole role) {
+        return userRepository.findByRole(role);
     }
 
 }

@@ -1,3 +1,4 @@
+<!-- src/main/resources/templates/memberDashboard.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
@@ -5,44 +6,69 @@
       layout:decorate="~{layouts/main}">
 <head>
     <title>Tableau de bord Membre</title>
-    <!-- Inclusion de Tailwind CSS via CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+          rel="stylesheet">
 </head>
 <body class="bg-gray-100">
 <div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-16">
-    <!-- Message de bienvenue -->
+
+    <!-- En‑tête -->
     <div class="text-center mb-12">
-        <h1 class="text-4xl font-extrabold text-gray-800">Bienvenue sur votre tableau de bord</h1>
+        <h1 class="text-4xl font-extrabold text-gray-800">
+            Bienvenue sur votre tableau de bord
+        </h1>
         <p class="mt-4 text-lg text-gray-600">
             Gérez vos actions et accédez rapidement aux services.
         </p>
     </div>
 
-    <!-- Grid avec deux cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Card Consulter les problèmes -->
-        <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Consulter les problèmes</h2>
-            <p class="text-gray-600 mb-6">
-                Accédez à la liste complète des problèmes et suivez leur évolution.
-            </p>
+    <!-- Grid des cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- Card Consulter les tickets -->
+        <div class="flex flex-col bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition">
+            <div class="flex-grow">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Consulter les tickets</h2>
+                <p class="text-gray-600 mb-6">
+                    Accédez à la liste complète des tickets et suivez leur évolution.
+                </p>
+            </div>
             <a th:href="@{/problems}"
-               class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">
-                Voir les problèmes
+               class="mt-auto inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">
+                Voir les tickets
             </a>
         </div>
-        <!-- Card Inscrire nouveau partenaire, affichée uniquement pour ADMIN/MEMBER -->
+
+        <!-- Card Inscrire nouveau partenaire -->
         <div sec:authorize="hasAnyRole('ADMIN','MEMBER')"
-             class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Inscrire nouveau partenaire</h2>
-            <p class="text-gray-600 mb-6">
-                Ajoutez une nouvelle entreprise comme partenaire.
-            </p>
+             class="flex flex-col bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition">
+            <div class="flex-grow">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Inscrire nouveau partenaire</h2>
+                <p class="text-gray-600 mb-6">
+                    Ajoutez une nouvelle ASBL comme partenaire.
+                </p>
+            </div>
             <a th:href="@{/registration}"
-               class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
+               class="mt-auto inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
                 Inscrire partenaire
             </a>
         </div>
+
+        <!-- Card Consulter les partenaires -->
+        <div sec:authorize="hasAnyRole('ADMIN','MEMBER')"
+             class="flex flex-col bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition">
+            <div class="flex-grow">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Consulter les partenaires</h2>
+                <p class="text-gray-600 mb-6">
+                    Parcourez la liste de vos partenaires (ASBL) inscrits.
+                </p>
+            </div>
+            <a th:href="@{/partners}"
+               class="mt-auto inline-block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded">
+                Voir les partenaires
+            </a>
+        </div>
+
     </div>
 </div>
 </body>

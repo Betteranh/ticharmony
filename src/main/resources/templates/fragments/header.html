@@ -11,20 +11,15 @@
         <div class="flex items-center justify-between h-16">
             <!-- Logo / Brand -->
             <div class="flex items-center">
-                <a th:href="@{/}" class="text-white font-bold text-xl">
-                    TIC Harmony
-                </a>
-                <!-- Menu principal -->
+                <a th:href="@{/}" class="text-white font-bold text-xl">TIC Harmony</a>
                 <div class="hidden md:block ml-10">
                     <div class="flex space-x-4">
-                        <!-- Lien "Accueil" (affiché si module != 'home') -->
                         <a th:if="${module != 'home'}"
                            th:href="@{/}"
                            th:classappend="${module == 'home' ? 'text-white' : 'text-gray-300'}"
                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
                             Accueil
                         </a>
-                        <!-- Lien "Liste des problèmes" (affiché si module != 'problems') -->
                         <a sec:authorize="isAuthenticated()"
                            th:if="${module != 'problems'}"
                            th:href="@{/problems}"
@@ -32,7 +27,6 @@
                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
                             Liste des problèmes
                         </a>
-                        <!-- Lien pour les clients -->
                         <a sec:authorize="hasRole('CLIENT')"
                            th:if="${module != 'dashboard'}"
                            th:href="@{/clientDashboard}"
@@ -40,7 +34,6 @@
                            class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
                             Dashboard
                         </a>
-                        <!-- Lien pour les admins et membres -->
                         <a sec:authorize="hasAnyRole('ADMIN','MEMBER')"
                            th:if="${module != 'dashboard'}"
                            th:href="@{/memberDashboard}"
