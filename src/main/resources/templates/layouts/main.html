@@ -1,7 +1,7 @@
 <!-- src/main/resources/templates/layouts/main.html -->
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     <title layout:title-pattern="$CONTENT_TITLE – Tic Harmony">Tic Harmony</title>
@@ -31,12 +31,13 @@
     <!-- le contenu de notifications.html sera injecté ici, mais ce div reste caché -->
 </div>
 
+
 <!-- Toggle script -->
 <script th:inline="javascript">
     /*<![CDATA[*/
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const toggle = document.getElementById('notifToggle');
-        const panel  = document.getElementById('notificationsPanel');
+        const panel = document.getElementById('notificationsPanel');
         if (toggle && panel) {
             toggle.addEventListener('click', () => panel.classList.toggle('hidden'));
         }

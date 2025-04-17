@@ -33,4 +33,31 @@ public class NotificationService {
             repo.save(n);
         });
     }
+
+    /**
+     * marque l’assignation lue pour ce user + ce problème
+     */
+    public void markAssignmentNotificationsRead(User user, Problem problem) {
+        repo.findByUserAndProblemAndTypeAndViewedFalse(user, problem, NotificationType.ASSIGNED_TO_PROBLEM)
+                .forEach(n -> {
+                    n.setViewed(true);
+                    repo.save(n);
+                });
+    }
+
+    /**
+     * Marque comme lue la ou les notifications non lues
+     * pour cet user / ticket / type donné.
+     */
+    public void markReadForProblem(User user, Problem problem, NotificationType type) {
+        List<Notification> toMark = repo.findByUserAndViewedFalseOrderByCreatedAtDesc(user)
+                .stream()
+                .filter(n -> n.getProblem().getId().equals(problem.getId())
+                        && n.getType() == type)
+                .toList();
+        toMark.forEach(n -> {
+            n.setViewed(true);
+            repo.save(n);
+        });
+    }
 }

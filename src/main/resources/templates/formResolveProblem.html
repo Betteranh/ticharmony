@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Résoudre le Ticket</title>
+</head>
+<body class="bg-gray-100">
+<div layout:fragment="content" class="container mx-auto px-4 pt-20 max-w-xl">
+
+    <div class="bg-white rounded-lg shadow p-6 space-y-6">
+        <!-- Titre du ticket -->
+        <h2 class="text-2xl font-bold">
+            Procédures pour : <span th:text="${problem.title}"></span>
+        </h2>
+
+        <!-- Description du ticket -->
+        <div>
+            <h3 class="font-semibold text-gray-800 mb-2">🔍 Description du problème</h3>
+            <div class="bg-gray-50 border border-gray-200 p-4 rounded">
+                <p th:text="${problem.description}"
+                   class="text-gray-700 leading-relaxed">
+                    Description détaillée du ticket…
+                </p>
+            </div>
+        </div>
+
+        <!-- Formulaire de résolution -->
+        <form th:action="@{'/problems/' + ${problem.id} + '/resolve'}"
+              method="post" class="space-y-4">
+            <!-- Rappel des infos clés -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p><strong>Catégorie :</strong> <span th:text="${problem.category}"></span></p>
+                <p><strong>Créé par :</strong>
+                    <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
+                </p>
+                <p><strong>Entreprise :</strong>
+                    <span th:text="${problem.user.nomEntreprise}"></span>
+                </p>
+                <p><strong>Priorité :</strong>
+                    <span th:text="${problem.priority}"></span>
+                </p>
+            </div>
+
+            <!-- Zone de texte pour la résolution -->
+            <div>
+                <label for="resolution" class="block font-semibold mb-1">Démarches entreprises</label>
+                <textarea id="resolution"
+                          name="resolution"
+                          rows="6"
+                          required
+                          class="w-full border border-gray-300 rounded p-2"
+                          placeholder="Décrivez les étapes pour résoudre le problème…"></textarea>
+            </div>
+
+            <!-- Bouton de soumission -->
+            <div class="text-right">
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Soumettre la résolution
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

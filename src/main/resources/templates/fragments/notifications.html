@@ -1,19 +1,40 @@
-<ul th:fragment="notifications" class="bg-white shadow-lg rounded-md p-4">
-    <h3 class="text-lg font-bold mb-2">🔔 Notifications</h3>
-    <li th:each="n : ${notifications}" class="border-b last:border-none py-2">
-        <a th:href="@{/problems/{id}(id=${n.problem.id})}"
-           class="block hover:bg-gray-50 p-1">
-      <span th:switch="${n.type}">
-        <span th:case="'NEW_PROBLEM'">🆕 Nouveau ticket :</span>
-        <span th:case="'PROBLEM_CLOSED'">✅ Ticket résolu :</span>
-        <span th:case="'ASSIGNED_TO_PROBLEM'">🔧 Vous avez un ticket :</span>
-      </span>
-            <strong th:text="${n.problem.title}">Titre</strong><br/>
-            <span class="text-xs text-gray-500"
-                  th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">Date</span>
-        </a>
-    </li>
-    <li th:if="${#lists.isEmpty(notifications)}" class="text-gray-500 text-sm">
-        Aucune notification
-    </li>
-</ul>
+<!-- src/main/resources/templates/fragments/notifications.html -->
+<div th:fragment="notifications">
+    <div class="fixed top-16 right-4 w-80 max-h-96 overflow-auto bg-white shadow-lg rounded-md p-4 z-50">
+        <h3 class="text-lg font-bold mb-2">🔔 Notifications</h3>
+        <ul>
+            <li th:each="n : ${notifications}"
+                class="border-b last:border-none py-2">
+                <a th:href="@{/problems/{id}(id=${n.problem.id})}"
+                   class="block hover:bg-gray-50 p-2">
+                    <div class="flex items-start space-x-2">
+                        <!-- switch sur le name() de l'enum -->
+                        <span th:switch="${n.type.name()}">
+              <span th:case="'NEW_PROBLEM'">🆕</span>
+              <span th:case="'PROBLEM_CLOSED'">✅</span>
+              <span th:case="'ASSIGNED_TO_PROBLEM'">🔧</span>
+            </span>
+                        <div>
+                            <p class="text-sm font-medium text-gray-800">
+                <span th:switch="${n.type.name()}">
+                  <span th:case="'NEW_PROBLEM'">Nouveau ticket créé :</span>
+                  <span th:case="'PROBLEM_CLOSED'">Ticket résolu :</span>
+                  <span th:case="'ASSIGNED_TO_PROBLEM'">Vous avez été assigné au ticket :</span>
+                </span>
+                                <strong th:text="${n.problem.title}">Titre du ticket</strong>
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1"
+                               th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">
+                                00/00 00:00
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            <li th:if="${#lists.isEmpty(notifications)}"
+                class="text-gray-500 text-sm py-2">
+                Aucune notification
+            </li>
+        </ul>
+    </div>
+</div>

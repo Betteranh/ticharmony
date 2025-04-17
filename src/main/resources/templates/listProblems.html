@@ -5,7 +5,8 @@
       layout:decorate="~{layouts/main}">
 <head>
     <title>Liste des Tickets</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+          rel="stylesheet">
 </head>
 <body class="bg-gray-100">
 <div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-12">
@@ -19,34 +20,56 @@
         <div th:each="problem : ${problems}"
              class="bg-white rounded-xl shadow hover:shadow-lg transition-shadow overflow-hidden">
 
-            <!-- Header carte -->
+            <!-- En‑tête de la carte -->
             <div class="px-6 py-4 border-b">
                 <h3 class="text-xl font-semibold text-gray-800 truncate"
                     th:text="${problem.title}">Titre du ticket</h3>
-                <div class="mt-2">
-            <span class="inline-block px-2 py-0.5 bg-gray-200 text-gray-800 text-xs font-medium rounded"
-                  th:text="${problem.status}">Statut</span>
-                    <span class="inline-block px-2 py-0.5 bg-gray-200 text-gray-800 text-xs font-medium rounded ml-2"
-                          th:text="${problem.priority}">Priorité</span>
+                <div class="mt-2 space-x-2">
+                    <!-- Badge de statut -->
+                    <span class="inline-block px-2 py-0.5 text-xs font-medium rounded"
+                          th:classappend="${problem.status.name() == 'OPEN'}      ? ' bg-green-100 text-green-800' :
+                                           (${problem.status.name() == 'IN_PROGRESS'} ? ' bg-yellow-100 text-yellow-800' :
+                                           (${problem.status.name() == 'RESOLVED'}   ? ' bg-blue-100 text-blue-800' :
+                                                                                     ' bg-gray-200 text-gray-800'))"
+                          th:text="${problem.status}">
+                        Statut
+                    </span>
+                    <!-- Badge de priorité -->
+                    <span th:text="${problem.priority}"
+                          class="inline-block px-2 py-0.5 bg-gray-200 text-gray-800 text-xs font-medium rounded">
+                        Priorité
+                    </span>
                 </div>
             </div>
 
-            <!-- Corps carte -->
+            <!-- Corps de la carte -->
             <div class="px-6 py-4 space-y-2 text-gray-600">
                 <p><strong>Catégorie :</strong> <span th:text="${problem.category}">Catégorie</span></p>
                 <p><strong>Demandeur :</strong>
-                    <span th:text="${problem.ticketUserInfo.firstName} + ' ' + ${problem.ticketUserInfo.lastName}">Nom Complet</span>
+                    <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}">
+                        Nom Complet
+                    </span>
                 </p>
-                <p><strong>Entreprise :</strong> <span th:text="${problem.user.nomEntreprise}">Entreprise</span></p>
+                <p><strong>Entreprise :</strong>
+                    <span th:text="${problem.user.nomEntreprise}">Entreprise</span>
+                </p>
+                <p><strong>Technicien :</strong>
+                    <span th:text="${problem.technician != null
+                                  ? problem.technician.firstname + ' ' + problem.technician.lastname
+                                  : 'Non assigné'}">
+                        Non assigné
+                    </span>
+                </p>
                 <p class="flex items-center space-x-1">
                     <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 5a2 2 0 012-2h12a2..."/>
+                        <path d="M6 2a1 1 0 012 0v1h4V2a1 1 0 112 0v1h1a2 2 0 012 2v2H3V5a2 2 0 012-2h1V2z"/>
+                        <path d="M3 9h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                     </svg>
                     <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}">Date</span>
                 </p>
             </div>
 
-            <!-- Footer carte -->
+            <!-- Pied de carte -->
             <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
                 <a th:href="@{'/problems/' + ${problem.id}}"
                    class="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Détails →</a>
