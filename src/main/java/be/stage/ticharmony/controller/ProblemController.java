@@ -1,6 +1,12 @@
 package be.stage.ticharmony.controller;
 
-import be.stage.ticharmony.model.*;
+import be.stage.ticharmony.model.NotificationType;
+import be.stage.ticharmony.model.Priority;
+import be.stage.ticharmony.model.Problem;
+import be.stage.ticharmony.model.Status;
+import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.UserRole;
+import be.stage.ticharmony.service.NotificationService;
 import be.stage.ticharmony.service.ProblemService;
 import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,30 +20,28 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/problems")
 public class ProblemController {
+
     @Autowired
     private ProblemService service;
+
     @Autowired
     private UserService userService;
 
-    public ProblemController(ProblemService service) {
-        this.service = service;
-    }
+    @Autowired
+    private NotificationService notificationService;
 
     /**
      * Affiche la liste des problèmes.
-     * Correspond à la vue listProblems.html.
      */
     @GetMapping
     public String getAllProblems(Model model) {
-        Iterable<Problem> problems = service.getProblems();
-        model.addAttribute("problems", problems);
+        model.addAttribute("problems", service.getProblems());
         model.addAttribute("module", "problems");
-        return "listProblems"; // home.html se trouve dans src/main/resources/templates
+        return "listProblems";
     }
 
     /**
-     * Affiche le formulaire de création d'un nouveau problème.
-     * Correspond à la vue formCreateProblem.html.
+     * Formulaire de création.
      */
     @GetMapping("/create")
     public String showCreateForm(Model model) {
@@ -46,14 +50,12 @@ public class ProblemController {
     }
 
     /**
-     * Affiche le formulaire de mise à jour d'un problème existant.
-     * Correspond à la vue formUpdateProblem.html.
+     * Formulaire de mise à jour.
      */
     @GetMapping("/update/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
         Problem problem = service.getProblem(id);
         if (problem == null) {
-            // Si le problème n'existe pas, redirige vers la liste
             return "redirect:/problems";
         }
         model.addAttribute("problem", problem);
@@ -61,40 +63,40 @@ public class ProblemController {
     }
 
     /**
-     * Traite la soumission du formulaire de création ou de mise à jour.
-     * L'action des formulaires doit pointer vers /problems/save.
+     * Sauvegarde ou création d'un problème.
+     * Notifie tous les ADMIN lors de la création.
      */
     @PostMapping("/save")
     public String saveProblem(@ModelAttribute("problem") Problem problem) {
         if (problem.getId() == null) {
-            // Définit les valeurs par défaut
+            // Valeurs par défaut
             problem.setStatus(Status.OPEN);
             problem.setPriority(Priority.MEDIUM);
 
-            // Récupérer l'utilisateur connecté via le nom d'utilisateur
+            // Associer l'utilisateur connecté
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null) {
-                String username = auth.getName();
-                User currentUser = userService.findByLogin(username);
-                if (currentUser == null) {
-                    throw new IllegalStateException("Utilisateur non trouvé pour le login: " + username);
-                }
-                problem.setUser(currentUser);
-            } else {
-                throw new IllegalStateException("Aucun utilisateur connecté trouvé pour créer un ticket.");
-            }
-        }
-        // Sauvegarde ou mise à jour du problème
-        if (problem.getId() != null) {
-            service.updateProblem(problem);
-        } else {
+            String username = auth.getName();
+            User currentUser = userService.findByLogin(username);
+            problem.setUser(currentUser);
+
+            // Création
             service.createProblem(problem);
+
+            // Notifier tous les ADMIN
+            userService.getAllUsers().stream()
+                    .filter(u -> u.getRole() == UserRole.ADMIN)
+                    .forEach(admin ->
+                            notificationService.notify(admin, problem, NotificationType.NEW_PROBLEM)
+                    );
+        } else {
+            // Mise à jour
+            service.updateProblem(problem);
         }
         return "redirect:/problems";
     }
 
     /**
-     * Supprime un problème et redirige vers la liste.
+     * Supprime un problème.
      */
     @GetMapping("/delete/{id}")
     public String deleteProblem(@PathVariable Long id) {
@@ -103,7 +105,7 @@ public class ProblemController {
     }
 
     /**
-     * Détail d’un ticket + liste des techniciens (ROLE_MEMBER) pour l’admin
+     * Détail d’un ticket + liste des techniciens pour l’admin.
      */
     @GetMapping("/{id}")
     public String showDetails(@PathVariable Long id, Model model) {
@@ -113,15 +115,14 @@ public class ProblemController {
         }
         model.addAttribute("problem", problem);
         model.addAttribute("module", "problems");
-        // si l’admin consulte, on veut lui passer la liste des membres
-        model.addAttribute("technicians",
-                userService.getUsersByRole(UserRole.MEMBER)
-        );
+        // Fournir la liste des users avec rôle MEMBER pour l'assignation
+        model.addAttribute("technicians", userService.getUsersByRole(UserRole.MEMBER));
         return "problemDetails";
     }
 
     /**
-     * POST pour assigner un technicien — accessible *seulement* aux ADMIN
+     * Assignation d’un technicien — accessible *seulement* aux ADMIN.
+     * Notifie le technicien nouvellement assigné.
      */
     @PostMapping("/{id}/assignTechnician")
     @PreAuthorize("hasRole('ADMIN')")
@@ -129,12 +130,17 @@ public class ProblemController {
                                    @RequestParam Long technicianId) {
         Problem problem = service.getProblem(id);
         if (problem != null) {
-            User tech = userService.getUser(technicianId);
-            problem.setTechnician(tech);
+            User newTech = userService.getUser(technicianId);
+            problem.setTechnician(newTech);
             service.updateProblem(problem);
+
+            // Notifier le technicien assigné
+            notificationService.notify(
+                    newTech,
+                    problem,
+                    NotificationType.ASSIGNED_TO_PROBLEM
+            );
         }
         return "redirect:/problems/" + id;
     }
 }
-
-

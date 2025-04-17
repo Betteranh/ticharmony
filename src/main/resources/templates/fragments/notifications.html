@@ -1,0 +1,19 @@
+<ul th:fragment="notifications" class="bg-white shadow-lg rounded-md p-4">
+    <h3 class="text-lg font-bold mb-2">🔔 Notifications</h3>
+    <li th:each="n : ${notifications}" class="border-b last:border-none py-2">
+        <a th:href="@{/problems/{id}(id=${n.problem.id})}"
+           class="block hover:bg-gray-50 p-1">
+      <span th:switch="${n.type}">
+        <span th:case="'NEW_PROBLEM'">🆕 Nouveau ticket :</span>
+        <span th:case="'PROBLEM_CLOSED'">✅ Ticket résolu :</span>
+        <span th:case="'ASSIGNED_TO_PROBLEM'">🔧 Vous avez un ticket :</span>
+      </span>
+            <strong th:text="${n.problem.title}">Titre</strong><br/>
+            <span class="text-xs text-gray-500"
+                  th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">Date</span>
+        </a>
+    </li>
+    <li th:if="${#lists.isEmpty(notifications)}" class="text-gray-500 text-sm">
+        Aucune notification
+    </li>
+</ul>

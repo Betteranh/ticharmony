@@ -1,51 +1,43 @@
-<!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Header Fragment</title>
-</head>
-<body>
 <header th:fragment="header" class="bg-gray-800 fixed top-0 w-full z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-            <!-- Logo / Brand -->
+            <!-- Logo / Brand + Nav -->
             <div class="flex items-center">
                 <a th:href="@{/}" class="text-white font-bold text-xl">TIC Harmony</a>
                 <div class="hidden md:block ml-10">
                     <div class="flex space-x-4">
-                        <a th:if="${module != 'home'}"
-                           th:href="@{/}"
+                        <a th:if="${module != 'home'}" th:href="@{/}"
                            th:classappend="${module == 'home' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
-                            Accueil
-                        </a>
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Accueil</a>
                         <a sec:authorize="isAuthenticated()"
-                           th:if="${module != 'problems'}"
-                           th:href="@{/problems}"
+                           th:if="${module != 'problems'}" th:href="@{/problems}"
                            th:classappend="${module == 'problems' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
-                            Liste des problèmes
-                        </a>
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Liste des problèmes</a>
                         <a sec:authorize="hasRole('CLIENT')"
-                           th:if="${module != 'dashboard'}"
-                           th:href="@{/clientDashboard}"
-                           th:classappend="${module == 'dashboard' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
-                            Dashboard
-                        </a>
+                           th:if="${module != 'clientDashboard'}" th:href="@{/clientDashboard}"
+                           th:classappend="${module == 'clientDashboard' ? 'text-white' : 'text-gray-300'}"
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Dashboard</a>
                         <a sec:authorize="hasAnyRole('ADMIN','MEMBER')"
-                           th:if="${module != 'dashboard'}"
-                           th:href="@{/memberDashboard}"
-                           th:classappend="${module == 'dashboard' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">
-                            Dashboard
-                        </a>
+                           th:if="${module != 'memberDashboard'}" th:href="@{/memberDashboard}"
+                           th:classappend="${module == 'memberDashboard' ? 'text-white' : 'text-gray-300'}"
+                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Dashboard</a>
                     </div>
                 </div>
             </div>
-            <!-- Zone utilisateur -->
+
+            <!-- Zone utilisateur + notifications -->
             <div class="flex items-center">
+                <!-- Cloche + badge (uniquement si authentifié) -->
+                <div sec:authorize="isAuthenticated()" class="relative mr-4">
+                    <button id="notifToggle" class="text-gray-300 hover:text-white focus:outline-none">
+                        🔔
+                        <span th:if="${notifications != null and notifications.size() > 0}"
+                              class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                              th:text="${notifications.size()}">0</span>
+                    </button>
+                </div>
+
+                <!-- Connexion / déconnexion -->
                 <div sec:authorize="!isAuthenticated()" class="text-gray-300 text-sm">
                     Vous n'êtes pas connecté.
                     <a th:href="@{/login}" class="text-blue-400 hover:text-blue-500 ml-2">Se connecter</a>
@@ -62,5 +54,16 @@
         </div>
     </div>
 </header>
-</body>
-</html>
+
+<!-- Panneau notifications injecté UNIQUEMENT pour un utilisateur authentifié -->
+<div sec:authorize="isAuthenticated()"
+     id="notificationsPanel"
+     th:replace="fragments/notifications :: notifications"
+     class="hidden"></div>
+
+<!-- Script toggle (lui aussi uniquement si authentifié) -->
+<script sec:authorize="isAuthenticated()">
+    document.getElementById('notifToggle')?.addEventListener('click', () => {
+        document.getElementById('notificationsPanel').classList.toggle('hidden');
+    });
+</script>
