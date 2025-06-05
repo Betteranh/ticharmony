@@ -12,6 +12,30 @@
 <div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-12">
     <h2 class="text-4xl font-extrabold mb-8 text-center text-gray-800">Liste des Tickets</h2>
 
+    <!-- Filtre par statut -->
+    <form method="get" class="mb-6 flex items-center space-x-2">
+        <label for="statusFilter" class="font-medium text-gray-700">Filtrer par statut :</label>
+        <select id="statusFilter"
+                name="status"
+                onchange="this.form.submit()"
+                class="border-gray-300 rounded px-2 py-1">
+            <option value="" th:selected="${selectedStatus == null}">
+                Tous (sauf Closed)
+            </option>
+            <option th:each="s : ${allStatuses}"
+                    th:value="${s}"
+                    th:text="${s}"
+                    th:selected="${s} == ${selectedStatus}">
+            </option>
+        </select>
+        <noscript>
+            <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded">
+                Appliquer
+            </button>
+        </noscript>
+    </form>
+
     <div th:if="${#lists.isEmpty(problems)}" class="text-center text-gray-500 italic mb-6">
         Aucun ticket en base de données.
     </div>

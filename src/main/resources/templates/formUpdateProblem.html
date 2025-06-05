@@ -1,44 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Modifier un problème</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Modifier un ticket</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+          rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-<!-- Navbar -->
-<nav class="bg-gray-800 fixed w-full z-50">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
-            <div>
-                <a th:href="@{/}" class="text-white font-bold text-xl">Système de gestion des problèmes</a>
-            </div>
-        </div>
-    </div>
-</nav>
+<div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-12 max-w-lg">
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-4">Modifier le ticket</h2>
+        <form th:action="@{/problems/save}" th:object="${problem}" method="post">
+            <input type="hidden" th:field="*{id}"/>
 
-<!-- Contenu principal -->
-<div class="container mx-auto px-4 pt-20">
-    <h2 class="text-2xl font-bold mb-4">Modification d'un problème</h2>
-    <div class="bg-white shadow rounded p-6">
-        <form method="post" th:action="@{/saveProblem}" th:object="${problem}">
-            <input type="hidden" th:field="*{id}">
             <div class="mb-4">
-                <label for="problemInput" class="block text-gray-700 font-bold mb-2">Problème</label>
-                <textarea th:field="*{problem}" id="problemInput" placeholder="Saisir la description du problème"
-                          class="w-full border border-gray-300 p-2 rounded"></textarea>
+                <label class="block font-bold mb-1">Titre</label>
+                <input type="text" th:field="*{title}" required
+                       class="w-full border rounded p-2"/>
             </div>
+
             <div class="mb-4">
-                <label for="solvedInput" class="block text-gray-700 font-bold mb-2">Résolu (0 pour Non, 1 pour
-                    Oui)</label>
-                <input type="number" th:field="*{solved}" id="solvedInput" placeholder="0 ou 1"
-                       class="w-full border border-gray-300 p-2 rounded">
+                <label class="block font-bold mb-1">Description</label>
+                <textarea th:field="*{description}" rows="5" required
+                          class="w-full border rounded p-2"></textarea>
             </div>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Modifier
+
+            <div class="mb-4">
+                <label class="block font-bold mb-1">Catégorie</label>
+                <input type="text" th:field="*{category}"
+                       class="w-full border rounded p-2"/>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block font-bold mb-1">Statut</label>
+                    <select th:field="*{status}" class="w-full border rounded p-2">
+                        <option th:each="s : ${T(be.stage.ticharmony.model.Status).values()}"
+                                th:value="${s}" th:text="${s}"/>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Priorité</label>
+                    <select th:field="*{priority}" class="w-full border rounded p-2">
+                        <option th:each="p : ${T(be.stage.ticharmony.model.Priority).values()}"
+                                th:value="${p}" th:text="${p}"/>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Enregistrer
             </button>
         </form>
+
     </div>
 </div>
 </body>

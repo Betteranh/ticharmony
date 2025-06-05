@@ -17,6 +17,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 @Controller
 @RequestMapping("/problems")
 public class ProblemController {
@@ -114,35 +120,57 @@ public class ProblemController {
 
     /**
      * Affiche la liste des problèmes.
-     */
-    /**
-     * Affiche la liste des problèmes.
      * - ADMIN      : voit tous.
      * - MEMBER     : ne voit que ceux qui lui sont assignés.
      * - CLIENT     : (optionnel) ne voit que ses propres tickets.
      */
     @GetMapping
-    public String getAllProblems(Model model, Authentication authentication) {
+    public String getAllProblems(
+            @RequestParam(name = "status", required = false) Status statusFilter,
+            Model model,
+            Authentication authentication
+    ) {
         User currentUser = userService.findByLogin(authentication.getName());
+
+        // 1) on récupère d'abord le sous-ensemble selon le rôle
         Iterable<Problem> problems;
-
         if (currentUser.getRole() == UserRole.MEMBER) {
-            // Technicien : seulement ses tickets
             problems = service.getProblemsByTechnician(currentUser);
-
         } else if (currentUser.getRole() == UserRole.CLIENT) {
-            // (Optionnel) Client : seulement ses tickets
             problems = service.getProblemsByUser(currentUser);
-
         } else {
-            // ADMIN : tous les tickets
             problems = service.getProblems();
         }
 
-        model.addAttribute("problems", problems);
+        // 2) on applique le filtre de statut **sur ce sous-ensemble**, ou on enlève les CLOSED par défaut
+        List<Problem> filtered = StreamSupport.stream(problems.spliterator(), false)
+                .filter(p -> {
+                    if (statusFilter != null) {
+                        return p.getStatus() == statusFilter;
+                    } else {
+                        return p.getStatus() != Status.CLOSED;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        filtered.sort(Comparator.comparing(Problem::getCreatedAt).reversed());
+
+        model.addAttribute("problems", filtered);
+        model.addAttribute("allStatuses", Status.values());
+        model.addAttribute("selectedStatus", statusFilter);
         model.addAttribute("module", "problems");
         return "listProblems";
     }
+
+    private int priorityOrder(Priority p) {
+        return switch (p) {
+            case URGENT -> 0;
+            case HIGH -> 1;
+            case MEDIUM -> 2;
+            case LOW -> 3;
+        };
+    }
+
 
     /**
      * Formulaire de création.
@@ -171,33 +199,39 @@ public class ProblemController {
      * Notifie tous les ADMIN lors de la création.
      */
     @PostMapping("/save")
-    public String saveProblem(@ModelAttribute("problem") Problem problem) {
-        if (problem.getId() == null) {
-            // Valeurs par défaut
-            problem.setStatus(Status.OPEN);
-            problem.setPriority(Priority.MEDIUM);
-
-            // Associer l'utilisateur connecté
+    public String saveProblem(@ModelAttribute("problem") Problem formProblem) {
+        if (formProblem.getId() == null) {
+            // --- création inchangée ---
+            formProblem.setStatus(Status.OPEN);
+            formProblem.setPriority(Priority.MEDIUM);
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();
-            User currentUser = userService.findByLogin(username);
-            problem.setUser(currentUser);
-
-            // Création
-            service.createProblem(problem);
-
-            // Notifier tous les ADMIN
+            User currentUser = userService.findByLogin(auth.getName());
+            formProblem.setUser(currentUser);
+            service.createProblem(formProblem);
+            // notification NEW_PROBLEM…
             userService.getAllUsers().stream()
                     .filter(u -> u.getRole() == UserRole.ADMIN)
                     .forEach(admin ->
-                            notificationService.notify(admin, problem, NotificationType.NEW_PROBLEM)
+                            notificationService.notify(admin, formProblem, NotificationType.NEW_PROBLEM)
                     );
         } else {
-            // Mise à jour
-            service.updateProblem(problem);
+            // --- mise à jour : on fusionne les seuls champs modifiables ---
+            Problem existing = service.getProblem(formProblem.getId());
+            if (existing == null) {
+                return "redirect:/problems";
+            }
+            // Champs autorisés à être modifiés :
+            existing.setTitle(formProblem.getTitle());
+            existing.setDescription(formProblem.getDescription());
+            existing.setCategory(formProblem.getCategory());
+            existing.setPriority(formProblem.getPriority());
+            existing.setStatus(formProblem.getStatus());
+            // (Ne touchez **pas** à existing.getTicketUserInfo(), existing.getUser(), existing.getTechnician(), etc.)
+            service.updateProblem(existing);
         }
         return "redirect:/problems";
     }
+
 
     /**
      * Supprime un problème.
