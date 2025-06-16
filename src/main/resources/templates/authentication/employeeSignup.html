@@ -1,79 +1,87 @@
-<!-- Inscription Employé -->
+<!-- Inscription Employé harmonisée -->
 <div xmlns:th="http://www.thymeleaf.org"
      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
      layout:decorate="~{layouts/main}">
-    <div layout:fragment="content"
-         class="min-h-screen flex items-center justify-center bg-gray-100">
-        <div class="w-full max-w-lg bg-white rounded-lg shadow-md p-8">
-            <h1 class="text-2xl font-bold text-center mb-6">Inscription Employé</h1>
 
-            <form th:action="@{/employeeSignup}" method="post" th:object="${user}">
-                <div class="mb-4">
-                    <label for="login" class="block text-gray-700 text-sm font-bold mb-2">Login :</label>
-                    <input type="text" id="login" th:field="*{login}" maxlength="60" required
-                           class="shadow border rounded w-full py-2 px-3">
-                </div>
-                <div class="mb-4">
-                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">
-                        Mot de passe :
-                    </label>
-                    <input type="password" id="password" th:field="*{password}" maxlength="60" required
-                           class="shadow border rounded w-full py-2 px-3">
-                </div>
-                <div class="mb-4 grid grid-cols-2 gap-4">
+    <div layout:fragment="content"
+         class="flex justify-center items-center py-20 md:py-32">
+        <div class="w-full max-w-lg rounded-2xl shadow-2xl p-8 flex flex-col items-center
+                    bg-white bg-opacity-50 backdrop-blur-lg">
+            <!-- Logo -->
+            <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-15 mx-auto mb-2"/>
+            <!-- Titre -->
+            <h1 class="text-3xl font-extrabold text-center mb-1">Inscription</h1>
+            <p class="text-gray-700 text-center mb-6">Créez votre compte TIC Harmony</p>
+
+            <form th:action="@{/employeeSignup}" method="post" th:object="${user}" class="w-full">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label for="firstname" class="block text-gray-700 text-sm font-bold mb-2">Prénom :</label>
+                        <label for="firstname" class="block text-gray-700 text-sm font-bold mb-1">Prénom</label>
                         <input type="text" id="firstname" th:field="*{firstname}" required
-                               class="shadow border rounded w-full py-2 px-3">
+                               class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
                     </div>
                     <div>
-                        <label for="lastname" class="block text-gray-700 text-sm font-bold mb-2">Nom :</label>
+                        <label for="lastname" class="block text-gray-700 text-sm font-bold mb-1">Nom</label>
                         <input type="text" id="lastname" th:field="*{lastname}" required
-                               class="shadow border rounded w-full py-2 px-3">
+                               class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
                     </div>
                 </div>
                 <div class="mb-4">
-                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email :</label>
-                    <input type="email" id="email" th:field="*{email}" required
-                           class="shadow border rounded w-full py-2 px-3">
+                    <label for="login" class="block text-gray-700 text-sm font-bold mb-1">Nom d'utilisateur</label>
+                    <input type="text" id="login" th:field="*{login}" maxlength="60" required
+                           class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
                 </div>
                 <div class="mb-4">
-                    <label for="telephone" class="block text-gray-700 text-sm font-bold mb-2">Téléphone :</label>
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-1">Email</label>
+                    <input type="email" id="email" th:field="*{email}" required
+                           class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-1">Mot de passe</label>
+                    <input type="password" id="password" th:field="*{password}" maxlength="60" required
+                           class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
+                </div>
+                <div class="mb-4">
+                    <label for="telephone" class="block text-gray-700 text-sm font-bold mb-1">Téléphone</label>
                     <input type="text" id="telephone" th:field="*{telephone}"
-                           class="shadow border rounded w-full py-2 px-3">
+                           class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
                 </div>
-                <div class="mb-6">
-                    <label for="adresse" class="block text-gray-700 text-sm font-bold mb-2">Adresse :</label>
+                <div class="mb-4">
+                    <label for="adresse" class="block text-gray-700 text-sm font-bold mb-1">Adresse</label>
                     <input type="text" id="adresse" th:field="*{adresse}"
-                           class="shadow border rounded w-full py-2 px-3">
+                           class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
                 </div>
-                <div class="mb-6">
-                    <label for="langue" class="block text-gray-700 text-sm font-bold mb-2">Langue :</label>
+                <div class="mb-4">
+                    <label for="langue" class="block text-gray-700 text-sm font-bold mb-1">Langue</label>
                     <select id="langue" th:field="*{langue}" required
-                            class="shadow border rounded w-full py-2 px-3">
+                            class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80">
                         <option value="fr">Français</option>
                         <option value="en">English</option>
                         <option value="nl">Nederlands</option>
                     </select>
                 </div>
                 <div class="mb-6">
-                    <label for="role" class="block text-gray-700 text-sm font-bold mb-2">Rôle :</label>
+                    <label for="role" class="block text-gray-700 text-sm font-bold mb-1">Rôle</label>
                     <select id="role" th:field="*{role}" required
-                            class="shadow border rounded w-full py-2 px-3">
+                            class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80">
                         <option value="MEMBER">Member</option>
                         <option value="ADMIN">Admin</option>
                     </select>
                 </div>
-                <div class="flex items-center justify-center">
-                    <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Créer compte
-                    </button>
-                </div>
+                <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition mb-2">
+                    S'inscrire
+                </button>
                 <div th:if="${errorMessage}" class="mt-4 text-center text-red-500">
                     <p th:text="${errorMessage}"></p>
                 </div>
             </form>
+
+            <!-- Lien vers connexion -->
+            <p class="mt-2 text-center text-gray-700 text-base">
+                Déjà un compte ?
+                <a th:href="@{/login}" class="text-blue-600 hover:underline">Se connecter</a>
+            </p>
         </div>
     </div>
 </div>

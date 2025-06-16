@@ -1,53 +1,41 @@
-<header th:fragment="header" class="bg-gray-800 fixed top-0 w-full z-50">
+<header th:fragment="header" class="bg-blue-600 fixed top-0 w-full z-50 shadow">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-            <!-- Logo / Brand + Nav -->
-            <div class="flex items-center">
-                <a th:href="@{/}" class="text-white font-bold text-xl">TIC Harmony</a>
-                <div class="hidden md:block ml-10">
-                    <div class="flex space-x-4">
-                        <a th:if="${module != 'home'}" th:href="@{/}"
-                           th:classappend="${module == 'home' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Accueil</a>
-                        <a sec:authorize="isAuthenticated()"
-                           th:if="${module != 'problems'}" th:href="@{/problems}"
-                           th:classappend="${module == 'problems' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Liste des problèmes</a>
-                        <a sec:authorize="hasRole('CLIENT')"
-                           th:if="${module != 'clientDashboard'}" th:href="@{/clientDashboard}"
-                           th:classappend="${module == 'clientDashboard' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Dashboard</a>
-                        <a sec:authorize="hasAnyRole('ADMIN','MEMBER')"
-                           th:if="${module != 'memberDashboard'}" th:href="@{/memberDashboard}"
-                           th:classappend="${module == 'memberDashboard' ? 'text-white' : 'text-gray-300'}"
-                           class="px-3 py-2 rounded-md text-sm font-medium hover:text-white">Dashboard</a>
-                    </div>
-                </div>
+            <!-- Logo + navigation principale ensemble à gauche -->
+            <div class="flex items-center space-x-8">
+                <a th:href="@{/}" class="flex items-center space-x-2">
+                    <img th:src="@{/images/tic.png}" alt="Logo TIC Harmony" class="h-10 w-auto">
+<!--                    <img th:src="@{/images/logo-tic-harmony.png}" alt="Logo TIC Harmony" class="h-10 w-auto">-->
+                </a>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a th:href="@{/}" class="text-white hover:underline">Accueil</a>
+                    <a sec:authorize="isAuthenticated()" th:href="@{/problems}" class="text-white hover:underline">Liste des problèmes</a>
+                    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="text-white hover:underline">Dashboard</a>
+                    <a sec:authorize="hasAnyRole('ADMIN','MEMBER')" th:href="@{/memberDashboard}" class="text-white hover:underline">Dashboard</a>
+                </nav>
             </div>
 
-            <!-- Zone utilisateur + notifications -->
-            <div class="flex items-center">
-                <!-- Cloche + badge (uniquement si authentifié) -->
-                <div sec:authorize="isAuthenticated()" class="relative mr-4">
-                    <button id="notifToggle" class="text-gray-300 hover:text-white focus:outline-none">
+            <!-- Zone utilisateur à droite -->
+            <div class="flex items-center space-x-2">
+                <!-- Non connecté -->
+                <div sec:authorize="!isAuthenticated()" class="flex space-x-2">
+                    <a th:href="@{/login}" class="text-white hover:underline font-medium">Connexion</a>
+                    <span class="text-white">|</span>
+                    <a th:href="@{/employeeSignup}" class="text-white hover:underline font-medium">Inscription</a>
+                </div>
+                <!-- Connecté -->
+                <div sec:authorize="isAuthenticated()" class="flex items-center space-x-4">
+                    <button id="notifToggle" class="text-white relative hover:text-yellow-300">
                         🔔
                         <span th:if="${notifications != null and notifications.size() > 0}"
                               class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                               th:text="${notifications.size()}">0</span>
                     </button>
-                </div>
-
-                <!-- Connexion / déconnexion -->
-                <div sec:authorize="!isAuthenticated()" class="text-gray-300 text-sm">
-                    Vous n'êtes pas connecté.
-                    <a th:href="@{/login}" class="text-blue-400 hover:text-blue-500 ml-2">Se connecter</a>
-                    <span class="mx-2 text-gray-300">|</span>
-                    <a th:href="@{/employeeSignup}" class="text-blue-400 hover:text-blue-500 ml-2">S'inscrire</a>
-                </div>
-                <div sec:authorize="isAuthenticated()" class="text-gray-300 text-sm flex items-center">
-                    Bonjour, <span sec:authentication="principal.username" class="ml-1 font-semibold"></span>!
-                    <form th:action="@{/logout}" method="post" class="ml-4">
-                        <button type="submit" class="text-blue-400 hover:text-blue-500">Se déconnecter</button>
+                    <span class="text-white font-semibold">
+                        Bonjour, <span sec:authentication="principal.username"></span>
+                    </span>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="text-white hover:underline">Se déconnecter</button>
                     </form>
                 </div>
             </div>
@@ -55,15 +43,3 @@
     </div>
 </header>
 
-<!-- Panneau notifications injecté UNIQUEMENT pour un utilisateur authentifié -->
-<div sec:authorize="isAuthenticated()"
-     id="notificationsPanel"
-     th:replace="fragments/notifications :: notifications"
-     class="hidden"></div>
-
-<!-- Script toggle (lui aussi uniquement si authentifié) -->
-<script sec:authorize="isAuthenticated()">
-    document.getElementById('notifToggle')?.addEventListener('click', () => {
-        document.getElementById('notificationsPanel').classList.toggle('hidden');
-    });
-</script>

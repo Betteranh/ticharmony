@@ -1,7 +1,32 @@
-<!-- PLUS DE <html> ni <head> ni <body> ! -->
-<footer th:fragment="footer"
-        class="bg-gray-800 text-gray-300 py-4">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        &copy; 2025 – TIC HARMONY – Projet Helpdesk
+<footer th:fragment="footer" class="bg-gray-900 text-gray-300 py-8">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:items-start">
+        <!-- Colonne 1 : Nom + Adresse -->
+        <div class="mb-6 md:mb-0 text-center md:text-left">
+            <span class="font-bold text-lg">TIC Harmony</span>
+            <div class="mt-1 text-gray-400 text-sm">Rue des Tanneurs 60A,<br>1000 Bruxelles</div>
+        </div>
+        <!-- Colonne 2 : Liens utiles -->
+        <div class="mb-6 md:mb-0 text-center">
+            <div class="font-semibold mb-2">Liens utiles</div>
+            <ul>
+                <li>
+                    <a th:href="@{/}" class="hover:underline">Accueil</a>
+                </li>
+                <li>
+                    <a th:href="@{/login}" class="hover:underline">Connexion</a>
+                </li>
+            </ul>
+        </div>
+        <!-- Colonne 3 : Contact -->
+        <div class="text-center md:text-right">
+            <div class="font-semibold mb-2">Contact</div>
+            <div>
+                <a href="mailto:info@tic-harmony.be" class="hover:underline">info@tic-harmony.be</a>
+            </div>
+        </div>
+    </div>
+    <div class="mt-8 text-center text-gray-500 text-sm">
+        &copy; 2025 – TIC Harmony – Projet Helpdesk
+        <span class="ml-2 text-pink-400">♥</span>
     </div>
 </footer>
