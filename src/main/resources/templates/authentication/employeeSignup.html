@@ -11,7 +11,7 @@
             <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-15 mx-auto mb-2"/>
             <!-- Titre -->
             <h1 class="text-3xl font-extrabold text-center mb-1">Inscription</h1>
-            <p class="text-gray-700 text-center mb-6">Créez votre compte TIC Harmony</p>
+            <p class="text-gray-700 text-center mb-6">Créez votre compte employé TIC Harmony</p>
 
             <form th:action="@{/employeeSignup}" method="post" th:object="${user}" class="w-full">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -50,23 +50,6 @@
                     <label for="adresse" class="block text-gray-700 text-sm font-bold mb-1">Adresse</label>
                     <input type="text" id="adresse" th:field="*{adresse}"
                            class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80"/>
-                </div>
-                <div class="mb-4">
-                    <label for="langue" class="block text-gray-700 text-sm font-bold mb-1">Langue</label>
-                    <select id="langue" th:field="*{langue}" required
-                            class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80">
-                        <option value="fr">Français</option>
-                        <option value="en">English</option>
-                        <option value="nl">Nederlands</option>
-                    </select>
-                </div>
-                <div class="mb-6">
-                    <label for="role" class="block text-gray-700 text-sm font-bold mb-1">Rôle</label>
-                    <select id="role" th:field="*{role}" required
-                            class="shadow border rounded w-full py-2 px-3 bg-white bg-opacity-80">
-                        <option value="MEMBER">Member</option>
-                        <option value="ADMIN">Admin</option>
-                    </select>
                 </div>
                 <button type="submit"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition mb-2">

@@ -7,40 +7,63 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-<div layout:fragment="content" class="container mx-auto py-12">
+<div layout:fragment="content" class="container mx-auto pt-20 pb-20">
+
     <!-- Message de bienvenue -->
     <div class="text-center mb-12">
-        <h1 class="text-4xl font-extrabold text-gray-800">Tableau de bord - Client</h1>
-        <p class="mt-4 text-lg text-gray-600">
-            Gérez vos demandes et suivez l'évolution de vos problèmes.
+        <h1 class="text-4xl font-extrabold text-[#22425d] mb-3">
+            Bienvenue sur votre espace client&nbsp;!
+        </h1>
+        <p class="mt-2 text-lg text-gray-600">
+            Retrouvez vos demandes et bénéficiez de l’assistance de notre équipe.<br>
+            Nous sommes à votre écoute pour vous accompagner au quotidien.
         </p>
     </div>
 
-    <!-- Grille avec deux cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Card: Consulter mes problèmes -->
-        <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Consulter mes problèmes</h2>
-            <p class="text-gray-600 mb-6">
-                Consultez la liste de vos problèmes soumis et suivez leur progression.
-            </p>
-            <a th:href="@{/problems}"
-               class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded">
-                Voir mes problèmes
-            </a>
-        </div>
-        <!-- Card: Créer un nouveau problème -->
-        <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Créer un nouveau problème</h2>
-            <p class="text-gray-600 mb-6">
-                Soumettez une nouvelle demande et notre équipe vous répondra rapidement.
-            </p>
-            <a th:href="@{/problems/create}"
-               class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
-                Nouveau problème
-            </a>
+    <!-- Actions principales : grandes cartes au lieu de simples boutons -->
+    <div class="flex flex-col md:flex-row gap-8 justify-center items-stretch mb-16">
+        <!-- Carte "Nouveau problème" -->
+        <a th:href="@{/problems/create}" class="flex-1 bg-gradient-to-tr from-green-500 to-green-600 hover:from-green-600 hover:to-green-700
+            text-white rounded-2xl shadow-lg p-8 flex flex-col items-center justify-center transition">
+            <svg class="w-12 h-12 mb-4 opacity-90" fill="none" stroke="currentColor" stroke-width="1.5"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            <span class="text-2xl font-bold mb-2">Déclarer un nouveau problème</span>
+            <span class="text-base opacity-90">Signalez un souci ou une question en quelques secondes.</span>
+        </a>
+        <!-- Carte "Mes problèmes" -->
+        <a th:href="@{/problems}" class="flex-1 bg-gradient-to-tr from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
+            text-white rounded-2xl shadow-lg p-8 flex flex-col items-center justify-center transition">
+            <svg class="w-12 h-12 mb-4 opacity-90" fill="none" stroke="currentColor" stroke-width="1.5"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"/>
+            </svg>
+            <span class="text-2xl font-bold mb-2">Suivre mes tickets</span>
+            <span class="text-base opacity-90">Consultez l’avancement et l’historique de vos demandes.</span>
+        </a>
+    </div>
+
+    <!-- Encadré informations/contact/support -->
+    <div class="max-w-3xl mx-auto mt-8 bg-white/90 border border-gray-100 rounded-2xl shadow p-8 text-center">
+        <h3 class="text-xl font-semibold text-indigo-700 mb-2">Besoin d'aide&nbsp;?</h3>
+        <p class="text-gray-700 mb-3">Notre équipe vous répond du lundi au vendredi, de 9h à 18h.<br>
+            <span class="text-indigo-700 font-semibold">Une question&nbsp;? Un doute&nbsp;?</span>
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 text-gray-600">
+            <div>
+                <span class="font-medium">Email&nbsp;:</span>
+                <a href="mailto:support@ticharmony.be" class="text-blue-600 hover:underline">support@ticharmony.be</a>
+            </div>
+            <div>
+                <span class="font-medium">Téléphone&nbsp;:</span>
+                <a href="tel:+3212345678" class="text-blue-600 hover:underline">+32 123 45 67 89</a>
+            </div>
         </div>
     </div>
+
 </div>
 </body>
 </html>

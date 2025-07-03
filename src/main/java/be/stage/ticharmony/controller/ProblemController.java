@@ -115,7 +115,7 @@ public class ProblemController {
                     NotificationType.PROBLEM_CLOSED
             );
         }
-        return "redirect:/problems/" + id;
+        return "redirect:/problems";
     }
 
     /**

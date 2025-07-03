@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Gestion des employés</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-20">
+    <div class="flex items-center justify-between mb-8 px-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-[#22425d]">Gestion des employés</h1>
+            <span class="text-gray-500 text-base hidden md:block">Administration des comptes employés</span>
+        </div>
+        <a th:href="@{/employeeSignup}"
+           class="inline-flex items-center px-5 py-2 border border-transparent text-sm font-medium rounded-lg shadow text-white bg-blue-600 hover:bg-blue-700 transition">
+            + Ajouter un employé
+        </a>
+    </div>
+    <table class="min-w-full w-full divide-y divide-gray-200 shadow rounded-lg overflow-hidden">
+        <thead>
+        <tr class="bg-gray-200">
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Prénom</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Rôle</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+        <tr th:each="employee : ${employees}">
+            <td class="px-6 py-4" th:text="${employee.id}">1</td>
+            <td class="px-6 py-4" th:text="${employee.firstname}">Prénom</td>
+            <td class="px-6 py-4" th:text="${employee.lastname}">Nom</td>
+            <td class="px-6 py-4" th:text="${employee.email}">Email</td>
+            <td class="px-6 py-4" th:text="${employee.role}">Rôle</td>
+            <td class="px-6 py-4">
+                <form th:action="@{/employees/changeRole}" method="post" class="inline">
+                    <input type="hidden" name="userId" th:value="${employee.id}"/>
+                    <select name="newRole" class="border rounded px-2 py-1 text-xs">
+                        <option th:selected="${employee.role != null and employee.role.name() == 'ADMIN'}"
+                                th:value="ADMIN">ADMIN
+                        </option>
+                        <option th:selected="${employee.role != null and employee.role.name() == 'MEMBER'}"
+                                th:value="MEMBER">TECHNICIEN
+                        </option>
+                    </select>
+                    <button type="submit"
+                            class="ml-2 px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-semibold">
+                        Changer rôle
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

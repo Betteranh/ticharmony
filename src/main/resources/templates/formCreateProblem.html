@@ -6,83 +6,89 @@
     <title>Ajouter un problème</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-<!-- Contenu principal -->
-<div layout:fragment="content" class="container mx-auto px-4 pt-20">
-    <h2 class="text-2xl font-bold mb-4">Ajout d'un nouveau problème</h2>
-    <div class="bg-white shadow rounded p-6">
-        <form method="post" th:action="@{/problems/save}" th:object="${problem}">
-            <!-- Informations du demandeur (TicketUserInfo) -->
-            <div class="mb-4 grid grid-cols-2 gap-4">
+<body class="bg-[#f6f7f3]">
+<div layout:fragment="content" class="min-h-screen flex items-center justify-center py-10 px-2 pt-20">
+    <div class="w-full max-w-3xl bg-white shadow-2xl rounded-3xl border border-gray-100 p-6 sm:p-10 md:p-14 transition-all">
+        <h2 class="text-4xl font-extrabold text-indigo-700 mb-2 text-center drop-shadow-sm">Nouveau ticket d’assistance</h2>
+        <p class="text-gray-500 text-center mb-10 text-lg">Signalez un problème ou une demande d’assistance à notre équipe technique.</p>
+
+        <form method="post" th:action="@{/problems/save}" th:object="${problem}" class="space-y-8">
+            <!-- Infos demandeur -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                    <label for="ticketFirstName" class="block text-gray-700 text-sm font-bold mb-2">
-                        Prénom :
-                    </label>
+                    <label for="ticketFirstName" class="block text-base font-medium text-gray-700 mb-1">Prénom</label>
                     <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                           placeholder="Ex : Paul"
+                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
                 </div>
                 <div>
-                    <label for="ticketLastName" class="block text-gray-700 text-sm font-bold mb-2">
-                        Nom :
-                    </label>
+                    <label for="ticketLastName" class="block text-base font-medium text-gray-700 mb-1">Nom</label>
                     <input type="text" id="ticketLastName" th:field="*{ticketUserInfo.lastName}" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                           placeholder="Ex : Martin"
+                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
                 </div>
             </div>
-            <div class="mb-4 grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                    <label for="ticketEmail" class="block text-gray-700 text-sm font-bold mb-2">
-                        Email :
-                    </label>
+                    <label for="ticketEmail" class="block text-base font-medium text-gray-700 mb-1">Email</label>
                     <input type="email" id="ticketEmail" th:field="*{ticketUserInfo.email}" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                           placeholder="exemple@mail.com"
+                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
                 </div>
                 <div>
-                    <label for="ticketPhone" class="block text-gray-700 text-sm font-bold mb-2">
-                        Téléphone :
-                    </label>
+                    <label for="ticketPhone" class="block text-base font-medium text-gray-700 mb-1">Téléphone</label>
                     <input type="text" id="ticketPhone" th:field="*{ticketUserInfo.phone}" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3">
+                           placeholder="0X XX XX XX XX"
+                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
                 </div>
             </div>
-            <!-- Champs spécifiques du ticket -->
-            <!-- Titre -->
-            <div class="mb-4">
-                <label for="title" class="block text-gray-700 text-sm font-bold mb-2">
-                    Titre :
-                </label>
+
+            <hr class="my-4">
+
+            <!-- Champs du ticket -->
+            <div>
+                <label for="title" class="block text-base font-medium text-gray-700 mb-1">Titre du problème</label>
                 <input type="text" id="title" th:field="*{title}" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3">
+                       placeholder="Titre court et précis"
+                       class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
             </div>
-            <!-- Catégorie -->
-            <div class="mb-4">
-                <label for="category" class="block text-gray-700 text-sm font-bold mb-2">
-                    Catégorie :
-                </label>
-                <input type="text" id="category" th:field="*{category}"
-                       class="shadow appearance-none border rounded w-full py-2 px-3"
-                       placeholder="Ex : Réseau, Logiciel...">
+
+            <div>
+                <label for="category" class="block text-base font-medium text-gray-700 mb-1">Catégorie</label>
+                <select id="category" th:field="*{category}" required
+                        class="border border-gray-300 rounded-xl w-full py-3 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
+                    <option value="" disabled selected>Choisir une catégorie</option>
+                    <option value="Réseau">Réseau</option>
+                    <option value="Matériel">Matériel</option>
+                    <option value="Logiciel">Logiciel</option>
+                    <option value="Sécurité">Sécurité</option>
+                    <option value="Autre">Autre</option>
+                </select>
             </div>
-            <!-- Description du problème -->
-            <div class="mb-4">
-                <label for="description" class="block text-gray-700 font-bold mb-2">
-                    Description du problème :
-                </label>
+
+            <div>
+                <label for="description" class="block text-base font-medium text-gray-700 mb-1">Description détaillée</label>
                 <textarea id="description" th:field="*{description}" required
-                          placeholder="Décrivez en détail le problème rencontré"
-                          class="w-full border border-gray-300 p-2 rounded"></textarea>
+                          rows="5"
+                          placeholder="Expliquez précisément le problème, les messages d’erreur éventuels, les étapes déjà tentées…"
+                          class="border border-gray-300 rounded-xl w-full p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"></textarea>
             </div>
-            <!-- Bouton de soumission -->
-            <div class="flex items-center justify-center">
-                <button type="submit"
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Créer
-                </button>
-            </div>
-            <div th:if="${errorMessage}" class="mt-4 text-center text-red-500">
+
+            <div th:if="${errorMessage}" class="text-center text-red-500">
                 <p th:text="${errorMessage}"></p>
             </div>
+
+            <div class="flex items-center justify-center pt-4">
+                <button type="submit"
+                        class="w-full md:w-auto px-14 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg transition text-lg duration-150">
+                    Envoyer ma demande
+                </button>
+            </div>
         </form>
+
+        <div class="mt-10 text-center text-gray-400 text-sm">
+            Notre équipe traite chaque demande dans les plus brefs délais. Merci pour votre confiance !
+        </div>
     </div>
 </div>
 </body>

@@ -12,11 +12,73 @@
     <div class="w-full max-w-md rounded-2xl shadow-2xl p-8 flex flex-col items-center
                 bg-white bg-opacity-50 backdrop-blur-lg">
         <!-- Logo -->
-<!--        <img th:src="@{/images/logo-tic-harmony.png}" alt="TIC Harmony" class="h-10 mx-auto mb-2"/>-->
+        <!--        <img th:src="@{/images/logo-tic-harmony.png}" alt="TIC Harmony" class="h-10 mx-auto mb-2"/>-->
         <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-15 mx-auto mb-2"/>
         <!-- Titre -->
         <h1 class="text-3xl font-extrabold text-center mb-1">Connexion</h1>
         <p class="text-gray-700 text-center mb-6">Accédez à votre espace TIC Harmony</p>
+        <!-- Boutons de connexion démo stylés -->
+        <div class="w-full mb-6">
+            <div class="flex flex-col gap-3">
+                <!-- Client -->
+                <button type="button"
+                        onclick="quickLogin('client1', '12345678')"
+                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 shadow transition group">
+                    <div class="flex items-center justify-center h-10 w-10 rounded-full bg-cyan-200 text-cyan-800 group-hover:bg-cyan-300">
+                        <!-- Icône User -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15.232 17.232a4 4 0 00-6.464 0M12 11a4 4 0 100-8 4 4 0 000 8z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-start text-left">
+                        <span class="font-bold text-cyan-900 text-lg">Client</span>
+                        <span class="text-xs text-gray-500">client1 / 12345678</span>
+                    </div>
+                </button>
+                <!-- Admin -->
+                <button type="button"
+                        onclick="quickLogin('bob', '12345678')"
+                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 shadow transition group">
+                    <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-200 text-indigo-800 group-hover:bg-indigo-300">
+                        <!-- Icône Crown/Admin -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 4l2.09 6.26L20 10.27l-5 3.64L16.18 20 12 16.9 7.82 20 9 13.91 4 10.27l5.91-.01L12 4z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-start text-left">
+                        <span class="font-bold text-indigo-900 text-lg">Administrateur</span>
+                        <span class="text-xs text-gray-500">bob / 12345678</span>
+                    </div>
+                </button>
+                <!-- Technicien -->
+                <button type="button"
+                        onclick="quickLogin('anna', '12345678')"
+                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-green-200 bg-green-50 hover:bg-green-100 shadow transition group">
+                    <div class="flex items-center justify-center h-10 w-10 rounded-full bg-green-200 text-green-800 group-hover:bg-green-300">
+                        <!-- Icône outils/Technicien -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M14.7 6.7a2 2 0 112.6 2.6l-9.1 9.1-3.2.6.6-3.2 9.1-9.1z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-start text-left">
+                        <span class="font-bold text-green-900 text-lg">Technicien</span>
+                        <span class="text-xs text-gray-500">anna / 12345678</span>
+                    </div>
+                </button>
+            </div>
+            <div class="my-6 flex items-center justify-center text-gray-400">
+                <span class="border-t border-gray-300 flex-grow mr-2"></span>
+                ou
+                <span class="border-t border-gray-300 flex-grow ml-2"></span>
+            </div>
+        </div>
+
         <!-- Formulaire -->
         <form th:action="@{/login}" method="post" class="w-full">
             <div class="mb-4">
@@ -48,5 +110,18 @@
         </p>
     </div>
 </div>
+<th:block layout:fragment="scripts">
+    <script>
+        function quickLogin(username, password) {
+            // Met automatiquement les valeurs dans les champs
+            document.getElementById('login').value = username;
+            document.getElementById('password').value = password;
+            // Envoie le formulaire automatiquement après un petit délai (optionnel)
+            setTimeout(function () {
+                document.querySelector('form').submit();
+            }, 150); // Mets un délai court pour que le navigateur ait le temps de remplir les champs
+        }
+    </script>
+</th:block>
 </body>
 </html>

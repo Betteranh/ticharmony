@@ -44,14 +44,13 @@ public class EmployeeSignupController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Initialiser created_at
         user.setCreated_at(LocalDateTime.now());
-        // Définir le rôle selon le choix dans le formulaire (ADMIN ou MEMBER)
-        // L'objet user reçoit le rôle sélectionné par l'employé.
-        // On laisse typeClient par défaut pour les employés : par exemple "employee"
+        // Le rôle est automatiquement MEMBER (pas d'input dans le form)
+        user.setRole(be.stage.ticharmony.model.UserRole.MEMBER);
+        // Type "employee"
         user.setTypeClient("employee");
-        // Définir la langue par défaut si non renseignée
-        if (user.getLangue() == null || user.getLangue().isEmpty()) {
-            user.setLangue("fr");
-        }
+        // Langue par défaut
+        user.setLangue("fr");
+
         userService.addUser(user);
         return "redirect:/login?employeeRegistrationSuccess=true";
     }

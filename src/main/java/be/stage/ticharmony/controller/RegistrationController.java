@@ -65,7 +65,7 @@ public class RegistrationController {
         userService.addUser(user);
 
         // Rediriger vers la page de login
-        return "redirect:/login?registrationSuccess=true";
+        return "redirect:/partners?registrationSuccess=true";
     }
 
 

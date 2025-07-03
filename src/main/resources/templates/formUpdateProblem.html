@@ -9,54 +9,69 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
           rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-<div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-12 max-w-lg">
-    <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-2xl font-bold mb-4">Modifier le ticket</h2>
-        <form th:action="@{/problems/save}" th:object="${problem}" method="post">
+<body class="bg-[#f6f7f3]">
+<div layout:fragment="content" class="min-h-screen flex items-center justify-center py-10 px-2 pt-20">
+    <div class="w-full max-w-3xl bg-white shadow-2xl rounded-3xl border border-gray-100 p-6 sm:p-10 md:p-14 transition-all">
+        <h2 class="text-4xl font-extrabold text-indigo-700 mb-2 text-center drop-shadow-sm">Modifier le ticket</h2>
+        <p class="text-gray-500 text-center mb-10 text-lg">Mettez à jour les informations relatives à votre demande.</p>
+        <form th:action="@{/problems/save}" th:object="${problem}" method="post" class="space-y-8">
             <input type="hidden" th:field="*{id}"/>
 
-            <div class="mb-4">
-                <label class="block font-bold mb-1">Titre</label>
-                <input type="text" th:field="*{title}" required
-                       class="w-full border rounded p-2"/>
+            <div>
+                <label for="title" class="block text-base font-medium text-gray-700 mb-1">Titre du problème</label>
+                <input type="text" id="title" th:field="*{title}" required
+                       placeholder="Titre court et précis"
+                       class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
             </div>
 
-            <div class="mb-4">
-                <label class="block font-bold mb-1">Description</label>
-                <textarea th:field="*{description}" rows="5" required
-                          class="w-full border rounded p-2"></textarea>
+            <div>
+                <label for="description" class="block text-base font-medium text-gray-700 mb-1">Description détaillée</label>
+                <textarea id="description" th:field="*{description}" rows="5" required
+                          placeholder="Détaillez le problème, les étapes, etc."
+                          class="border border-gray-300 rounded-xl w-full p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"></textarea>
             </div>
 
-            <div class="mb-4">
-                <label class="block font-bold mb-1">Catégorie</label>
-                <input type="text" th:field="*{category}"
-                       class="w-full border rounded p-2"/>
+            <div>
+                <label for="category" class="block text-base font-medium text-gray-700 mb-1">Catégorie</label>
+                <select id="category" th:field="*{category}" required
+                        class="border border-gray-300 rounded-xl w-full py-3 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
+                    <option value="" disabled>Choisir une catégorie</option>
+                    <option value="Réseau">Réseau</option>
+                    <option value="Matériel">Matériel</option>
+                    <option value="Logiciel">Logiciel</option>
+                    <option value="Sécurité">Sécurité</option>
+                    <option value="Autre">Autre</option>
+                </select>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                    <label class="block font-bold mb-1">Statut</label>
-                    <select th:field="*{status}" class="w-full border rounded p-2">
+                    <label for="status" class="block text-base font-medium text-gray-700 mb-1">Statut</label>
+                    <select id="status" th:field="*{status}" class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
                         <option th:each="s : ${T(be.stage.ticharmony.model.Status).values()}"
                                 th:value="${s}" th:text="${s}"/>
                     </select>
                 </div>
                 <div>
-                    <label class="block font-bold mb-1">Priorité</label>
-                    <select th:field="*{priority}" class="w-full border rounded p-2">
+                    <label for="priority" class="block text-base font-medium text-gray-700 mb-1">Priorité</label>
+                    <select id="priority" th:field="*{priority}" class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
                         <option th:each="p : ${T(be.stage.ticharmony.model.Priority).values()}"
                                 th:value="${p}" th:text="${p}"/>
                     </select>
                 </div>
             </div>
 
-            <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Enregistrer
-            </button>
+            <div class="flex items-center justify-center pt-4">
+                <button type="submit"
+                        class="w-full md:w-auto px-14 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg transition text-lg duration-150">
+                    Enregistrer les modifications
+                </button>
+            </div>
         </form>
 
+        <div class="mt-10 text-center text-gray-400 text-sm">
+            Les modifications seront prises en compte immédiatement après validation.
+        </div>
     </div>
 </div>
 </body>

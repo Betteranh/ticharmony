@@ -1,17 +1,36 @@
 <header th:fragment="header" class="bg-blue-600 fixed top-0 w-full z-50 shadow">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 w-full">
             <!-- Logo + navigation principale ensemble à gauche -->
             <div class="flex items-center space-x-8">
                 <a th:href="@{/}" class="flex items-center space-x-2">
                     <img th:src="@{/images/tic.png}" alt="Logo TIC Harmony" class="h-10 w-auto">
-<!--                    <img th:src="@{/images/logo-tic-harmony.png}" alt="Logo TIC Harmony" class="h-10 w-auto">-->
+                    <!--                    <img th:src="@{/images/logo-tic-harmony.png}" alt="Logo TIC Harmony" class="h-10 w-auto">-->
                 </a>
+                <!-- Affiche Support Technique uniquement pour connecté -->
+                <span sec:authorize="isAuthenticated()" class="text-white font-bold text-lg tracking-wide">
+                    Support Technique
+                </span>
                 <nav class="hidden md:flex items-center space-x-6">
                     <a th:href="@{/}" class="text-white hover:underline">Accueil</a>
-                    <a sec:authorize="isAuthenticated()" th:href="@{/problems}" class="text-white hover:underline">Liste des problèmes</a>
-                    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="text-white hover:underline">Dashboard</a>
-                    <a sec:authorize="hasAnyRole('ADMIN','MEMBER')" th:href="@{/memberDashboard}" class="text-white hover:underline">Dashboard</a>
+                    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}"
+                       class="text-white hover:underline">Tableau de bord</a>
+                    <a sec:authorize="hasAnyRole('MEMBER')" th:href="@{/memberDashboard}"
+                       class="text-white hover:underline">Tableau de bord</a>
+                    <a sec:authorize="hasAnyRole('ADMIN')" th:href="@{/adminDashboard}"
+                       class="text-white hover:underline">Tableau de bord</a>
+                    <a sec:authorize="isAuthenticated()" th:href="@{/problems}" class="text-white hover:underline">Tickets</a>
+                    <a sec:authorize="hasRole('ADMIN') or hasRole('CLIENT')" th:href="@{/problems/create}"
+                       class="text-white hover:underline">
+                        Nouveau ticket
+                    </a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/employees}" class="text-white hover:underline">
+                        Utilisateurs
+                    </a>
+                    <a sec:authorize="hasAnyRole('ADMIN', 'MEMBER')" th:href="@{/partners}"
+                       class="text-white hover:underline">
+                        Clients
+                    </a>
                 </nav>
             </div>
 
@@ -32,10 +51,10 @@
                               th:text="${notifications.size()}">0</span>
                     </button>
                     <span class="text-white font-semibold">
-                        Bonjour, <span sec:authentication="principal.username"></span>
+                        <span sec:authentication="principal.username"></span>
                     </span>
                     <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="text-white hover:underline">Se déconnecter</button>
+                        <button type="submit" class="text-white hover:underline">Déconnexion</button>
                     </form>
                 </div>
             </div>
