@@ -7,42 +7,99 @@
     <title layout:title-pattern="$CONTENT_TITLE – Tic Harmony">Tic Harmony</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
           rel="stylesheet">
+    <style>
+        .glass-navbar {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 16px rgba(44, 62, 80, 0.04);
+        }
+
+        #drawerNotif {
+            transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        #drawerOverlay {
+            transition: opacity 0.2s;
+            opacity: 0;
+        }
+
+        #drawerOverlay.opacity-100 {
+            opacity: 1;
+        }
+    </style>
     <th:block layout:fragment="css"></th:block>
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100">
+<body class="flex flex-col min-h-screen bg-blue-50">
 
 <!-- Header -->
 <div th:replace="fragments/header :: header"></div>
 
 <!-- Main content -->
-<main class="flex-grow min-h-screen"
-      style="background: linear-gradient(120deg, #dbeafe 0%, #3b82f6 100%);">
-    <div layout:fragment="content"></div>
+<main class="flex-grow min-h-screen pt-16">
+    <div th:if="${module == 'home'}" layout:fragment="content"></div>
+    <div th:if="${module != 'home'}" class="max-w-7xl mx-auto w-full px-4" layout:fragment="content"></div>
 </main>
 
 <!-- Footer -->
 <div th:replace="fragments/footer :: footer"></div>
 
-<!-- Notifications panel (uniquement pour un utilisateur connecté) -->
-<div sec:authorize="isAuthenticated()"
-     id="notificationsPanel"
-     class="hidden fixed top-16 right-4 w-80 max-h-96 overflow-auto z-50"
-     th:insert="fragments/notifications :: notifications">
-    <!-- le contenu de notifications.html sera injecté ici, mais ce div reste caché -->
+<!-- Drawer Notifications (Sidebar à droite, UNIQUEMENT pour un utilisateur connecté) -->
+<div sec:authorize="isAuthenticated()">
+    <!-- Overlay -->
+    <div id="drawerOverlay"
+         class="fixed inset-0 bg-black bg-opacity-30 z-50 hidden transition-opacity duration-200"></div>
+    <!-- Drawer panel -->
+    <div id="drawerNotif"
+         class="fixed top-0 right-0 h-full w-80 max-w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300"
+         style="will-change: transform;">
+        <button id="closeDrawerNotif"
+                class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700">&times;</button>
+        <div class="mt-8"></div>
+        <div th:replace="fragments/notifications :: notifications"></div>
+    </div>
+    <!-- Script pour Drawer -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function () {
+            const notifToggle = document.getElementById('notifToggle');
+            const drawer = document.getElementById('drawerNotif');
+            const overlay = document.getElementById('drawerOverlay');
+            const closeBtn = document.getElementById('closeDrawerNotif');
+            // Ouvrir drawer
+            notifToggle?.addEventListener('click', function(e) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => { overlay.classList.add('opacity-100'); }, 10);
+                e.stopPropagation();
+            });
+            // Fermer drawer
+            function closeDrawer() {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('opacity-100');
+            }
+            closeBtn?.addEventListener('click', closeDrawer);
+            overlay?.addEventListener('click', closeDrawer);
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") closeDrawer();
+            });
+        });
+        /*]]>*/
+    </script>
 </div>
+<!-- /Drawer Notifications -->
 
-
-<!-- Toggle script -->
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    document.addEventListener('DOMContentLoaded', function () {
-        const toggle = document.getElementById('notifToggle');
-        const panel = document.getElementById('notificationsPanel');
-        if (toggle && panel) {
-            toggle.addEventListener('click', () => panel.classList.toggle('hidden'));
+<!-- Shadow on navbar on scroll -->
+<script>
+    document.addEventListener('scroll', function () {
+        const nav = document.querySelector('.glass-navbar');
+        if (window.scrollY > 10) {
+            nav.classList.add('shadow-lg');
+        } else {
+            nav.classList.remove('shadow-lg');
         }
     });
-    /*]]>*/
 </script>
 
 <th:block layout:fragment="scripts"></th:block>

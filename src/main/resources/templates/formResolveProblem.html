@@ -5,7 +5,6 @@
 <head>
     <title>Résoudre le Ticket</title>
 </head>
-<body class="bg-gray-100">
 <div layout:fragment="content" class="container mx-auto px-4 pt-20 max-w-xl">
 
     <div class="bg-white rounded-lg shadow p-6 space-y-6">
@@ -54,7 +53,11 @@
             </div>
 
             <!-- Bouton de soumission -->
-            <div class="text-right">
+            <div class="text-right space-x-2">
+                <a th:href="@{'/problems/' + ${problem.id}}"
+                   class="bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-2 px-4 rounded inline-block ml-2 transition">
+                    Soumettre plus tard
+                </a>
                 <button type="submit"
                         class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Soumettre la résolution
@@ -64,5 +67,4 @@
     </div>
 
 </div>
-</body>
 </html>

@@ -1,4 +1,4 @@
-<footer th:fragment="footer" class="bg-gray-900 text-gray-300 py-8">
+<footer th:fragment="footer" class="bg-gray-900 text-gray-300 pt-8">
     <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:items-start">
         <!-- Colonne 1 : Nom + Adresse -->
         <div class="mb-6 md:mb-0 text-center md:text-left">
@@ -25,6 +25,17 @@
             </div>
         </div>
     </div>
+
+    <!-- PARTENAIRES : élégant, centré, effet premium -->
+    <div class="mt-8 flex flex-col items-center">
+        <div class="text-xs uppercase tracking-widest text-gray-400 mb-2">Avec le soutien de</div>
+        <div class="flex flex-row flex-wrap items-center justify-center gap-8 bg-gray-800 px-4 py-4 rounded-2xl shadow-inner max-w-2xl">
+            <img src="/images/bxl_logo.jpg" alt="Ville de Bruxelles" class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow" />
+            <img src="/images/rbc-logo.png" alt="Finance Brussels" class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow" />
+            <img src="/images/Region-de-Bruxelles-Capitale-1.jpg" alt="Région Bruxelles Capitale" class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow" />
+        </div>
+    </div>
+
     <div class="mt-8 text-center text-gray-500 text-sm">
         &copy; 2025 – TIC Harmony – Projet Helpdesk
         <span class="ml-2 text-pink-400">♥</span>

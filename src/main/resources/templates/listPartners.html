@@ -7,8 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
           rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-<div layout:fragment="content" class="container mx-auto px-4 pt-20 pb-16">
+<div layout:fragment="content" class="max-w-7xl mx-auto w-full min-h-screen pt-20 pb-12">
 
     <div th:if="${param.registrationSuccess}"
          class="mb-4 rounded bg-green-100 border border-green-300 text-green-800 px-4 py-2 text-center shadow">
@@ -122,5 +121,4 @@
         }
     </script>
 </th:block>
-</body>
 </html>

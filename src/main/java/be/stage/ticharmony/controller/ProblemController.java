@@ -1,11 +1,7 @@
 package be.stage.ticharmony.controller;
 
-import be.stage.ticharmony.model.NotificationType;
-import be.stage.ticharmony.model.Priority;
-import be.stage.ticharmony.model.Problem;
-import be.stage.ticharmony.model.Status;
-import be.stage.ticharmony.model.User;
-import be.stage.ticharmony.model.UserRole;
+import be.stage.ticharmony.model.*;
+import be.stage.ticharmony.service.CommentService;
 import be.stage.ticharmony.service.NotificationService;
 import be.stage.ticharmony.service.ProblemService;
 import be.stage.ticharmony.service.UserService;
@@ -35,6 +31,9 @@ public class ProblemController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private CommentService commentService;
 
     /**
      * Prise en charge → IN_PROGRESS puis affiche le formulaire
@@ -92,7 +91,27 @@ public class ProblemController {
             // 2) on marque la notif "ASSIGNED_TO_PROBLEM" comme lue
             notificationService.markAssignmentNotificationsRead(current, problem);
         }
-        return "redirect:/problems/" + id;
+        return "redirect:/problems";
+    }
+
+    @GetMapping("/{id}/resolve")
+    @PreAuthorize("hasRole('MEMBER')")
+    public String showResolveForm(@PathVariable Long id,
+                                  Model model,
+                                  Authentication auth) {
+        Problem problem = service.getProblem(id);
+        User current = userService.findByLogin(auth.getName());
+
+        // Vérifie que c’est bien le technicien assigné et que le ticket est IN_PROGRESS
+        if (problem == null
+                || !current.equals(problem.getTechnician())
+                || problem.getStatus() != Status.IN_PROGRESS) {
+            return "redirect:/problems/" + id;
+        }
+
+        model.addAttribute("problem", problem);
+        model.addAttribute("module", "problems");
+        return "formResolveProblem"; // ton template
     }
 
     /**
@@ -115,7 +134,7 @@ public class ProblemController {
                     NotificationType.PROBLEM_CLOSED
             );
         }
-        return "redirect:/problems";
+        return "redirect:/problems?status=CLOSED";
     }
 
     /**
@@ -254,6 +273,11 @@ public class ProblemController {
         if (problem == null) return "redirect:/problems";
 
         User current = userService.findByLogin(auth.getName());
+
+        // Pour commentaires :
+        List<Comment> comments = commentService.getCommentsByProblem(problem);
+        model.addAttribute("comments", comments);
+
         // si c’est le tech sur **son** ticket, on marque son assignation lue
         if (current.getRole() == UserRole.MEMBER
                 && problem.getTechnician() != null

@@ -4,178 +4,95 @@
       layout:decorate="~{layouts/main}">
 <head>
     <title>Accueil - TIC Harmony</title>
-    <!-- Inclusion de Tailwind CSS via CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style th:inline="css">
-        .hero-bg {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-            url([[ @{/images/Equipe-TIC-Harmony.jpg} ]]);
-            background-size: cover;
-            background-position: center;
-        }
-    </style>
+    <!-- Tailwind déjà inclus via layout -->
 </head>
-<body class="bg-gray-100">
+<body>
 <div layout:fragment="content">
-    <!-- Hero Section -->
-    <section class="pt-24 pb-20 bg-blue-500">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center px-4">
-            <div class="flex-1 text-white">
-                <h1 class="text-5xl font-extrabold mb-4">TIC Harmony</h1>
-                <p class="text-xl mb-8">Solution complète de gestion de tickets de support technique pour PME et
-                    associations.<br>
-                    Simplifiez la gestion de vos demandes d’assistance informatique.
-                </p>
-                <a th:href="@{/employeeSignup}"
-                   class="bg-white text-blue-600 font-bold py-3 px-6 rounded-full shadow hover:bg-gray-200 transition">Commencer
-                    maintenant</a>
-            </div>
-            <div class="flex-1 flex justify-center mt-10 md:mt-0">
-                <!-- Utilise une icône SVG pour le casque -->
-                <div class="flex-1 flex justify-center mt-10 md:mt-0">
-                    <div class="bg-white rounded-full p-8 shadow-xl">
-                        <img th:src="@{/images/soutien.png}" alt="Support" class="w-56 h-56 object-contain">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Fonctionnalités principales -->
-    <section class="py-16 bg-white">
-        <div class="max-w-5xl mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-4">Fonctionnalités principales</h2>
-            <p class="text-gray-700 text-center text-lg mb-12">
-                Une solution complète pour gérer efficacement vos tickets de support
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Gestion des tickets -->
-                <div class="bg-white rounded-2xl shadow p-8 text-center">
-                    <div class="flex justify-center mb-4">
-                    <span class="inline-flex items-center justify-center bg-blue-100 rounded-full w-16 h-16">
-                        <!-- Ticket SVG -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                             stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-blue-500">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"/>
-                        </svg>
-                    </span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Gestion des tickets</h3>
-                    <p class="text-gray-600 text-base">Créez, suivez et gérez facilement tous vos tickets de support
-                        avec un workflow optimisé.</p>
-                </div>
-                <!-- Gestion des rôles -->
-                <div class="bg-white rounded-2xl shadow p-8 text-center">
-                    <div class="flex justify-center mb-4">
-                    <span class="inline-flex items-center justify-center bg-green-100 rounded-full w-16 h-16">
-                        <!-- User/roles SVG -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                             stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-green-500">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-                        </svg>
-                    </span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Gestion des rôles</h3>
-                    <p class="text-gray-600 text-base">Système de rôles avancé : clients, techniciens et administrateurs
-                        avec permissions adaptées.</p>
-                </div>
-                <!-- Tableau de bord -->
-                <div class="bg-white rounded-2xl shadow p-8 text-center">
-                    <div class="flex justify-center mb-4">
-                    <span class="flex items-center justify-center rounded-full bg-blue-400 w-16 h-16">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-         stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-white">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"/>
-    </svg>
-</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Tableau de bord</h3>
-                    <p class="text-gray-600 text-base">Visualisez les statistiques et métriques de performance de votre
-                        service support.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Comment ça marche -->
-    <section class="py-16 bg-gray-50">
-        <div class="max-w-5xl mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-6">Comment ça marche</h2>
-            <p class="text-gray-700 text-center text-lg mb-12">Un processus simple et efficace en 4 étapes</p>
-            <div class="flex flex-col md:flex-row items-center md:justify-between gap-8">
-                <div class="flex flex-col items-center">
-                    <span class="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-2xl font-bold mb-2">1</span>
-                    <h4 class="font-bold mb-1">Création</h4>
-                    <p class="text-sm text-gray-500 text-center">Le client crée un ticket décrivant son problème
-                        technique</p>
-                </div>
-                <div class="w-8 h-1 bg-gray-300 md:w-12 md:h-1 my-4 md:my-0"></div>
-                <div class="flex flex-col items-center">
-                    <span class="w-12 h-12 rounded-full bg-yellow-400 text-white flex items-center justify-center text-2xl font-bold mb-2">2</span>
-                    <h4 class="font-bold mb-1">Attribution</h4>
-                    <p class="text-sm text-gray-500 text-center">L'administrateur assigne le ticket à un technicien
-                        qualifié</p>
-                </div>
-                <div class="w-8 h-1 bg-gray-300 md:w-12 md:h-1 my-4 md:my-0"></div>
-                <div class="flex flex-col items-center">
-                    <span class="w-12 h-12 rounded-full text-white flex items-center justify-center text-2xl font-bold mb-2"
-                          style="background-color: #fb923c;">
-                        3
-                    </span>
-                    <h4 class="font-bold mb-1">Résolution</h4>
-                    <p class="text-sm text-gray-500 text-center">Le technicien intervient et documente la solution</p>
-                </div>
-                <div class="w-8 h-1 bg-gray-300 md:w-12 md:h-1 my-4 md:my-0"></div>
-                <div class="flex flex-col items-center">
-                    <span class="w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl font-bold mb-2">4</span>
-                    <h4 class="font-bold mb-1">Validation</h4>
-                    <p class="text-sm text-gray-500 text-center">L'administrateur valide et archive le ticket résolu</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Section Découverte du magasin OrdiRec -->
-    <section class="py-12 bg-white">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
-            <div class="flex-1">
-                <h2 class="text-2xl md:text-3xl font-bold text-indigo-800 mb-2">
-                    Découvrez aussi <span class="text-blue-600">OrdiRec</span>
-                </h2>
-                <p class="text-gray-700 text-lg mb-4">
-                    Notre boutique propose des ordinateurs reconditionnés, accessoires et services informatiques à prix
-                    malin.
-                    <br>
-                    <span class="text-blue-600 font-semibold">Commandez en ligne ou retirez à Bruxelles !</span>
-                </p>
-                <a href="https://ordirec.eu/" target="_blank" rel="noopener"
-                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-full shadow transition">
-                    Visiter la boutique OrdiRec
-                </a>
-            </div>
-            <!-- Petite illustration d'ordinateur (optionnelle, stylée) -->
-            <div class="flex-1 hidden md:flex justify-center">
-                <svg width="140" height="110" viewBox="0 0 140 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="10" y="10" width="120" height="70" rx="8" fill="#EEF2FF"/>
-                    <rect x="30" y="30" width="80" height="30" rx="4" fill="#3B82F6" opacity="0.7"/>
-                    <rect x="60" y="80" width="20" height="8" rx="2" fill="#64748B"/>
-                    <rect x="40" y="95" width="60" height="6" rx="3" fill="#A5B4FC"/>
-                </svg>
-            </div>
-        </div>
-    </section>
-    <!-- Call to action -->
-    <section class="py-16 bg-blue-500 text-white text-center ">
-        <h2 class="text-3xl font-bold mb-4">Prêt à commencer ?</h2>
-        <p class="mb-8 text-lg">Rejoignez les entreprises qui font confiance à TIC Harmony</p>
+    <!-- HERO -->
+    <section class="flex flex-col items-center text-center py-20 px-3 bg-gradient-to-b from-blue-50 via-white to-white">
+        <img th:src="@{/images/tic.png}" alt="Tic Harmony"
+             class="mx-auto mb-8 w-32 md:w-40 drop-shadow-lg">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-snug mb-5 tracking-wide max-w-2xl mx-auto">
+            Votre partenaire informatique de confiance pour les
+            <span class="text-blue-700">ASBL</span> et <span class="text-blue-500">PME</span>
+        </h1>
+        <p class="text-lg text-gray-600 mb-8 max-w-xl mx-auto">
+            Tic Harmony accompagne votre organisation avec des solutions informatiques adaptées, un support
+            technique réactif et une gestion simplifiée de vos demandes d’assistance.
+        </p>
         <div class="flex flex-col md:flex-row gap-4 justify-center">
-            <a th:href="@{/employeeSignup}"
-               class="bg-white text-blue-600 font-bold py-3 px-6 rounded-full shadow hover:bg-gray-200 transition">Créer
-                un compte</a>
             <a th:href="@{/login}"
-               class="bg-blue-700 font-bold py-3 px-6 rounded-full shadow hover:bg-blue-800 transition">Se connecter</a>
+               class="px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow flex items-center gap-2">
+                Accéder à votre espace
+            </a>
+            <a href="https://www.ordirec.eu/" target="_blank" rel="noopener"
+               class="px-7 py-3 bg-white border border-blue-600 text-blue-600 font-semibold rounded-xl transition shadow hover:bg-blue-50">
+                Découvrir notre magasin
+            </a>
+        </div>
+    </section>
+
+    <!-- DOMAINES D'EXPERTISE -->
+    <section id="services" class="py-12 bg-gradient-to-r from-blue-50 via-white to-white">
+        <h2 class="text-2xl font-bold text-center mb-8 text-gray-700">Nos domaines d'expertise</h2>
+        <div class="flex flex-wrap justify-center gap-6 px-2">
+            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
+                <div class="text-blue-500 text-4xl mb-3">🖥️</div>
+                <div class="font-bold mb-1">Matériel</div>
+                <div class="text-gray-500 text-sm text-center">Installation, maintenance et réparation de votre parc
+                    informatique
+                </div>
+            </div>
+            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
+                <div class="text-green-500 text-4xl mb-3">🌐</div>
+                <div class="font-bold mb-1">Réseau</div>
+                <div class="text-gray-500 text-sm text-center">Configuration et sécurisation de votre infrastructure
+                    réseau
+                </div>
+            </div>
+            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
+                <div class="text-purple-500 text-4xl mb-3">💾</div>
+                <div class="font-bold mb-1">Logiciels</div>
+                <div class="text-gray-500 text-sm text-center">Installation, configuration et mise à jour de vos
+                    applications
+                </div>
+            </div>
+            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
+                <div class="text-red-500 text-4xl mb-3">🔒</div>
+                <div class="font-bold mb-1">Sécurité</div>
+                <div class="text-gray-500 text-sm text-center">Protection et sauvegarde de vos données sensibles
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SYSTÈME DE TICKETS & ESPACE PERSO -->
+    <section class="flex flex-col md:flex-row justify-center items-center gap-10 py-14 px-3">
+        <div class="max-w-md">
+            <h3 class="text-xl font-bold mb-4 text-gray-700">Un système de tickets innovant pour votre tranquillité
+                d’esprit</h3>
+            <ul class="space-y-4 text-gray-600">
+                <li><span class="text-green-500 mr-2">✔</span>Support rapide et efficace</li>
+                <li><span class="text-blue-500 mr-2">✔</span>Équipe de techniciens experts</li>
+                <li><span class="text-purple-500 mr-2">✔</span>Suivi transparent</li>
+            </ul>
+        </div>
+        <div class="bg-blue-100 border-blue-300 border rounded-2xl p-7 shadow-md w-full md:max-w-xs">
+            <div class="font-bold mb-2 text-gray-700">Votre espace personnalisé</div>
+            <ul class="text-sm text-blue-900 space-y-2">
+                <li>
+                    <span class="font-bold">Pour les clients (ASBL/PME)</span><br>
+                    Créez et suivez vos demandes d’assistance
+                </li>
+                <li>
+                    <span class="font-bold">Pour les techniciens</span><br>
+                    Gérez les interventions et documentez les solutions
+                </li>
+                <li>
+                    <span class="font-bold">Pour les administrateurs</span><br>
+                    Supervisez l’ensemble des demandes et optimisez les ressources
+                </li>
+            </ul>
         </div>
     </section>
 </div>

@@ -1,35 +1,70 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main}">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Connexion</title>
+    <meta charset="utf-8">
+    <title>Connexion – Tic Harmony</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .glass-navbar {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 16px rgba(44, 62, 80, 0.04);
+        }
+    </style>
 </head>
-<body>
-<div layout:fragment="content"
-     class="flex justify-center items-center py-20 md:py-32">
+<body class="flex flex-col min-h-screen bg-blue-50">
+
+<!-- Header (NO sec:authorize, always visible) -->
+<header class="fixed top-0 w-full z-50 glass-navbar transition-all duration-300 bg-white/80 backdrop-blur">
+    <div class="w-full bg-transparent">
+        <div class="max-w-7xl mx-auto flex items-center h-16 w-full px-4 sm:px-6 lg:px-8">
+            <!-- GAUCHE -->
+            <div class="flex items-center flex-1 min-w-0">
+                <a th:href="@{/}" class="flex items-center space-x-2 min-w-0">
+                    <img th:src="@{/images/tic.png}" alt="Logo TIC Harmony" class="h-10 w-auto">
+                </a>
+                <div class="flex flex-col leading-tight ml-2">
+                    <span class="font-bold text-gray-700 text-xl md:text-2xl mb-0.5">Tic Harmony</span>
+                    <span class="text-xs md:text-sm text-gray-600 font-medium">L’informatique clé en main</span>
+                </div>
+            </div>
+            <!-- CENTRE (désactivé) -->
+            <nav class="flex-1 flex justify-center"></nav>
+            <!-- DROITE : Connexion simple -->
+            <div class="flex items-center justify-end flex-1 min-w-0">
+                <a th:href="@{/login}"
+                   class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg transition text-base flex items-center gap-2">
+                    Se connecter
+                    <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Espace principal -->
+<main class="flex-grow min-h-screen pt-20 flex items-center justify-center">
     <div class="w-full max-w-md rounded-2xl shadow-2xl p-8 flex flex-col items-center
-                bg-white bg-opacity-50 backdrop-blur-lg">
+                bg-white bg-opacity-60 backdrop-blur-lg">
         <!-- Logo -->
-        <!--        <img th:src="@{/images/logo-tic-harmony.png}" alt="TIC Harmony" class="h-10 mx-auto mb-2"/>-->
-        <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-15 mx-auto mb-2"/>
+        <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-30 mx-auto mb-2"/>
         <!-- Titre -->
         <h1 class="text-3xl font-extrabold text-center mb-1">Connexion</h1>
         <p class="text-gray-700 text-center mb-6">Accédez à votre espace TIC Harmony</p>
-        <!-- Boutons de connexion démo stylés -->
+
+        <!-- Boutons démo -->
         <div class="w-full mb-6">
             <div class="flex flex-col gap-3">
-                <!-- Client -->
-                <button type="button"
-                        onclick="quickLogin('client1', '12345678')"
-                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 shadow transition group">
+                <button type="button" onclick="quickLogin('client1', '12345678')" class="flex items-center gap-4 w-full p-4 rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 shadow transition group">
                     <div class="flex items-center justify-center h-10 w-10 rounded-full bg-cyan-200 text-cyan-800 group-hover:bg-cyan-300">
                         <!-- Icône User -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M15.232 17.232a4 4 0 00-6.464 0M12 11a4 4 0 100-8 4 4 0 000 8z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 17.232a4 4 0 00-6.464 0M12 11a4 4 0 100-8 4 4 0 000 8z"/>
                         </svg>
                     </div>
                     <div class="flex flex-col items-start text-left">
@@ -37,16 +72,11 @@
                         <span class="text-xs text-gray-500">client1 / 12345678</span>
                     </div>
                 </button>
-                <!-- Admin -->
-                <button type="button"
-                        onclick="quickLogin('bob', '12345678')"
-                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 shadow transition group">
+                <button type="button" onclick="quickLogin('bob', '12345678')" class="flex items-center gap-4 w-full p-4 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 shadow transition group">
                     <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-200 text-indigo-800 group-hover:bg-indigo-300">
-                        <!-- Icône Crown/Admin -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 4l2.09 6.26L20 10.27l-5 3.64L16.18 20 12 16.9 7.82 20 9 13.91 4 10.27l5.91-.01L12 4z"/>
+                        <!-- Icône Admin -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4l2.09 6.26L20 10.27l-5 3.64L16.18 20 12 16.9 7.82 20 9 13.91 4 10.27l5.91-.01L12 4z"/>
                         </svg>
                     </div>
                     <div class="flex flex-col items-start text-left">
@@ -54,16 +84,11 @@
                         <span class="text-xs text-gray-500">bob / 12345678</span>
                     </div>
                 </button>
-                <!-- Technicien -->
-                <button type="button"
-                        onclick="quickLogin('anna', '12345678')"
-                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-green-200 bg-green-50 hover:bg-green-100 shadow transition group">
+                <button type="button" onclick="quickLogin('anna', '12345678')" class="flex items-center gap-4 w-full p-4 rounded-xl border border-green-200 bg-green-50 hover:bg-green-100 shadow transition group">
                     <div class="flex items-center justify-center h-10 w-10 rounded-full bg-green-200 text-green-800 group-hover:bg-green-300">
-                        <!-- Icône outils/Technicien -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M14.7 6.7a2 2 0 112.6 2.6l-9.1 9.1-3.2.6.6-3.2 9.1-9.1z"/>
+                        <!-- Icône Tech -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.7a2 2 0 112.6 2.6l-9.1 9.1-3.2.6.6-3.2 9.1-9.1z"/>
                         </svg>
                     </div>
                     <div class="flex flex-col items-start text-left">
@@ -79,7 +104,7 @@
             </div>
         </div>
 
-        <!-- Formulaire -->
+        <!-- Formulaire de login -->
         <form th:action="@{/login}" method="post" class="w-full">
             <div class="mb-4">
                 <label for="login" class="block text-gray-700 text-sm font-bold mb-1">Nom d'utilisateur</label>
@@ -93,6 +118,8 @@
                        placeholder="Votre mot de passe"
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-white bg-opacity-80"/>
             </div>
+            <!-- CSRF token -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition flex items-center justify-center gap-2 mb-2">
                 <!-- Icône login -->
@@ -104,24 +131,69 @@
                 Se connecter
             </button>
         </form>
+
+        <!-- Message d'erreur -->
+        <div th:if="${param.loginError}" class="mt-4 text-red-600 text-center">
+            Nom d'utilisateur ou mot de passe incorrect.
+        </div>
+        <div th:if="${param.logoutSuccess}" class="mt-4 text-green-600 text-center">
+            Vous êtes déconnecté.
+        </div>
+
         <p class="mt-2 text-center text-gray-700 text-base">
             Pas encore de compte ?
             <a th:href="@{/employeeSignup}" class="text-blue-600 hover:underline">Créer un compte</a>
         </p>
     </div>
-</div>
-<th:block layout:fragment="scripts">
-    <script>
-        function quickLogin(username, password) {
-            // Met automatiquement les valeurs dans les champs
-            document.getElementById('login').value = username;
-            document.getElementById('password').value = password;
-            // Envoie le formulaire automatiquement après un petit délai (optionnel)
-            setTimeout(function () {
-                document.querySelector('form').submit();
-            }, 150); // Mets un délai court pour que le navigateur ait le temps de remplir les champs
-        }
-    </script>
-</th:block>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-300 pt-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:items-start">
+        <div class="mb-6 md:mb-0 text-center md:text-left">
+            <span class="font-bold text-lg">TIC Harmony</span>
+            <div class="mt-1 text-gray-400 text-sm">Rue des Tanneurs 60A,<br>1000 Bruxelles</div>
+        </div>
+        <div class="mb-6 md:mb-0 text-center">
+            <div class="font-semibold mb-2">Liens utiles</div>
+            <ul>
+                <li>
+                    <a th:href="@{/}" class="hover:underline">Accueil</a>
+                </li>
+                <li>
+                    <a th:href="@{/login}" class="hover:underline">Connexion</a>
+                </li>
+            </ul>
+        </div>
+        <div class="text-center md:text-right">
+            <div class="font-semibold mb-2">Contact</div>
+            <div>
+                <a href="mailto:info@tic-harmony.be" class="hover:underline">info@tic-harmony.be</a>
+            </div>
+        </div>
+    </div>
+    <div class="mt-8 flex flex-col items-center">
+        <div class="text-xs uppercase tracking-widest text-gray-400 mb-2">Avec le soutien de</div>
+        <div class="flex flex-row flex-wrap items-center justify-center gap-8 bg-gray-800 px-4 py-4 rounded-2xl shadow-inner max-w-2xl">
+            <img src="/images/bxl_logo.jpg" alt="Ville de Bruxelles" class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow" />
+            <img src="/images/rbc-logo.png" alt="Finance Brussels" class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow" />
+            <img src="/images/Region-de-Bruxelles-Capitale-1.jpg" alt="Région Bruxelles Capitale" class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow" />
+        </div>
+    </div>
+    <div class="mt-8 text-center text-gray-500 text-sm">
+        &copy; 2025 – TIC Harmony – Projet Helpdesk
+        <span class="ml-2 text-pink-400">♥</span>
+    </div>
+</footer>
+
+<script>
+    function quickLogin(username, password) {
+        document.getElementById('login').value = username;
+        document.getElementById('password').value = password;
+        setTimeout(function () {
+            document.querySelector('form').submit();
+        }, 150);
+    }
+</script>
 </body>
 </html>

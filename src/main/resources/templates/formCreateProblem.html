@@ -3,93 +3,212 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Ajouter un problème</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Créer un nouveau ticket</title>
 </head>
-<body class="bg-[#f6f7f3]">
-<div layout:fragment="content" class="min-h-screen flex items-center justify-center py-10 px-2 pt-20">
-    <div class="w-full max-w-3xl bg-white shadow-2xl rounded-3xl border border-gray-100 p-6 sm:p-10 md:p-14 transition-all">
-        <h2 class="text-4xl font-extrabold text-indigo-700 mb-2 text-center drop-shadow-sm">Nouveau ticket d’assistance</h2>
-        <p class="text-gray-500 text-center mb-10 text-lg">Signalez un problème ou une demande d’assistance à notre équipe technique.</p>
+<div layout:fragment="content" class="max-w-5xl mx-auto pt-16 pb-12">
+    <!-- ADMIN -->
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/adminDashboard}"
+       class="text-blue-700 text-sm flex items-center gap-1 mb-3 hover:underline">
+        &larr; Retour au tableau de bord
+    </a>
+    <!-- CLIENT -->
+    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}"
+       class="text-blue-700 text-sm flex items-center gap-1 mb-3 hover:underline">
+        &larr; Retour au tableau de bord
+    </a>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+        <!-- FORMULAIRE PRINCIPAL -->
+        <div class="col-span-2 bg-white rounded-2xl border border-gray-100 shadow-lg p-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-[#22425d] mb-2">Créer un nouveau ticket</h1>
+            <p class="text-gray-500 mb-6">Décrivez votre problème pour obtenir une assistance rapide</p>
 
-        <form method="post" th:action="@{/problems/save}" th:object="${problem}" class="space-y-8">
-            <!-- Infos demandeur -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <label for="ticketFirstName" class="block text-base font-medium text-gray-700 mb-1">Prénom</label>
-                    <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}" required
-                           placeholder="Ex : Paul"
-                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
+            <form method="post" th:action="@{/problems/save}" th:object="${problem}" class="space-y-6">
+                <!-- Infos demandeur -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label for="ticketFirstName" class="block font-semibold mb-1">Prénom <span class="text-red-500">*</span></label>
+                        <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}" required
+                               placeholder="Ex : Paul"
+                               class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition text-base"/>
+                    </div>
+                    <div>
+                        <label for="ticketLastName" class="block font-semibold mb-1">Nom <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="ticketLastName" th:field="*{ticketUserInfo.lastName}" required
+                               placeholder="Ex : Martin"
+                               class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition text-base"/>
+                    </div>
                 </div>
-                <div>
-                    <label for="ticketLastName" class="block text-base font-medium text-gray-700 mb-1">Nom</label>
-                    <input type="text" id="ticketLastName" th:field="*{ticketUserInfo.lastName}" required
-                           placeholder="Ex : Martin"
-                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label for="ticketEmail" class="block font-semibold mb-1">Email <span
+                                class="text-red-500">*</span></label>
+                        <input type="email" id="ticketEmail" th:field="*{ticketUserInfo.email}" required
+                               placeholder="exemple@mail.com"
+                               class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition text-base"/>
+                    </div>
+                    <div>
+                        <label for="ticketPhone" class="block font-semibold mb-1">Téléphone <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="ticketPhone" th:field="*{ticketUserInfo.phone}" required
+                               placeholder="0X XX XX XX XX"
+                               class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition text-base"/>
+                    </div>
                 </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <hr class="my-4">
+
+                <!-- Titre du problème -->
                 <div>
-                    <label for="ticketEmail" class="block text-base font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="ticketEmail" th:field="*{ticketUserInfo.email}" required
-                           placeholder="exemple@mail.com"
-                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
+                    <label for="title" class="block font-semibold mb-1">Titre du problème <span
+                            class="text-red-500">*</span></label>
+                    <input type="text" id="title" th:field="*{title}" maxlength="120" required
+                           placeholder="Ex: Ordinateur ne démarre plus"
+                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition text-base"/>
+                    <div class="text-xs text-gray-400 mt-1">0/120 caractères</div>
                 </div>
+
+                <!-- Catégorie (Radios) -->
                 <div>
-                    <label for="ticketPhone" class="block text-base font-medium text-gray-700 mb-1">Téléphone</label>
-                    <input type="text" id="ticketPhone" th:field="*{ticketUserInfo.phone}" required
-                           placeholder="0X XX XX XX XX"
-                           class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
+                    <div class="font-semibold mb-2">Catégorie <span class="text-red-500">*</span></div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition hover:bg-blue-50">
+                            <input type="radio" name="category" value="Matériel informatique" th:field="*{category}"
+                                   required class="accent-blue-600">
+                            <span>
+                                <span class="font-bold">Matériel informatique</span>
+                                <div class="text-xs text-gray-500 font-normal">Ordinateurs, imprimantes, périphériques</div>
+                            </span>
+                        </label>
+                        <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition hover:bg-blue-50">
+                            <input type="radio" name="category" value="Réseau et connectivité" th:field="*{category}"
+                                   required class="accent-blue-600">
+                            <span>
+                                <span class="font-bold">Réseau et connectivité</span>
+                                <div class="text-xs text-gray-500 font-normal">Internet, Wifi, accès aux serveurs</div>
+                            </span>
+                        </label>
+                        <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition hover:bg-blue-50">
+                            <input type="radio" name="category" value="Logiciels et applications" th:field="*{category}"
+                                   required class="accent-blue-600">
+                            <span>
+                                <span class="font-bold">Logiciels et applications</span>
+                                <div class="text-xs text-gray-500 font-normal">Programmes, mises à jour, installations</div>
+                            </span>
+                        </label>
+                        <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition hover:bg-blue-50">
+                            <input type="radio" name="category" value="Sécurité informatique" th:field="*{category}"
+                                   required class="accent-blue-600">
+                            <span>
+                                <span class="font-bold">Sécurité informatique</span>
+                                <div class="text-xs text-gray-500 font-normal">Antivirus, sauvegardes, protection</div>
+                            </span>
+                        </label>
+                        <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer transition hover:bg-blue-50">
+                            <input type="radio" name="category" value="Autre" th:field="*{category}" required
+                                   class="accent-blue-600">
+                            <span>
+                                <span class="font-bold">Autre</span>
+                                <div class="text-xs text-gray-500 font-normal">Non listé ci-dessus</div>
+                            </span>
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            <hr class="my-4">
+                <!-- Priorité (Radios colorées) -->
+                <div>
+                    <div class="font-semibold mb-2">Priorité <span class="text-red-500">*</span></div>
+                    <div class="space-y-2">
+                        <!-- Faible -->
+                        <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:bg-green-50 [&:has(input:checked)]:border-green-500">
+                            <input type="radio" th:field="*{priority}" value="LOW" required
+                                   class="accent-green-600 w-3.5 h-3.5 transition-shadow"/>
+                            <span class="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-bold mr-2">Faible</span>
+                            <span class="text-sm text-gray-500">Problème mineur, non bloquant</span>
+                        </label>
+                        <!-- Normale -->
+                        <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:bg-blue-50 [&:has(input:checked)]:border-blue-500">
+                            <input type="radio" th:field="*{priority}" value="MEDIUM" required
+                                   class="accent-blue-600 w-3.5 h-3.5 transition-shadow"/>
+                            <span class="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-bold mr-2">Normale</span>
+                            <span class="text-sm text-gray-500">Problème standard à traiter rapidement</span>
+                        </label>
+                        <!-- Élevée -->
+                        <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:bg-yellow-50 [&:has(input:checked)]:border-yellow-400">
+                            <input type="radio" th:field="*{priority}" value="HIGH" required
+                                   class="accent-yellow-400 w-3.5 h-3.5 transition-shadow"/>
+                            <span class="inline-block"
+                                  style="background:#fef08a; color:#b45309; font-weight:bold; font-size:0.75rem; padding:0.25rem 0.5rem; border-radius:0.5rem; margin-right:0.5rem;">Élevée</span>
+                            <span class="text-sm text-gray-500">Problème important, impact fort</span>
+                        </label>
+                        <!-- Critique -->
+                        <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:bg-red-50 [&:has(input:checked)]:border-red-500">
+                            <input type="radio" th:field="*{priority}" value="URGENT" required
+                                   class="accent-red-600 w-3.5 h-3.5 transition-shadow"/>
+                            <span class="inline-block bg-red-100 text-red-700 text-xs px-2 py-1 rounded font-bold mr-2">Critique</span>
+                            <span class="text-sm text-gray-500">Urgence absolue, blocage total</span>
+                        </label>
+                    </div>
+                </div>
 
-            <!-- Champs du ticket -->
-            <div>
-                <label for="title" class="block text-base font-medium text-gray-700 mb-1">Titre du problème</label>
-                <input type="text" id="title" th:field="*{title}" required
-                       placeholder="Titre court et précis"
-                       class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
-            </div>
+                <!-- Description détaillée -->
+                <div>
+                    <label for="description" class="block font-semibold mb-1">Description détaillée <span
+                            class="text-red-500">*</span></label>
+                    <textarea id="description" th:field="*{description}" rows="5" required
+                              placeholder="Décrivez votre problème en détail…"
+                              class="border border-gray-300 rounded-xl w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition text-base"></textarea>
+                    <div class="text-xs text-gray-400 mt-1">
+                        • Que s’est-il passé ?<br>
+                        • Quand cela a-t-il commencé ?<br>
+                        • Avez-vous remarqué autre chose d’inhabituel ?<br>
+                        • Avez-vous essayé de résoudre le problème ?
+                    </div>
+                </div>
 
-            <div>
-                <label for="category" class="block text-base font-medium text-gray-700 mb-1">Catégorie</label>
-                <select id="category" th:field="*{category}" required
-                        class="border border-gray-300 rounded-xl w-full py-3 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
-                    <option value="" disabled selected>Choisir une catégorie</option>
-                    <option value="Réseau">Réseau</option>
-                    <option value="Matériel">Matériel</option>
-                    <option value="Logiciel">Logiciel</option>
-                    <option value="Sécurité">Sécurité</option>
-                    <option value="Autre">Autre</option>
-                </select>
-            </div>
+                <div th:if="${errorMessage}" class="text-center text-red-500">
+                    <p th:text="${errorMessage}"></p>
+                </div>
 
-            <div>
-                <label for="description" class="block text-base font-medium text-gray-700 mb-1">Description détaillée</label>
-                <textarea id="description" th:field="*{description}" required
-                          rows="5"
-                          placeholder="Expliquez précisément le problème, les messages d’erreur éventuels, les étapes déjà tentées…"
-                          class="border border-gray-300 rounded-xl w-full p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"></textarea>
-            </div>
-
-            <div th:if="${errorMessage}" class="text-center text-red-500">
-                <p th:text="${errorMessage}"></p>
-            </div>
-
-            <div class="flex items-center justify-center pt-4">
-                <button type="submit"
-                        class="w-full md:w-auto px-14 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg transition text-lg duration-150">
-                    Envoyer ma demande
-                </button>
-            </div>
-        </form>
-
-        <div class="mt-10 text-center text-gray-400 text-sm">
-            Notre équipe traite chaque demande dans les plus brefs délais. Merci pour votre confiance !
+                <div class="flex gap-3">
+                    <button type="submit"
+                            class="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow transition text-base">
+                        Créer le ticket
+                    </button>
+                    <a th:href="@{/adminDashboard}"
+                       class="w-full md:w-auto px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-xl transition text-base text-center">Annuler</a>
+                </div>
+            </form>
         </div>
+
+        <!-- CONSEILS -->
+        <aside class="space-y-5">
+            <div class="bg-white border rounded-2xl shadow-md p-5 text-sm space-y-2">
+                <div class="font-bold mb-2 text-blue-800">Conseils</div>
+                <div>
+                    <span class="font-semibold">Titre efficace</span><br>
+                    Soyez précis et concis. Ex : “Imprimante HP ne répond plus” plutôt que “Problème d’impression”
+                </div>
+                <div>
+                    <span class="font-semibold">Description complète</span><br>
+                    Détaillez les étapes qui ont mené au problème, les messages d’erreur éventuels, et ce que vous avez
+                    essayé.
+                </div>
+                <div>
+                    <span class="font-semibold">Priorité appropriée</span><br>
+                    Choisissez la priorité selon l’impact réel sur votre travail. Les tickets critiques sont traités en
+                    urgence.
+                </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 text-sm">
+                <div class="font-bold mb-1 text-blue-800">Besoin d’aide urgente ?</div>
+                <div>Pour les urgences critiques, vous pouvez nous contacter directement :</div>
+                <div class="mt-1 font-bold text-blue-900">
+                    Téléphone : <span class="font-normal">+32 2 123 45 67</span><br>
+                    Email : <span class="font-normal">info@tic-harmony.be</span>
+                </div>
+            </div>
+        </aside>
     </div>
 </div>
-</body>
 </html>

@@ -7,180 +7,241 @@
     <title>Détails du Ticket</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-[#f6f7f3]">
-<div layout:fragment="content" class="w-full px-0 pt-24 pb-16">
-    <div class="mx-auto w-full max-w-6xl flex flex-col md:flex-row gap-10">
+<div layout:fragment="content" class="max-w-6xl mx-auto pt-16 pb-12 px-2">
+    <!-- ADMIN -->
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/adminDashboard}"
+       class="text-blue-700 text-sm flex items-center gap-1 mb-3 hover:underline">
+        &larr; Retour au tableau de bord
+    </a>
+    <!-- MEMBER -->
+    <a sec:authorize="hasRole('MEMBER')" th:href="@{/memberDashboard}"
+       class="text-blue-700 text-sm flex items-center gap-1 mb-3 hover:underline">
+        &larr; Retour au tableau de bord
+    </a>
+    <!-- CLIENT -->
+    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}"
+       class="text-blue-700 text-sm flex items-center gap-1 mb-3 hover:underline">
+        &larr; Retour au tableau de bord
+    </a>
 
-        <!-- Zone principale -->
-        <div class="flex-1 min-w-0 bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+    <!-- HEADER titre et badges -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+        <!-- Titre + numéro -->
+        <div>
+            <h1 class="text-3xl font-extrabold text-[#22425d]" th:text="${problem.title}">Titre du ticket</h1>
+            <div class="text-gray-500 text-base" th:text="'Ticket #' + ${problem.id}">Ticket #12</div>
+        </div>
+        <!-- Badges -->
+        <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
+            <!-- BADGE ADMIN -->
+            <span th:if="${problem.user.role.name() == 'ADMIN'}"
+                  class="ml-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-bold align-middle">
+                Admin
+            </span>
+            <span th:if="${problem.priority != null}" class="px-3 py-1 rounded-full text-xs font-semibold"
+                  th:classappend="
+                ${problem.priority.name() == 'LOW'} ? 'bg-green-100 text-green-700' :
+                (${problem.priority.name() == 'MEDIUM'} ? 'bg-blue-100 text-blue-700' :
+                (${problem.priority.name() == 'HIGH'} ? 'bg-yellow-100 text-yellow-700' :
+                (${problem.priority.name() == 'URGENT'} ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600')))"
+                  th:text="${problem.priority.name() == 'LOW' ? 'Faible' : (problem.priority.name() == 'MEDIUM' ? 'Normale' : (problem.priority.name() == 'HIGH' ? 'Élevée' : 'Critique'))}">
+                Faible
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
+                  th:if="${problem.status.name() == 'IN_PROGRESS'}">En cours</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700"
+                  th:if="${problem.status.name() == 'OPEN'}">Ouvert</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700"
+                  th:if="${problem.status.name() == 'RESOLVED'}">Résolu</span>
+        </div>
+    </div>
 
-            <!-- Header -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 px-10 py-8 bg-gradient-to-r from-indigo-700 to-blue-600 text-white border-b border-indigo-100">
-                <div>
-                    <h1 class="text-3xl font-extrabold tracking-tight mb-2" th:text="${problem.title}">Titre du ticket</h1>
-                    <div class="text-base text-indigo-100">
-                        Ticket #<span th:text="${problem.id}">ID</span> —
-                        <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+
+        <!-- COLONNE CENTRALE -->
+        <div class="col-span-2 flex flex-col gap-7">
+
+            <!-- Description du problème -->
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-7">
+                <div class="flex items-center gap-2 font-bold mb-2 text-[#22425d]">
+                    Description du problème
+                </div>
+                <div class="text-gray-800 mb-3" th:text="${problem.description}">Description détaillée du ticket…</div>
+                <div class="text-xs text-gray-400">
+                    Catégorie : <span th:text="${problem.category}"></span> &nbsp;•&nbsp;
+                    Créé le : <span th:text="${#temporals.format(problem.createdAt, 'dd MMM yyyy à HH:mm')}"></span>
+                </div>
+            </div>
+
+            <!-- Procédures effectuées si résolu -->
+            <div th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}"
+                 class="bg-green-50 border border-green-200 rounded-2xl shadow-sm p-7">
+                <div class="font-bold mb-2 text-green-700">Procédures effectuées</div>
+                <div class="text-gray-800" th:text="${problem.resolution}">Procédures entreprises…</div>
+            </div>
+
+            <!-- Bloc assignation visible seulement si ADMIN et pas de technicien -->
+            <div sec:authorize="hasRole('ADMIN')" th:if="${problem.technician == null}" class="w-full">
+                <form th:action="@{'/problems/' + ${problem.id} + '/assignTechnician'}" method="post"
+                      class="bg-white border border-gray-100 rounded-2xl shadow-sm p-7 flex flex-col gap-5 max-w-full">
+                    <div class="font-bold flex items-center gap-2 mb-3 text-blue-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Assigner le ticket
                     </div>
-                </div>
-                <div class="flex gap-2 flex-wrap">
-                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-sm border"
-                          th:classappend="
-                            ${problem.status.name() == 'OPEN'} ? 'bg-green-50 text-green-800 border-green-200' :
-                            (${problem.status.name() == 'IN_PROGRESS'} ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                            (${problem.status.name() == 'RESOLVED'} ? 'bg-blue-50 text-blue-800 border-blue-200' :
-                            'bg-gray-50 text-gray-500 border-gray-200'))"
-                          th:text="${problem.status}">
-                        Statut
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-sm border"
-                          th:classappend="
-                            ${problem.priority.name() == 'LOW'} ? 'bg-green-50 text-green-700 border-green-200' :
-                            (${problem.priority.name() == 'MEDIUM'} ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                            (${problem.priority.name() == 'HIGH'} ? 'bg-orange-50 text-orange-700 border-orange-200' :
-                            'bg-red-50 text-red-700 border-red-200'))"
-                          th:text="${problem.priority}">
-                        Priorité
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-sm border border-indigo-200 bg-indigo-50 text-indigo-800"
-                          th:text="${problem.category}">Catégorie</span>
-                </div>
-            </div>
-
-            <!-- Timeline -->
-            <div class="px-10 py-10">
-                <ol class="relative border-l-2 border-indigo-100">
-
-                    <!-- Description -->
-                    <li>
-                        <div class="absolute w-4 h-4 bg-indigo-400 rounded-full mt-1.5 -left-2 border-2 border-white"></div>
-                        <div class="ml-8">
-                            <div class="flex items-center gap-2">
-                                <h2 class="text-lg font-semibold text-gray-800">Description</h2>
-                            </div>
-                            <div class="bg-[#f2f4fa] border border-indigo-100 p-5 rounded-lg text-gray-700 mb-10 mt-2">
-                                <p th:text="${problem.description}">Description détaillée du ticket…</p>
-                            </div>
+                    <div class="flex flex-col md:flex-row gap-5">
+                        <div class="flex-1">
+                            <label class="block font-semibold mb-1">Technicien</label>
+                            <select name="technicianId" required
+                                    class="border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <option value="" disabled selected>Sélectionner un technicien…</option>
+                                <option th:each="tech : ${technicians}" th:value="${tech.id}"
+                                        th:text="${tech.firstname + ' ' + tech.lastname}"></option>
+                            </select>
                         </div>
-                    </li>
-
-                    <!-- Ticket assigné -->
-                    <li th:if="${problem.technician != null}">
-                        <div class="absolute w-4 h-4 bg-indigo-500 rounded-full mt-1.5 -left-2 border-2 border-white"></div>
-                        <div class="ml-8">
-                            <div class="flex items-center gap-2">
-                                <span class="text-base font-semibold text-indigo-800">
-                                    Ticket assigné à
-                                    <span th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
-                                </span>
-                            </div>
-                            <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-lg text-indigo-900 mt-2">
-                                Ce ticket a été attribué à ce technicien.
-                            </div>
+                        <div class="flex-1">
+                            <label class="block font-semibold mb-1">Priorité</label>
+                            <select name="priority" required
+                                    class="border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <option value="" disabled selected>Définir la priorité</option>
+                                <option value="LOW">Faible</option>
+                                <option value="MEDIUM">Normale</option>
+                                <option value="HIGH">Élevée</option>
+                                <option value="URGENT">Critique</option>
+                            </select>
                         </div>
-                    </li>
-
-                    <!-- Procédures -->
-                    <li th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}">
-                        <div class="absolute w-4 h-4 bg-green-400 rounded-full mt-1.5 -left-2 border-2 border-white"></div>
-                        <div class="ml-8">
-                            <div class="flex items-center gap-2">
-                                <h2 class="text-lg font-semibold text-gray-800">Procédures effectuées</h2>
-                            </div>
-                            <div class="bg-[#eafbf0] border border-green-100 p-5 rounded-lg text-gray-700 mt-2">
-                                <p th:text="${problem.resolution}">Procédures entreprises…</p>
-                            </div>
-                        </div>
-                    </li>
-                </ol>
-            </div>
-
-            <!-- ACTIONS -->
-            <div class="flex flex-col md:flex-row gap-4 px-10 pb-10 pt-2 border-t">
-                <a th:href="@{/problems}"
-                   class="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-lg text-center border border-gray-200 transition">
-                    Retour
-                </a>
-                <a th:href="@{'/problems/update/' + ${problem.id}}"
-                   class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-lg text-center border border-indigo-600 transition">
-                    Modifier
-                </a>
-                <a sec:authorize="hasRole('MEMBER')"
-                   th:if="${currentUser.id == problem.technician?.id and problem.status.name() == 'OPEN'}"
-                   th:href="@{'/problems/' + ${problem.id} + '/take'}"
-                   class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2.5 px-4 rounded-lg text-center border border-yellow-500 transition">
-                    Prendre en charge
-                </a>
-                <a sec:authorize="hasRole('MEMBER')"
-                   th:if="${currentUser.id == problem.technician?.id and problem.status.name() == 'IN_PROGRESS'}"
-                   th:href="@{'/problems/' + ${problem.id} + '/take'}"
-                   class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2.5 px-4 rounded-lg text-center border border-yellow-500 transition">
-                    Continuer
-                </a>
-                <form sec:authorize="hasRole('ADMIN')"
-                      th:if="${problem.status.name() == 'RESOLVED'}"
-                      th:action="@{'/problems/' + ${problem.id} + '/close'}"
-                      method="post"
-                      class="flex-1">
+                    </div>
                     <button type="submit"
-                            class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-4 rounded-lg border border-green-600 transition">
-                        Valider résolution
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl px-6 py-3 transition">
+                        Assigner le ticket
                     </button>
                 </form>
             </div>
+
         </div>
 
-        <!-- INFOS CARTE -->
-        <aside class="md:w-72 w-full flex-shrink-0 mt-10 md:mt-0">
-            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 px-6 py-7 flex flex-col gap-8">
-                <!-- Demandeur -->
+        <!-- COLONNE DROITE -->
+        <aside class="space-y-6 w-full">
+
+            <!-- Infos du ticket -->
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 text-gray-800 space-y-1.5">
+                <div class="font-bold mb-2">Informations du ticket</div>
                 <div>
-                    <div class="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wide">Demandeur</div>
-                    <div class="text-base font-semibold text-gray-700" th:text="${problem.ticketUserInfo.firstName} + ' ' + ${problem.ticketUserInfo.lastName}"></div>
-                    <div class="text-sm text-gray-500" th:text="${problem.ticketUserInfo.email}"></div>
-                    <div class="text-sm text-gray-400" th:text="${problem.ticketUserInfo.phone}"></div>
+                    <span class="font-medium">Client :</span>
+                    <span th:text="${problem.user.nomEntreprise}">Entreprise</span>
                 </div>
-                <!-- Partenaire -->
                 <div>
-                    <div class="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wide">Partenaire</div>
-                    <div class="text-base font-semibold text-gray-700" th:text="${problem.user.nomEntreprise}">Entreprise</div>
-                    <div class="text-sm text-gray-500" th:text="${problem.user.firstname} + ' ' + ${problem.user.lastname}"></div>
-                    <div class="text-sm text-gray-400" th:text="${problem.user.email}"></div>
-                    <div class="text-sm text-gray-400" th:text="${problem.user.telephone}"></div>
-                </div>
-                <!-- Technicien -->
-                <div>
-                    <div class="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wide">Technicien assigné</div>
-                    <div th:if="${problem.technician != null}">
-                        <div class="text-base font-semibold text-gray-700" th:text="${problem.technician.firstname} + ' ' + ${problem.technician.lastname}"></div>
-                        <div class="text-sm text-gray-500" th:text="${problem.technician.email}"></div>
+                    <span class="font-medium">Demandeur :</span>
+                    <div class="ml-2 text-sm">
+                        <div th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></div>
+                        <div><span class="font-medium">Email :</span> <span
+                                th:text="${problem.ticketUserInfo.email}"></span></div>
+                        <div><span class="font-medium">Téléphone :</span> <span
+                                th:text="${problem.ticketUserInfo.phone}"></span></div>
                     </div>
-                    <div th:if="${problem.technician == null}" class="text-gray-400 italic">Aucun technicien assigné</div>
-                    <!-- Assignation ADMIN -->
-                    <form sec:authorize="hasRole('ADMIN')"
-                          th:action="@{'/problems/' + ${problem.id} + '/assignTechnician'}"
-                          method="post"
-                          class="mt-2">
-                        <div class="flex gap-2">
-                            <select name="technicianId" required
-                                    class="w-full border-gray-300 rounded px-2 py-1 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="" disabled selected>Assigner un technicien…</option>
-                                <option th:each="tech : ${technicians}"
-                                        th:value="${tech.id}"
-                                        th:text="${tech.firstname + ' ' + tech.lastname}">
-                                    Alice Dupont
-                                </option>
-                            </select>
-                            <button type="submit"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm font-semibold">
-                                Assigner
-                            </button>
-                        </div>
-                    </form>
                 </div>
+                <div th:if="${problem.technician != null}">
+                    <span class="font-medium">Technicien assigné :</span>
+                    <span th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
+                </div>
+                <div>
+                    <span class="font-medium">Créé le :</span>
+                    <span th:text="${#temporals.format(problem.createdAt, 'dd MMM yyyy à HH:mm')}"></span>
+                </div>
+                <div>
+                    <span class="font-medium">Dernière mise à jour :</span>
+                    <span th:text="${#temporals.format(problem.updatedAt, 'dd MMM yyyy à HH:mm')}"></span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col gap-3">
+                <div class="font-bold mb-2">Actions</div>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{'/problems/update/' + ${problem.id}}"
+                   class="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 text-blue-700 font-bold text-sm hover:bg-blue-100 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                         stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                    </svg>
+                    Modifier le ticket
+                </a>
+                <a sec:authorize="hasRole('MEMBER')"
+                   th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'OPEN'}"
+                   th:href="@{'/problems/' + ${problem.id} + '/take'}"
+                   class="flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-400 text-white font-bold text-sm hover:bg-yellow-500 text-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 12l6 6 6-6"/>
+                    </svg>
+                    Prendre en charge
+                </a>
+                <a sec:authorize="hasRole('MEMBER')"
+                   th:if="${problem.technician != null
+                       and problem.technician.id == currentUser.id
+                       and problem.status.name() == 'IN_PROGRESS'}"
+                   th:href="@{'/problems/' + ${problem.id} + '/resolve'}"
+                   class="flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-400 text-white font-bold text-sm hover:bg-yellow-500 text-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 12l6 6 6-6"/>
+                    </svg>
+                    Continuer la résolution
+                </a>
+                <!-- Valider le ticket (admin, si RESOLVED) -->
+                <form sec:authorize="hasRole('ADMIN')"
+                      th:if="${problem.status.name() == 'RESOLVED'}"
+                      th:action="@{'/problems/' + ${problem.id} + '/close'}"
+                      method="post" class="w-full">
+                    <button type="submit"
+                            class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 text-center transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M4.5 12.75l6 6 9-13.5"/>
+                        </svg>
+                        Valider le ticket
+                    </button>
+                </form>
+
+            </div>
+
+            <!-- Suivi du ticket -->
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+                <div class="font-bold mb-3 text-[#22425d]">Suivi du ticket</div>
+                <ol class="relative border-l-2 border-blue-100 pl-4">
+                    <li class="mb-5 ml-2">
+                        <div class="absolute w-3 h-3 bg-blue-500 rounded-full mt-1.5 -left-2 border-2 border-white"></div>
+                        <span class="font-medium">Ticket créé</span>
+                        <span class="block text-xs text-gray-500"
+                              th:text="${#temporals.format(problem.createdAt, 'dd MMM yyyy à HH:mm')}"></span>
+                    </li>
+                    <li class="mb-5 ml-2" th:if="${problem.technician != null}">
+                        <div class="absolute w-3 h-3 bg-yellow-500 rounded-full mt-1.5 -left-2 border-2 border-white"></div>
+                        <span class="font-medium">Assigné à un technicien</span>
+                        <span class="block text-xs text-gray-500"
+                              th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
+                    </li>
+                    <!-- ÉTAPE RÉSOLU -->
+                    <li class="mb-5 ml-2"
+                        th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}">
+                        <div class="absolute w-3 h-3 bg-green-500 rounded-full mt-1.5 -left-2 border-2 border-white"></div>
+                        <span class="font-medium">Résolu</span>
+                        <span class="block text-xs text-gray-500"
+                              th:text="${#temporals.format(problem.solvedAt != null ? problem.solvedAt : problem.updatedAt, 'dd MMM yyyy à HH:mm')}"></span>
+                    </li>
+                    <!-- ÉTAPE FERMÉ -->
+                    <li class="mb-5 ml-2"
+                        th:if="${problem.status.name() == 'CLOSED'}">
+                        <div class="absolute w-3 h-3 bg-gray-800 rounded-full mt-1.5 -left-2 border-2 border-white"></div>
+                        <span class="font-medium">Fermé</span>
+                        <span class="block text-xs text-gray-500"
+                              th:text="${#temporals.format(problem.updatedAt, 'dd MMM yyyy à HH:mm')}"></span>
+                    </li>
+                </ol>
             </div>
         </aside>
     </div>
 </div>
-</body>
 </html>

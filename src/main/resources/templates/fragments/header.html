@@ -1,64 +1,150 @@
-<header th:fragment="header" class="bg-blue-600 fixed top-0 w-full z-50 shadow">
-    <div class="px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 w-full">
-            <!-- Logo + navigation principale ensemble à gauche -->
-            <div class="flex items-center space-x-8">
-                <a th:href="@{/}" class="flex items-center space-x-2">
+<header th:fragment="header"
+        class="fixed top-0 w-full z-50 glass-navbar transition-all duration-300 bg-white/80 backdrop-blur">
+    <div class="w-full bg-transparent">
+        <div class="max-w-7xl mx-auto flex items-center h-16 w-full px-4 sm:px-6 lg:px-8">
+            <!-- GAUCHE -->
+            <div class="flex items-center flex-1 min-w-0">
+                <a th:href="@{/}" class="flex items-center space-x-2 min-w-0">
                     <img th:src="@{/images/tic.png}" alt="Logo TIC Harmony" class="h-10 w-auto">
-                    <!--                    <img th:src="@{/images/logo-tic-harmony.png}" alt="Logo TIC Harmony" class="h-10 w-auto">-->
                 </a>
-                <!-- Affiche Support Technique uniquement pour connecté -->
-                <span sec:authorize="isAuthenticated()" class="text-white font-bold text-lg tracking-wide">
-                    Support Technique
-                </span>
-                <nav class="hidden md:flex items-center space-x-6">
-                    <a th:href="@{/}" class="text-white hover:underline">Accueil</a>
+                <div class="flex flex-col leading-tight ml-2">
+                    <span class="font-bold text-gray-700 text-xl md:text-2xl mb-0.5">Tic Harmony</span>
+                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="!isAuthenticated()">
+                        L’informatique clé en main
+                    </span>
+                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('ADMIN')">
+                        Espace Administrateur
+                    </span>
+                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('MEMBER')">
+                        Espace Technicien
+                    </span>
+                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('CLIENT')">
+                        Espace Client
+                    </span>
+                </div>
+            </div>
+
+            <!-- CENTRE -->
+            <div class="flex-1 flex justify-center">
+                <nav class="flex items-center space-x-5 md:space-x-6 xl:space-x-7 text-sm font-medium">
+                    <!-- Tableau de bord CLIENT -->
                     <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}"
-                       class="text-white hover:underline">Tableau de bord</a>
+                       class="flex items-center gap-2 whitespace-nowrap text-gray-700 font-medium text-sm transition px-2 py-1
+                              hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                    <!-- Tableau de bord MEMBRE -->
                     <a sec:authorize="hasAnyRole('MEMBER')" th:href="@{/memberDashboard}"
-                       class="text-white hover:underline">Tableau de bord</a>
+                       class="flex items-center gap-2 whitespace-nowrap text-gray-700 font-medium text-sm transition px-2 py-1
+                              hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                    <!-- Tableau de bord ADMIN -->
                     <a sec:authorize="hasAnyRole('ADMIN')" th:href="@{/adminDashboard}"
-                       class="text-white hover:underline">Tableau de bord</a>
-                    <a sec:authorize="isAuthenticated()" th:href="@{/problems}" class="text-white hover:underline">Tickets</a>
+                       class="flex items-center gap-2 whitespace-nowrap text-gray-700 font-medium text-sm transition px-2 py-1
+                              hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                    <!-- Tickets -->
+                    <a sec:authorize="isAuthenticated()" th:href="@{/problems}"
+                       class="flex items-center gap-2 whitespace-nowrap text-gray-700 font-medium text-sm transition px-2 py-1
+                              hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"/>
+                        </svg>
+                        Tickets
+                    </a>
+                    <!-- Nouveau ticket -->
                     <a sec:authorize="hasRole('ADMIN') or hasRole('CLIENT')" th:href="@{/problems/create}"
-                       class="text-white hover:underline">
+                       class="flex items-center gap-2 whitespace-nowrap text-gray-700 font-medium text-sm transition px-2 py-1
+                              hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                        </svg>
                         Nouveau ticket
                     </a>
-                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/employees}" class="text-white hover:underline">
+                    <!-- Utilisateurs -->
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/employees}"
+                       class="flex items-center gap-2 whitespace-nowrap text-gray-700 font-medium text-sm transition px-2 py-1
+                              hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>
+                        </svg>
                         Utilisateurs
                     </a>
+                    <!-- Clients -->
                     <a sec:authorize="hasAnyRole('ADMIN', 'MEMBER')" th:href="@{/partners}"
-                       class="text-white hover:underline">
+                       class="flex items-center gap-2 whitespace-nowrap text-gray-700 font-medium text-sm transition px-2 py-1
+                              hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"/>
+                        </svg>
                         Clients
                     </a>
                 </nav>
             </div>
 
-            <!-- Zone utilisateur à droite -->
-            <div class="flex items-center space-x-2">
-                <!-- Non connecté -->
-                <div sec:authorize="!isAuthenticated()" class="flex space-x-2">
-                    <a th:href="@{/login}" class="text-white hover:underline font-medium">Connexion</a>
-                    <span class="text-white">|</span>
-                    <a th:href="@{/employeeSignup}" class="text-white hover:underline font-medium">Inscription</a>
+            <!-- DROITE -->
+            <div class="flex items-center justify-end flex-1 min-w-0">
+                <div sec:authorize="!isAuthenticated()" class="flex">
+                    <a th:href="@{/login}"
+                       class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg transition text-base flex items-center gap-2">
+                        Se connecter
+                        <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
                 </div>
-                <!-- Connecté -->
                 <div sec:authorize="isAuthenticated()" class="flex items-center space-x-4">
-                    <button id="notifToggle" class="text-white relative hover:text-yellow-300">
+                    <button id="notifToggle"
+                            class="text-blue-700 relative hover:text-yellow-400 text-xl transition px-2 py-1
+                               hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
                         🔔
                         <span th:if="${notifications != null and notifications.size() > 0}"
                               class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                               th:text="${notifications.size()}">0</span>
                     </button>
-                    <span class="text-white font-semibold">
+                    <span class="text-gray-700 font-semibold">
                         <span sec:authentication="principal.username"></span>
                     </span>
                     <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="text-white hover:underline">Déconnexion</button>
+                        <button type="submit"
+                                class="text-gray-700 transition px-2 py-1
+                                   hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-xl">
+                            Déconnexion
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </header>
-

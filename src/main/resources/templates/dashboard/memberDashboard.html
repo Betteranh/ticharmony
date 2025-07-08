@@ -8,18 +8,17 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-[#f6f7f3]">
 
-<div layout:fragment="content" class="min-h-screen px-2 pt-24 pb-12">
+<div layout:fragment="content" class="max-w-7xl mx-auto w-full px-4 pt-24 pb-12">
 
     <!-- Header dashboard -->
-    <div class="flex items-center justify-between mb-8 px-4">
+    <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-extrabold text-[#22425d]">Tableau de bord</h1>
         <span class="text-gray-500 text-base hidden md:block">Vue de vos tickets</span>
     </div>
 
     <!-- Stats Top -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
             <div class="text-3xl font-bold text-[#25636a]" th:text="${totalTickets}">10</div>
             <div class="mt-1 text-sm text-gray-500">Tickets total</div>
@@ -39,7 +38,7 @@
     </div>
 
     <!-- Charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Par statut -->
         <div class="bg-white rounded-2xl p-2 border border-[#e5e7eb] flex flex-col h-[300px] overflow-hidden">
             <div class="font-bold text-base mb-1 text-[#22425d] self-start">Répartition par statut</div>
@@ -52,7 +51,7 @@
         </div>
     </div>
     <!-- Tickets récents nécessitant une attention -->
-    <div class="mt-8 px-4">
+    <div class="mt-8">
         <div class="bg-white rounded-2xl border border-[#e5e7eb] p-6 mb-4">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-[#22425d]">Tickets récents nécessitant une attention</h2>
@@ -84,6 +83,11 @@
                         class="py-3 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div>
                             <span class="font-semibold text-[#22425d]" th:text="${problem.title}">Titre</span>
+                            <!-- BADGE ADMIN -->
+                            <span th:if="${problem.user.role.name() == 'ADMIN'}"
+                                  class="ml-2 px-2 py-0.5 text-xs font-bold rounded bg-pink-100 text-pink-600 align-middle">
+                                    Admin
+                            </span>
                             <span class="text-gray-500 text-sm ml-2">
             #<span th:text="${problem.id}"></span> –
             <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
@@ -123,8 +127,6 @@
         </div>
     </div>
 </div>
-
-</body>
 
 <th:block layout:fragment="scripts">
     <script th:inline="javascript">
