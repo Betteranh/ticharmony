@@ -6,62 +6,91 @@
     <title>Tableau de bord Client</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<div layout:fragment="content" class="max-w-7xl mx-auto w-full px-4 pt-24 pb-12">
+<body class="flex flex-col min-h-screen bg-blue-50">
+<div layout:fragment="content" class="max-w-5xl mx-auto w-full pt-24 pb-16 px-4">
 
-    <!-- Message de bienvenue -->
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-extrabold text-[#22425d] mb-3">
-            Bienvenue sur votre espace client&nbsp;!
+    <!-- HERO SECTION -->
+    <div class="flex flex-col items-center mb-14">
+        <div class="bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center w-24 h-24 mb-6 border border-blue-100">
+            <!-- Logo TIC Harmony -->
+            <img src="/images/tic.png" alt="TIC Harmony Logo" class="w-16 h-16 object-contain"/>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-[#22425d] mb-2 drop-shadow tracking-tight">
+            Bienvenue sur votre espace client
         </h1>
-        <p class="mt-2 text-lg text-gray-600">
-            Retrouvez vos demandes et bénéficiez de l’assistance de notre équipe.<br>
-            Nous sommes à votre écoute pour vous accompagner au quotidien.
+        <p class="text-lg text-gray-700 mt-1 max-w-xl text-center">
+            Suivez vos demandes et bénéficiez d'une assistance personnalisée.<br>
+            Notre équipe est là pour vous accompagner.
         </p>
     </div>
 
-    <!-- Actions principales : grandes cartes au lieu de simples boutons -->
-    <div class="flex flex-col md:flex-row gap-8 justify-center items-stretch mb-16">
-        <!-- Carte "Nouveau problème" -->
-        <a th:href="@{/problems/create}" class="flex-1 bg-gradient-to-tr from-green-500 to-green-600 hover:from-green-600 hover:to-green-700
-            text-white rounded-2xl shadow-lg p-8 flex flex-col items-center justify-center transition">
-            <svg class="w-12 h-12 mb-4 opacity-90" fill="none" stroke="currentColor" stroke-width="1.5"
-                 viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"/>
-            </svg>
-            <span class="text-2xl font-bold mb-2">Déclarer un nouveau problème</span>
-            <span class="text-base opacity-90">Signalez un souci ou une question en quelques secondes.</span>
-        </a>
-        <!-- Carte "Mes problèmes" -->
-        <a th:href="@{/problems}" class="flex-1 bg-gradient-to-tr from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
-            text-white rounded-2xl shadow-lg p-8 flex flex-col items-center justify-center transition">
-            <svg class="w-12 h-12 mb-4 opacity-90" fill="none" stroke="currentColor" stroke-width="1.5"
-                 viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"/>
-            </svg>
-            <span class="text-2xl font-bold mb-2">Suivre mes tickets</span>
-            <span class="text-base opacity-90">Consultez l’avancement et l’historique de vos demandes.</span>
-        </a>
-    </div>
-
-    <!-- Encadré informations/contact/support -->
-    <div class="max-w-3xl mx-auto mt-8 bg-white/90 border border-gray-100 rounded-2xl shadow p-8 text-center">
-        <h3 class="text-xl font-semibold text-indigo-700 mb-2">Besoin d'aide&nbsp;?</h3>
-        <p class="text-gray-700 mb-3">Notre équipe vous répond du lundi au vendredi, de 9h à 18h.<br>
-            <span class="text-indigo-700 font-semibold">Une question&nbsp;? Un doute&nbsp;?</span>
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 text-gray-600">
-            <div>
-                <span class="font-medium">Email&nbsp;:</span>
-                <a href="mailto:support@ticharmony.be" class="text-blue-600 hover:underline">support@ticharmony.be</a>
+    <!-- ACTIONS PRINCIPALES -->
+    <div class="flex flex-col md:flex-row gap-8 justify-center items-stretch mb-14">
+        <a th:href="@{/problems/create}"
+           class="flex-1 flex flex-col items-center justify-center bg-white/90 border border-blue-200 hover:border-blue-400
+           rounded-2xl shadow-sm px-8 py-10 transition hover:scale-[1.03] group cursor-pointer backdrop-blur-sm hover:bg-blue-50">
+            <div class="flex items-center justify-center bg-blue-100 rounded-full w-16 h-16 mb-4 group-hover:bg-blue-200 transition">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.3"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
             </div>
-            <div>
-                <span class="font-medium">Téléphone&nbsp;:</span>
-                <a href="tel:+3212345678" class="text-blue-600 hover:underline">+32 123 45 67 89</a>
+            <span class="text-2xl font-bold text-[#22425d] mb-2">Nouveau ticket</span>
+            <span class="text-base text-gray-600">Signaler un problème en 2 minutes</span>
+        </a>
+        <a th:href="@{/problems}"
+           class="flex-1 flex flex-col items-center justify-center bg-white/90 border border-indigo-200 hover:border-indigo-400
+           rounded-2xl shadow-sm px-8 py-10 transition hover:scale-[1.03] group cursor-pointer backdrop-blur-sm hover:bg-indigo-50">
+            <div class="flex items-center justify-center bg-indigo-100 rounded-full w-16 h-16 mb-4 group-hover:bg-indigo-200 transition">
+                <svg class="w-8 h-8 text-indigo-700" fill="none" stroke="currentColor" stroke-width="2.3"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3
+                          M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026
+                          c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026
+                          a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"/>
+                </svg>
+            </div>
+            <span class="text-2xl font-bold text-[#22425d] mb-2">Mes tickets</span>
+            <span class="text-base text-gray-600">Voir l'historique et le suivi</span>
+        </a>
+    </div>
+
+    <!-- ENCADRÉ CONTACT -->
+    <div class="max-w-lg mx-auto mt-4 bg-white/90 border border-blue-100 rounded-2xl shadow-sm px-6 py-7 text-center backdrop-blur-sm">
+        <div class="flex flex-col items-center mb-2">
+            <div class="bg-blue-50 rounded-full w-11 h-11 flex items-center justify-center mb-2">
+                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M16.72 2.59a2.25 2.25 0 013.18 0l1.5 1.5a2.25 2.25 0 010 3.18l-9.28 9.28a2.25 2.25 0 01-1.13.6l-4.39.88a.75.75 0 01-.88-.88l.88-4.39a2.25 2.25 0 01.6-1.13l9.28-9.28z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M15 5l4 4"/>
+                </svg>
+            </div>
+            <h3 class="text-base font-bold text-blue-700 mb-0.5">Besoin d’aide&nbsp;?</h3>
+        </div>
+        <p class="text-gray-600 text-sm mb-3 leading-relaxed">
+            Notre équipe vous répond <b>du lundi au vendredi, de 9h30 à 17h30</b>.<br>
+            Contactez-nous, nous sommes toujours à votre écoute.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2 mb-3">
+            <div class="flex items-center gap-2">
+                <a href="mailto:support@ticharmony.be" class="text-sm text-blue-700 hover:underline font-medium">
+                    support@ticharmony.be
+                </a>
+            </div>
+            <span class="hidden sm:inline-block text-gray-400">|</span>
+            <div class="flex items-center gap-2">
+                <a href="tel:+3212345678" class="text-sm text-indigo-700 hover:underline font-medium">
+                    +32 123 45 67 89
+                </a>
             </div>
         </div>
     </div>
 
+
 </div>
+</body>
 </html>

@@ -20,19 +20,35 @@
     <!-- Stats Top -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <div class="text-3xl font-bold text-[#25636a]" th:text="${totalTickets}">10</div>
+            <a th:href="@{/problems}" class="focus:outline-none group">
+                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
+                     th:text="${totalTickets}">10
+                </div>
+            </a>
             <div class="mt-1 text-sm text-gray-500">Tickets total</div>
         </div>
         <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <div class="text-3xl font-bold text-[#25636a]" th:text="${newTickets}">3</div>
+            <a th:href="@{/problems(status='OPEN')}" class="focus:outline-none group">
+                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
+                     th:text="${newTickets}">3
+                </div>
+            </a>
             <div class="mt-1 text-sm text-gray-500">Nouveaux tickets</div>
         </div>
         <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <div class="text-3xl font-bold text-[#25636a]" th:text="${inProgressTickets}">4</div>
+            <a th:href="@{/problems(status='IN_PROGRESS')}" class="focus:outline-none group">
+                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
+                     th:text="${inProgressTickets}">4
+                </div>
+            </a>
             <div class="mt-1 text-sm text-gray-500">En cours</div>
         </div>
         <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <div class="text-3xl font-bold text-[#25636a]" th:text="${resolvedTickets}">3</div>
+            <a th:href="@{/problems(status='RESOLVED')}" class="focus:outline-none group">
+                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
+                     th:text="${resolvedTickets}">3
+                </div>
+            </a>
             <div class="mt-1 text-sm text-gray-500">Résolus</div>
         </div>
     </div>

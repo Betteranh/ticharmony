@@ -195,9 +195,24 @@ public class ProblemController {
      * Formulaire de création.
      */
     @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("problem", new Problem());
-        return "formCreateProblem";
+    public String showCreateForm(Model model, Authentication authentication) {
+        Problem problem = new Problem();
+
+        // Récupère l'utilisateur connecté
+        User currentUser = userService.findByLogin(authentication.getName());
+
+        // Préremplit les infos s'il s'agit d'un ADMIN
+        if (currentUser != null && currentUser.getRole() == UserRole.ADMIN) {
+            TicketUserInfo info = new TicketUserInfo();
+            info.setFirstName(currentUser.getFirstname());
+            info.setLastName(currentUser.getLastname());
+            info.setEmail(currentUser.getEmail());
+            info.setPhone(currentUser.getTelephone());
+            problem.setTicketUserInfo(info);
+        }
+
+        model.addAttribute("problem", problem);
+        return "formCreateProblem"; // ton template
     }
 
     /**

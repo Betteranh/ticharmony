@@ -54,7 +54,8 @@
          class="fixed top-0 right-0 h-full w-80 max-w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300"
          style="will-change: transform;">
         <button id="closeDrawerNotif"
-                class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700">&times;</button>
+                class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700">&times;
+        </button>
         <div class="mt-8"></div>
         <div th:replace="fragments/notifications :: notifications"></div>
     </div>
@@ -67,21 +68,25 @@
             const overlay = document.getElementById('drawerOverlay');
             const closeBtn = document.getElementById('closeDrawerNotif');
             // Ouvrir drawer
-            notifToggle?.addEventListener('click', function(e) {
+            notifToggle?.addEventListener('click', function (e) {
                 drawer.classList.remove('translate-x-full');
                 overlay.classList.remove('hidden');
-                setTimeout(() => { overlay.classList.add('opacity-100'); }, 10);
+                setTimeout(() => {
+                    overlay.classList.add('opacity-100');
+                }, 10);
                 e.stopPropagation();
             });
+
             // Fermer drawer
             function closeDrawer() {
                 drawer.classList.add('translate-x-full');
                 overlay.classList.add('hidden');
                 overlay.classList.remove('opacity-100');
             }
+
             closeBtn?.addEventListener('click', closeDrawer);
             overlay?.addEventListener('click', closeDrawer);
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 if (e.key === "Escape") closeDrawer();
             });
         });
@@ -101,7 +106,6 @@
         }
     });
 </script>
-
 <th:block layout:fragment="scripts"></th:block>
 </body>
 </html>
