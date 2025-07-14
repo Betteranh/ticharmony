@@ -58,8 +58,8 @@
     <!-- LISTE DES TICKETS -->
     <div class="grid gap-7 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <div th:each="problem : ${problems}"
-             class="ticket-card flex flex-col bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition group overflow-hidden">
-
+             class="ticket-card group flex flex-col bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition overflow-hidden relative cursor-pointer"
+             th:attr="data-href=@{'/problems/' + ${problem.id}}">
             <!-- En-tête -->
             <div class="flex flex-col gap-2 px-6 pt-6 pb-4 border-b">
                 <div class="flex items-center gap-2">
@@ -67,32 +67,29 @@
                         th:text="${problem.title}">Titre du ticket</h3>
                     <span th:if="${problem.user.role.name() == 'ADMIN'}"
                           class="ml-1 px-2 py-0.5 text-xs font-bold rounded-full bg-pink-100 text-pink-600">
-                        ADMIN
-                    </span>
+                    ADMIN
+                </span>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap mt-1">
-                    <!-- Badge statut -->
-                    <span th:text="${problem.status}"
-                          th:classappend="
-                              ${problem.status.name() == 'OPEN'}        ? 'bg-green-100 text-green-800' :
-                              (${problem.status.name() == 'IN_PROGRESS'} ? 'bg-yellow-100 text-yellow-800' :
-                              (${problem.status.name() == 'RESOLVED'}   ? 'bg-blue-100 text-blue-800' :
-                              (${problem.status.name() == 'CLOSED'}     ? 'bg-gray-300 text-gray-700' : 'bg-gray-100 text-gray-700')))"
-                          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold uppercase shadow">
-                        Statut
-                    </span>
-                    <!-- Badge priorité -->
+                <span th:text="${problem.status}"
+                      th:classappend="
+                          ${problem.status.name() == 'OPEN'}        ? 'bg-green-100 text-green-800' :
+                          (${problem.status.name() == 'IN_PROGRESS'} ? 'bg-yellow-100 text-yellow-800' :
+                          (${problem.status.name() == 'RESOLVED'}   ? 'bg-blue-100 text-blue-800' :
+                          (${problem.status.name() == 'CLOSED'}     ? 'bg-gray-300 text-gray-700' : 'bg-gray-100 text-gray-700')))"
+                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold uppercase shadow">
+                    Statut
+                </span>
                     <span th:text="${problem.priority}"
                           th:classappend="
-                              ${problem.priority == 'HIGH'}    ? 'bg-red-100 text-red-700' :
-                              (${problem.priority == 'MEDIUM'} ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-700')"
+                          ${problem.priority == 'HIGH'}    ? 'bg-red-100 text-red-700' :
+                          (${problem.priority == 'MEDIUM'} ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-700')"
                           class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold uppercase shadow">
-                        Priorité
-                    </span>
+                    Priorité
+                </span>
                 </div>
             </div>
-
             <!-- Corps -->
             <div class="flex-1 px-6 py-5 space-y-2 text-gray-700 text-sm">
                 <div class="flex items-center gap-2">
@@ -111,8 +108,8 @@
                 <div class="flex items-center gap-2">
                     <span class="font-medium text-gray-600">Technicien :</span>
                     <span th:text="${problem.technician != null
-                                   ? problem.technician.firstname + ' ' + problem.technician.lastname
-                                   : 'Non assigné'}"
+                               ? problem.technician.firstname + ' ' + problem.technician.lastname
+                               : 'Non assigné'}"
                           class="truncate"></span>
                 </div>
                 <div class="flex items-center gap-2">
@@ -125,32 +122,20 @@
                     <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}" class="ml-1"></span>
                 </div>
             </div>
-
-            <!-- Pied -->
-            <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t">
-                <a th:href="@{'/problems/' + ${problem.id}}"
-                   class="flex items-center gap-1 text-blue-700 hover:text-blue-900 font-semibold text-sm transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                         viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12h.01M9 12h.01"/>
-                    </svg>
-                    Détails
-                </a>
+            <!-- Footer -->
+            <div class="flex justify-end items-center px-6 py-4 bg-gray-50 border-t">
                 <div class="flex gap-2">
                     <a th:href="@{'/problems/update/' + ${problem.id}}" title="Modifier"
-                       class="px-3 py-1 text-xs rounded font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition shadow">
-                        Modifier
-                    </a>
+                       class="px-3 py-1 text-xs rounded font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition shadow"
+                       onclick="event.stopPropagation();">Modifier</a>
                     <a th:href="@{'/problems/delete/' + ${problem.id}}" title="Supprimer"
                        class="px-3 py-1 text-xs rounded font-medium text-red-700 bg-red-50 hover:bg-red-100 transition shadow"
-                       onclick="return confirm('Supprimer ce ticket ?');">
-                        Supprimer
-                    </a>
+                       onclick="event.stopPropagation(); return confirm('Supprimer ce ticket ?');">Supprimer</a>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 <!-- Script de recherche + bouton reset -->
 <th:block layout:fragment="scripts">
@@ -193,6 +178,17 @@
             const msg = document.getElementById("no-tickets-message");
             if (msg) msg.style.display = (countVisible === 0) ? '' : 'none';
         }
+    </script>
+    <script>
+        // Rend toute la carte cliquable sauf les boutons du footer
+        document.querySelectorAll('.ticket-card').forEach(card => {
+            card.addEventListener('click', function (e) {
+                // Si le clic vient d'un bouton "a" dans le footer, on ne fait rien
+                if (e.target.closest('a')) return;
+                // Sinon on redirige
+                window.location = card.getAttribute('data-href');
+            });
+        });
     </script>
 </th:block>
 </body>

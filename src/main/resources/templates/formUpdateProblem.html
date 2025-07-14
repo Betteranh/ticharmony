@@ -24,7 +24,8 @@
             </div>
 
             <div>
-                <label for="description" class="block text-base font-medium text-gray-700 mb-1">Description détaillée</label>
+                <label for="description" class="block text-base font-medium text-gray-700 mb-1">Description
+                    détaillée</label>
                 <textarea id="description" th:field="*{description}" rows="5" required
                           placeholder="Détaillez le problème, les étapes, etc."
                           class="border border-gray-300 rounded-xl w-full p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"></textarea>
@@ -46,18 +47,34 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                     <label for="status" class="block text-base font-medium text-gray-700 mb-1">Statut</label>
-                    <select id="status" th:field="*{status}" class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
+                    <select id="status" th:field="*{status}"
+                            class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
                         <option th:each="s : ${T(be.stage.ticharmony.model.Status).values()}"
                                 th:value="${s}" th:text="${s}"/>
                     </select>
                 </div>
                 <div>
                     <label for="priority" class="block text-base font-medium text-gray-700 mb-1">Priorité</label>
-                    <select id="priority" th:field="*{priority}" class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
+                    <select id="priority" th:field="*{priority}"
+                            class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
                         <option th:each="p : ${T(be.stage.ticharmony.model.Priority).values()}"
                                 th:value="${p}" th:text="${p}"/>
                     </select>
                 </div>
+            </div>
+
+            <div th:if="${technicians != null}" class="mt-2">
+                <label for="technician" class="block text-base font-medium text-gray-700 mb-1">Technicien assigné</label>
+                <select id="technician" name="technicianId"
+                        class="border border-gray-300 rounded-xl w-full py-3 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
+                    <!-- Option "Aucun" avec value="0" (PAS VIDE) -->
+                    <option th:value="0" th:text="'Aucun (non assigné)'" th:selected="${problem.technician == null}"></option>
+                    <option th:each="tech : ${technicians}"
+                            th:value="${tech.id}"
+                            th:text="${tech.firstname + ' ' + tech.lastname}"
+                            th:selected="${problem.technician != null and problem.technician.id == tech.id}">
+                    </option>
+                </select>
             </div>
 
             <div class="flex items-center justify-center pt-4">

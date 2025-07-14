@@ -219,12 +219,19 @@ public class ProblemController {
      * Formulaire de mise à jour.
      */
     @GetMapping("/update/{id}")
-    public String showUpdateForm(@PathVariable Long id, Model model) {
+    public String showUpdateForm(@PathVariable Long id, Model model, Authentication authentication) {
         Problem problem = service.getProblem(id);
         if (problem == null) {
             return "redirect:/problems";
         }
         model.addAttribute("problem", problem);
+
+        // Ajoute les techniciens pour l'admin
+        User current = userService.findByLogin(authentication.getName());
+        if (current.getRole() == UserRole.ADMIN) {
+            List<User> technicians = userService.getUsersByRole(UserRole.MEMBER);
+            model.addAttribute("technicians", technicians);
+        }
         return "formUpdateProblem";
     }
 
@@ -233,34 +240,91 @@ public class ProblemController {
      * Notifie tous les ADMIN lors de la création.
      */
     @PostMapping("/save")
-    public String saveProblem(@ModelAttribute("problem") Problem formProblem) {
+    public String saveProblem(
+            @ModelAttribute("problem") Problem formProblem,
+            @RequestParam(value = "technicianId", required = false) Long technicianId
+    ) {
         if (formProblem.getId() == null) {
-            // --- création inchangée ---
+            // --- création ---
             formProblem.setStatus(Status.OPEN);
             formProblem.setPriority(Priority.MEDIUM);
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User currentUser = userService.findByLogin(auth.getName());
             formProblem.setUser(currentUser);
+
+            // Si un technicien a été sélectionné à la création (optionnel)
+            if (technicianId != null && technicianId != 0) {
+                User tech = userService.getUser(technicianId);
+                formProblem.setTechnician(tech);
+            }
+
             service.createProblem(formProblem);
-            // notification NEW_PROBLEM…
+
+            // notification NEW_PROBLEM pour tous les admins
             userService.getAllUsers().stream()
                     .filter(u -> u.getRole() == UserRole.ADMIN)
                     .forEach(admin ->
                             notificationService.notify(admin, formProblem, NotificationType.NEW_PROBLEM)
                     );
+
+            // Notifier le technicien s'il y en a un
+            if (formProblem.getTechnician() != null) {
+                notificationService.notify(formProblem.getTechnician(), formProblem, NotificationType.ASSIGNED_TO_PROBLEM);
+            }
+
         } else {
-            // --- mise à jour : on fusionne les seuls champs modifiables ---
+            // --- mise à jour ---
             Problem existing = service.getProblem(formProblem.getId());
             if (existing == null) {
                 return "redirect:/problems";
             }
-            // Champs autorisés à être modifiés :
+            // Champs modifiables
             existing.setTitle(formProblem.getTitle());
             existing.setDescription(formProblem.getDescription());
             existing.setCategory(formProblem.getCategory());
             existing.setPriority(formProblem.getPriority());
             existing.setStatus(formProblem.getStatus());
-            // (Ne touchez **pas** à existing.getTicketUserInfo(), existing.getUser(), existing.getTechnician(), etc.)
+
+            // ----- GESTION DU CHANGEMENT DE TECHNICIEN -----
+            User oldTech = existing.getTechnician();
+            User newTech = null;
+            boolean techChanged = false;
+
+            if (technicianId != null && technicianId != 0) {
+                newTech = userService.getUser(technicianId);
+            }
+
+            // Cas changement de technicien
+            if ((oldTech == null && newTech != null)
+                    || (oldTech != null && (newTech == null || !oldTech.getId().equals(newTech.getId())))) {
+
+                techChanged = true;
+
+                // 1. Marquer l'ancienne notif comme lue
+                if (oldTech != null) {
+                    notificationService.markAssignmentNotificationsRead(oldTech, existing);
+                }
+                // 2. Notifier le nouveau technicien
+                if (newTech != null) {
+                    notificationService.notify(newTech, existing, NotificationType.ASSIGNED_TO_PROBLEM);
+                }
+                // 3. Changer le technicien assigné
+                existing.setTechnician(newTech);
+
+            } else if (technicianId != null && technicianId == 0) {
+                // Désassigner le technicien si "Aucun"
+                if (oldTech != null) {
+                    notificationService.markAssignmentNotificationsRead(oldTech, existing);
+                }
+                existing.setTechnician(null);
+            }
+
+            // Si le technicien a été changé, remettre le statut à OPEN
+            if (techChanged) {
+                existing.setStatus(Status.OPEN);
+            }
+
+            // Mise à jour du ticket
             service.updateProblem(existing);
         }
         return "redirect:/problems";
