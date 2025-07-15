@@ -43,6 +43,7 @@ public class PartnerController {
         if (existing == null) {
             return "redirect:/partners";
         }
+
         // MÀJ des champs autorisés
         existing.setFirstname(updatedUser.getFirstname());
         existing.setLastname(updatedUser.getLastname());

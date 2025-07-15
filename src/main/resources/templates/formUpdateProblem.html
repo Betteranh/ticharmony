@@ -50,7 +50,11 @@
                     <select id="status" th:field="*{status}"
                             class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
                         <option th:each="s : ${T(be.stage.ticharmony.model.Status).values()}"
-                                th:value="${s}" th:text="${s}"/>
+                                th:value="${s}"
+                                th:text="${s.name() == 'OPEN' ? 'Ouvert' :
+                     (s.name() == 'IN_PROGRESS' ? 'En cours' :
+                     (s.name() == 'RESOLVED' ? 'Résolu' :
+                     (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"/>
                     </select>
                 </div>
                 <div>
@@ -58,17 +62,23 @@
                     <select id="priority" th:field="*{priority}"
                             class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
                         <option th:each="p : ${T(be.stage.ticharmony.model.Priority).values()}"
-                                th:value="${p}" th:text="${p}"/>
+                                th:value="${p}"
+                                th:text="${p.name() == 'LOW' ? 'Faible' :
+                     (p.name() == 'MEDIUM' ? 'Normale' :
+                     (p.name() == 'HIGH' ? 'Élevée' :
+                     (p.name() == 'URGENT' ? 'Critique' : p.name())))}"/>
                     </select>
                 </div>
             </div>
 
             <div th:if="${technicians != null}" class="mt-2">
-                <label for="technician" class="block text-base font-medium text-gray-700 mb-1">Technicien assigné</label>
+                <label for="technician" class="block text-base font-medium text-gray-700 mb-1">Technicien
+                    assigné</label>
                 <select id="technician" name="technicianId"
                         class="border border-gray-300 rounded-xl w-full py-3 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
                     <!-- Option "Aucun" avec value="0" (PAS VIDE) -->
-                    <option th:value="0" th:text="'Aucun (non assigné)'" th:selected="${problem.technician == null}"></option>
+                    <option th:value="0" th:text="'Aucun (non assigné)'"
+                            th:selected="${problem.technician == null}"></option>
                     <option th:each="tech : ${technicians}"
                             th:value="${tech.id}"
                             th:text="${tech.firstname + ' ' + tech.lastname}"

@@ -70,7 +70,7 @@
                 <th class="px-4 py-3 text-left font-semibold">Téléphone</th>
                 <th class="px-4 py-3 text-left font-semibold">Adresse</th>
                 <th class="px-4 py-3 text-left font-semibold">TVA</th>
-                <th class="px-4 py-3 text-center font-semibold">Action</th>
+                <th class="px-4 py-3 text-center font-semibold" sec:authorize="hasRole('ADMIN')">Action</th>
             </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
@@ -99,7 +99,7 @@
                           class="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-50 text-indigo-800 shadow-sm">TVA</span>
                     <span th:unless="${partner.tva}" class="text-gray-400">–</span>
                 </td>
-                <td class="px-4 py-4 text-center">
+                <td class="px-4 py-4 text-center" sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{'/partners/edit/' + ${partner.id}}"
                        class="inline-flex items-center gap-1 px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-blue-700 bg-blue-100 hover:bg-blue-200 transition shadow-sm">
                         <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"

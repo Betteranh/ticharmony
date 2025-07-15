@@ -49,11 +49,12 @@ public class EmployeeController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateEmployee(@PathVariable Long id, @ModelAttribute("user") User updatedUser) {
+    public String updateEmployee(@PathVariable Long id, @ModelAttribute("user") User updatedUser, Model model) {
         User existing = userService.getUser(id);
         if (existing == null) {
             return "redirect:/employees";
         }
+
         // MàJ des champs autorisés
         existing.setFirstname(updatedUser.getFirstname());
         existing.setLastname(updatedUser.getLastname());

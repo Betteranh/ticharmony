@@ -151,14 +151,22 @@ public class ProblemController {
     ) {
         User currentUser = userService.findByLogin(authentication.getName());
 
-        // 1) on récupère d'abord le sous-ensemble selon le rôle
+//        // 1) on récupère d'abord le sous-ensemble selon le rôle
+//        Iterable<Problem> problems;
+//        if (currentUser.getRole() == UserRole.MEMBER) {
+//            problems = service.getProblemsByTechnician(currentUser);
+//        } else if (currentUser.getRole() == UserRole.CLIENT) {
+//            problems = service.getProblemsByUser(currentUser);
+//        } else {
+//            problems = service.getProblems();
+//        }
+
+        // 1) ADMIN et MEMBER voient tout, CLIENT voit ses tickets
         Iterable<Problem> problems;
-        if (currentUser.getRole() == UserRole.MEMBER) {
-            problems = service.getProblemsByTechnician(currentUser);
-        } else if (currentUser.getRole() == UserRole.CLIENT) {
+        if (currentUser.getRole() == UserRole.CLIENT) {
             problems = service.getProblemsByUser(currentUser);
         } else {
-            problems = service.getProblems();
+            problems = service.getProblems(); // ADMIN et MEMBER voient tout
         }
 
         // 2) on applique le filtre de statut **sur ce sous-ensemble**, ou on enlève les CLOSED par défaut
@@ -178,6 +186,8 @@ public class ProblemController {
         model.addAttribute("allStatuses", Status.values());
         model.addAttribute("selectedStatus", statusFilter);
         model.addAttribute("module", "problems");
+        model.addAttribute("currentUser", currentUser);
+
         return "listProblems";
     }
 
@@ -327,7 +337,7 @@ public class ProblemController {
             // Mise à jour du ticket
             service.updateProblem(existing);
         }
-        return "redirect:/problems";
+        return "redirect:/problems/" + formProblem.getId();
     }
 
 
@@ -367,9 +377,22 @@ public class ProblemController {
         model.addAttribute("problem", problem);
         model.addAttribute("currentUser", current);
         model.addAttribute("module", "problems");
+
         if (current.getRole() == UserRole.ADMIN) {
-            model.addAttribute("technicians", userService.getUsersByRole(UserRole.MEMBER));
+            List<User> technicians = userService.getUsersByRole(UserRole.MEMBER);
+
+            // Map<Long, Long> techId → nombre de tickets (hors CLOSED)
+            java.util.Map<Long, Long> techTicketCounts = technicians.stream().collect(Collectors.toMap(
+                    User::getId,
+                    tech -> StreamSupport.stream(service.getProblemsByTechnician(tech).spliterator(), false)
+                            .filter(p -> p.getStatus() != Status.CLOSED)
+                            .count()
+            ));
+
+            model.addAttribute("technicians", technicians);
+            model.addAttribute("techTicketCounts", techTicketCounts);
         }
+
         return "problemDetails";
     }
 
@@ -381,6 +404,7 @@ public class ProblemController {
     @PreAuthorize("hasRole('ADMIN')")
     public String assignTechnician(@PathVariable Long id,
                                    @RequestParam Long technicianId,
+                                   @RequestParam Priority priority,
                                    Authentication auth) {
         Problem problem = service.getProblem(id);
         if (problem != null) {
@@ -396,6 +420,9 @@ public class ProblemController {
             // 2) on assigne le nouveau technicien
             User newTech = userService.getUser(technicianId);
             problem.setTechnician(newTech);
+            // 2,5) applique la priorité choisie
+            problem.setPriority(priority);
+
             service.updateProblem(problem);
 
             // 3) on notifie le technicien

@@ -38,21 +38,35 @@
                   class="ml-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-bold align-middle">
                 Admin
             </span>
-            <span th:if="${problem.priority != null}" class="px-3 py-1 rounded-full text-xs font-semibold"
+            <span th:if="${problem.priority != null}"
                   th:classappend="
-                ${problem.priority.name() == 'LOW'} ? 'bg-green-100 text-green-700' :
-                (${problem.priority.name() == 'MEDIUM'} ? 'bg-blue-100 text-blue-700' :
-                (${problem.priority.name() == 'HIGH'} ? 'bg-yellow-100 text-yellow-700' :
-                (${problem.priority.name() == 'URGENT'} ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600')))"
-                  th:text="${problem.priority.name() == 'LOW' ? 'Faible' : (problem.priority.name() == 'MEDIUM' ? 'Normale' : (problem.priority.name() == 'HIGH' ? 'Élevée' : 'Critique'))}">
-                Faible
+                    ${problem.priority.name() == 'LOW'}     ? 'bg-gray-200 text-gray-700' :
+                    (${problem.priority.name() == 'MEDIUM'} ? 'bg-blue-100 text-blue-700' :
+                    (${problem.priority.name() == 'HIGH'}   ? 'bg-yellow-100 text-yellow-700' :
+                    (${problem.priority.name() == 'URGENT'} ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700')))
+                  "
+                  class="px-3 py-1 rounded-full text-xs font-semibold uppercase shadow min-w-[70px] justify-center inline-flex items-center">
+                <span th:if="${problem.priority.name() == 'LOW'}">Faible</span>
+                <span th:if="${problem.priority.name() == 'MEDIUM'}">Normale</span>
+                <span th:if="${problem.priority.name() == 'HIGH'}">Élevée</span>
+                <span th:if="${problem.priority.name() == 'URGENT'}">Critique</span>
+                <span th:if="${problem.priority == null}">N/A</span>
             </span>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"
-                  th:if="${problem.status.name() == 'IN_PROGRESS'}">En cours</span>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700"
-                  th:if="${problem.status.name() == 'OPEN'}">Ouvert</span>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700"
-                  th:if="${problem.status.name() == 'RESOLVED'}">Résolu</span>
+            <!-- Statut -->
+            <span th:if="${problem.status != null}"
+                  th:classappend="
+                    ${problem.status.name() == 'OPEN'}        ? 'bg-blue-100 text-blue-600' :
+                    (${problem.status.name() == 'IN_PROGRESS'} ? 'bg-yellow-100 text-yellow-700' :
+                    (${problem.status.name() == 'RESOLVED'}   ? 'bg-green-100 text-green-700' :
+                    'bg-gray-200 text-gray-800'))
+                  "
+                  class="px-3 py-1 rounded-full text-xs font-semibold uppercase shadow min-w-[70px] justify-center inline-flex items-center">
+                <span th:if="${problem.status.name() == 'OPEN'}">Ouvert</span>
+                <span th:if="${problem.status.name() == 'IN_PROGRESS'}">En cours</span>
+                <span th:if="${problem.status.name() == 'RESOLVED'}">Résolu</span>
+                <span th:if="${problem.status.name() == 'CLOSED'}">Fermé</span>
+                <span th:if="${problem.status == null}">N/A</span>
+            </span>
         </div>
     </div>
 
@@ -92,18 +106,22 @@
                     </div>
                     <div class="flex flex-col md:flex-row gap-5">
                         <div class="flex-1">
-                            <label class="block font-semibold mb-1">Technicien</label>
+                            <label class="block font-semibold mb-1 text-blue-900">Technicien</label>
                             <select name="technicianId" required
-                                    class="border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    class="border-2 border-blue-400 rounded-xl px-4 py-3 bg-blue-50 w-full text-base shadow focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-600 transition font-medium">
                                 <option value="" disabled selected>Sélectionner un technicien…</option>
                                 <option th:each="tech : ${technicians}" th:value="${tech.id}"
-                                        th:text="${tech.firstname + ' ' + tech.lastname}"></option>
+                                        th:text="${tech.firstname + ' ' + tech.lastname +
+                    (techTicketCounts[tech.id] == 0 ? ' — Disponible' :
+                      ' — ' + techTicketCounts[tech.id] + ' ticket(s) assigné(s)') }"
+                                        th:classappend="${techTicketCounts[tech.id] > 2 ? 'text-red-600 font-bold' : (techTicketCounts[tech.id] > 0 ? 'text-yellow-700' : 'text-green-700')}">
+                                </option>
                             </select>
                         </div>
                         <div class="flex-1">
-                            <label class="block font-semibold mb-1">Priorité</label>
+                            <label class="block font-semibold mb-1 text-blue-900">Priorité</label>
                             <select name="priority" required
-                                    class="border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    class="border-2 border-blue-400 rounded-xl px-4 py-3 bg-blue-50 w-full text-base shadow focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-600 transition font-medium">
                                 <option value="" disabled selected>Définir la priorité</option>
                                 <option value="LOW">Faible</option>
                                 <option value="MEDIUM">Normale</option>

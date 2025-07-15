@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main}">
+<head>
+    <title>Accès refusé</title>
+</head>
+<body>
+<div layout:fragment="content" class="flex flex-col items-center justify-center min-h-screen bg-blue-50">
+    <h1 class="text-6xl font-bold text-red-600 mb-2">403</h1>
+    <p class="text-xl text-gray-500 mb-4">Vous n'avez pas accès à cette page.</p>
+    <a th:href="@{/}" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow">Retour à
+        l'accueil</a>
+</div>
+</body>
+</html>

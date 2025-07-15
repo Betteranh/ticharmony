@@ -40,6 +40,21 @@ public class EmployeeSignupController {
             model.addAttribute("errorMessage", "Un utilisateur avec ce login ou cet email existe déjà.");
             return "authentication/employeeSignup";
         }
+        // Vérifie format email
+        if (!user.getEmail().matches("^[\\w-.]+@[\\w-]+\\.[a-zA-Z]{2,}$")) {
+            model.addAttribute("errorMessage", "Format d'adresse email invalide.");
+            return "authentication/employeeSignup";
+        }
+
+        // Vérifie format téléphone (si champ non vide)
+        if (user.getTelephone() != null && !user.getTelephone().isBlank()) {
+            // Doit commencer par 0, suivi de 8 ou 9 chiffres, donc total 9 ou 10 chiffres
+            if (!user.getTelephone().matches("^0[0-9]{8,9}$")) {
+                model.addAttribute("errorMessage", "Le numéro de téléphone doit commencer par 0 et contenir 9 ou 10 chiffres (sans espaces ni caractères spéciaux).");
+                return "authentication/employeeSignup";
+            }
+        }
+
         // Encoder le mot de passe
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Initialiser created_at

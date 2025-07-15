@@ -24,10 +24,12 @@ public class SpringSecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/", "/home", "/login", "/registration", "/employeeSignup").permitAll();
+                    auth.requestMatchers("/", "/home", "/login").permitAll();
                     auth.requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll();
-                    auth.requestMatchers("/admin").hasRole("ADMIN");
-                    auth.requestMatchers("/user").hasRole("MEMBER");
+                    auth.requestMatchers("/admin/**", "/employees/**", "/registration/**", "/employeeSignup", "/adminDashboard", "/formUpdateProblem").hasRole("ADMIN");
+                    auth.requestMatchers("/user/**", "/memberDashboard").hasRole("MEMBER");
+                    auth.requestMatchers("/partners").hasAnyRole("ADMIN", "MEMBER");
+                    auth.requestMatchers("/partners/**").hasAnyRole("ADMIN");
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(form -> form
