@@ -102,7 +102,11 @@ public class DashboardController {
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
 
-        model.addAttribute("problems", filteredProblems);
+        List<Problem> nonAssigned = filteredProblems.stream()
+                .filter(p -> p.getTechnician() == null)
+                .collect(Collectors.toList());
+
+        model.addAttribute("problems", nonAssigned);
         model.addAttribute("module", "dashboard");
 
         return "dashboard/adminDashboard";
@@ -184,7 +188,12 @@ public class DashboardController {
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
 
-        model.addAttribute("problems", filteredProblems);
+        List<Problem> inProgressTicketsList = filteredProblems.stream()
+                .filter(p -> p.getStatus() == Status.IN_PROGRESS)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("problems", inProgressTicketsList);
         model.addAttribute("module", "dashboard");
 
         return "dashboard/memberDashboard";

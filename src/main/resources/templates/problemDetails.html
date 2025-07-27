@@ -150,6 +150,10 @@
                     <span th:text="${problem.user.nomEntreprise}">Entreprise</span>
                 </div>
                 <div>
+                    <span class="font-medium">Adresse :</span>
+                    <span th:text="${problem.user.adresse}">Adresse du client</span>
+                </div>
+                <div>
                     <span class="font-medium">Demandeur :</span>
                     <div class="ml-2 text-sm">
                         <div th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></div>

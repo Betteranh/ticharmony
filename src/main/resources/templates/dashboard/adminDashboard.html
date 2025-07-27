@@ -80,11 +80,14 @@
                             class="border-gray-300 rounded px-2 py-1">
                         <option value=""
                                 th:selected="${selectedStatus == null or selectedStatus.isEmpty()}">
-                            Tous (sauf Closed)
+                            Tous (sauf Fermé)
                         </option>
                         <option th:each="s : ${allStatuses}"
                                 th:value="${s.name()}"
-                                th:text="${s}"
+                                th:text="${s.name() == 'OPEN' ? 'Ouvert' :
+                                  (s.name() == 'IN_PROGRESS' ? 'En cours' :
+                                  (s.name() == 'RESOLVED' ? 'Résolu' :
+                                  (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"
                                 th:selected="${s.name()} == ${selectedStatus}">
                         </option>
                     </select>
@@ -94,56 +97,55 @@
                 Aucun ticket à afficher.
             </div>
             <div th:if="${!#lists.isEmpty(problems)}">
-                <ul class="divide-y divide-gray-200">
-                    <li th:each="problem : ${problems}"
-                        class="py-3 flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <span class="font-semibold text-[#22425d]" th:text="${problem.title}">Titre</span>
-                            <!-- BADGE ADMIN -->
-                            <span th:if="${problem.user.role.name() == 'ADMIN'}"
-                                  class="ml-2 px-2 py-0.5 text-xs font-bold rounded bg-pink-100 text-pink-600 align-middle">
-                                    Admin
-                            </span>
-                            <span class="text-gray-500 text-sm ml-2">
+                <ul class="flex flex-col gap-2">
+                    <li th:each="problem : ${problems}">
+                        <a th:href="@{'/problems/' + ${problem.id}}"
+                           class="block rounded-xl border border-gray-200 bg-white px-5 py-4 transition hover:border-blue-400 hover:shadow group focus:ring-2 focus:ring-blue-200"
+                           style="text-decoration: none;">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
+                                <div>
+                                    <span class="font-semibold text-[#22425d] text-base md:text-lg" th:text="${problem.title}">Titre</span>
+                                    <!-- BADGE ADMIN -->
+                                    <span th:if="${problem.user != null and problem.user.role != null and problem.user.role.name() == 'ADMIN'}"
+                                          class="ml-2 px-2 py-0.5 text-xs font-bold rounded bg-pink-100 text-pink-600 align-middle border border-pink-200">Admin</span>
+                                    <span class="text-gray-500 text-xs md:text-sm ml-2">
                             #<span th:text="${problem.id}"></span> –
                             <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
-                                –
-                            <span th:text="${problem.technician != null
-                                ? problem.technician.firstname + ' ' + problem.technician.lastname
-                                : 'Non assigné'}"></span>
-                            </span>
-                        </div>
-                        <div class="mt-2 md:mt-0 flex items-center space-x-2">
-                            <!-- Badge Statut (FR) -->
-                            <span class="px-2 py-0.5 rounded text-xs font-semibold"
-                                  th:classappend="
-                                    ${problem.status.name() == 'OPEN'} ? ' bg-blue-100 text-blue-600' :
-                                    (${problem.status.name() == 'IN_PROGRESS'} ? ' bg-yellow-100 text-yellow-700' :
-                                    (${problem.status.name() == 'RESOLVED'} ? ' bg-green-100 text-green-700' :
-                                    (${problem.status.name() == 'CLOSED'} ? ' bg-gray-200 text-gray-800' : ' bg-gray-200 text-gray-800')))
-                                  ">
-                              <span th:if="${problem.status.name() == 'OPEN'}">Ouvert</span>
-                              <span th:if="${problem.status.name() == 'IN_PROGRESS'}">En cours</span>
-                              <span th:if="${problem.status.name() == 'RESOLVED'}">Résolu</span>
-                              <span th:if="${problem.status.name() == 'CLOSED'}">Fermé</span>
-                            </span>
-
-                            <!-- Badge Priorité (FR) -->
-                            <span class="px-2 py-0.5 rounded text-xs font-semibold"
-                                  th:classappend="
-                                    ${problem.priority.name() == 'LOW'} ? ' bg-green-100 text-green-700' :
-                                    (${problem.priority.name() == 'MEDIUM'} ? ' bg-blue-100 text-blue-700' :
-                                    (${problem.priority.name() == 'HIGH'} ? ' bg-yellow-100 text-yellow-700' :
-                                    (${problem.priority.name() == 'URGENT'} ? ' bg-red-100 text-red-700' : ' bg-gray-100 text-gray-700')))
-                                  ">
-                              <span th:if="${problem.priority.name() == 'LOW'}">Faible</span>
-                              <span th:if="${problem.priority.name() == 'MEDIUM'}">Normale</span>
-                              <span th:if="${problem.priority.name() == 'HIGH'}">Élevée</span>
-                              <span th:if="${problem.priority.name() == 'URGENT'}">Critique</span>
-                            </span>
-                            <a th:href="@{'/problems/' + ${problem.id}}"
-                               class="px-3 py-0.5 rounded bg-gray-100 text-gray-800 text-xs font-semibold hover:bg-gray-200 transition">Voir</a>
-                        </div>
+                            –
+                            <span th:if="${problem.technician != null}" th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
+                            <span th:if="${problem.technician == null}">Non assigné</span>
+                        </span>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 mt-2 md:mt-0">
+                                    <!-- Badge Statut -->
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold border"
+                                          th:classappend="
+                                ${problem.status != null and problem.status.name() == 'OPEN'} ? ' bg-blue-100 text-blue-700 border-blue-200' :
+                                (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? ' bg-yellow-100 text-yellow-700 border-yellow-200' :
+                                (${problem.status != null and problem.status.name() == 'RESOLVED'} ? ' bg-green-100 text-green-700 border-green-200' :
+                                (${problem.status != null and problem.status.name() == 'CLOSED'} ? ' bg-gray-100 text-gray-600 border-gray-200' : ' bg-gray-100 text-gray-600 border-gray-200')))
+                              ">
+                            <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}">Ouvert</span>
+                            <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}">En cours</span>
+                            <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}">Résolu</span>
+                            <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}">Fermé</span>
+                        </span>
+                                    <!-- Badge Priorité -->
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold border"
+                                          th:classappend="
+                                ${problem.priority != null and problem.priority.name() == 'LOW'} ? ' bg-gray-50 text-gray-600 border-gray-200' :
+                                (${problem.priority != null and problem.priority.name() == 'MEDIUM'} ? ' bg-blue-50 text-blue-700 border-blue-200' :
+                                (${problem.priority != null and problem.priority.name() == 'HIGH'} ? ' bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                (${problem.priority != null and problem.priority.name() == 'URGENT'} ? ' bg-red-50 text-red-600 border-red-200' : ' bg-gray-100 text-gray-600 border-gray-200')))
+                              ">
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Faible</span>
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Normale</span>
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Élevée</span>
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
+                        </span>
+                                </div>
+                            </div>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -183,7 +185,7 @@
         new Chart(document.getElementById('priorityChart'), {
             type: 'bar',
             data: {
-                labels: ['Faible', 'Moyenne', 'Haute', 'Urgent'],
+                labels: ['Faible', 'Normale', 'Élevé', 'Critique'],
                 datasets: [{
                     data: ticketsByPriority,
                     backgroundColor: ['#22c55e', '#0ea5e9', '#fde047', '#f87171']

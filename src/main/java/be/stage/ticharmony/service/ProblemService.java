@@ -1,16 +1,16 @@
 package be.stage.ticharmony.service;
 
-import be.stage.ticharmony.model.Priority;
-import be.stage.ticharmony.model.Problem;
-import be.stage.ticharmony.model.Status;
-import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.repository.ProblemRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Data
@@ -28,6 +28,7 @@ public class ProblemService {
      * Récupère tous les problèmes
      *
      * @return Un Iterable contenant tous les problèmes
+     * en cas de problème régler le toute seule
      */
     public Iterable<Problem> getProblems() {
         Iterable<Problem> problems = repository.findAll();
@@ -104,5 +105,69 @@ public class ProblemService {
 
     public Iterable<Problem> getProblemsByUser(User user) {
         return repository.findByUser(user);
+    }
+
+    // === NOUVEAU : Filtrage combiné avancé ===
+    public List<Problem> filterProblems(
+            Iterable<Problem> all,
+            Status status,
+            Priority priority,
+            Integer year,
+            Integer month,
+            String search
+    ) {
+        return StreamSupport.stream(all.spliterator(), false)
+                .filter(p -> status == null || p.getStatus() == status)
+                .filter(p -> priority == null || p.getPriority() == priority)
+                .filter(p -> year == null || (p.getCreatedAt() != null && p.getCreatedAt().getYear() == year))
+                .filter(p -> month == null || (p.getCreatedAt() != null && p.getCreatedAt().getMonthValue() == month))
+                .filter(p -> search == null || search.isBlank() || (
+                        p.getTitle() != null && p.getTitle().toLowerCase().contains(search.toLowerCase())
+                        // Tu peux aussi inclure la description ou autre champ si tu veux
+                ))
+                .sorted(Comparator.comparing(Problem::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+    }
+
+    // === NOUVEAU : Liste des années disponibles ===
+    public Set<Integer> getDistinctYears(Iterable<Problem> all) {
+        return StreamSupport.stream(all.spliterator(), false)
+                .map(Problem::getCreatedAt)
+                .filter(Objects::nonNull)
+                .map(LocalDateTime::getYear)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    // === NOUVEAU : Liste des mois disponibles pour une année donnée ===
+    public Set<Integer> getDistinctMonths(Iterable<Problem> all, Integer year) {
+        return StreamSupport.stream(all.spliterator(), false)
+                .map(Problem::getCreatedAt)
+                .filter(Objects::nonNull)
+                .filter(dt -> year == null || dt.getYear() == year)
+                .map(LocalDateTime::getMonthValue)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    // === NOUVEAU : Statistiques par technicien pour diagramme ===
+    public List<TechnicianStatsDTO> getTechnicianStats(
+            List<Problem> problems,
+            User currentUser
+    ) {
+        Map<Long, TechnicianStatsDTO> stats = new HashMap<>();
+        for (Problem p : problems) {
+            if (p.getTechnician() != null) {
+                Long techId = p.getTechnician().getId();
+                String name = (currentUser.getRole() == UserRole.MEMBER && currentUser.getId().equals(techId))
+                        ? "Moi"
+                        : p.getTechnician().getFirstname() + " " + p.getTechnician().getLastname();
+                stats.computeIfAbsent(techId, id -> new TechnicianStatsDTO(techId, name, 0))
+                        .setTicketCount(stats.getOrDefault(techId, new TechnicianStatsDTO(techId, name, 0)).getTicketCount() + 1);
+            }
+        }
+        // Corrige l’incrémentation (car computeIfAbsent + getTicketCount +1 peut écraser, donc on fait plus simple)
+        stats.values().forEach(ts -> ts.setTicketCount(
+                problems.stream().filter(p -> p.getTechnician() != null && p.getTechnician().getId().equals(ts.getTechnicianId())).count()
+        ));
+        return new ArrayList<>(stats.values());
     }
 }

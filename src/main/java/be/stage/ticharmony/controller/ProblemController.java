@@ -13,8 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -121,8 +124,7 @@ public class ProblemController {
     @PreAuthorize("hasRole('ADMIN')")
     public String closeProblem(@PathVariable Long id, Authentication auth) {
         Problem problem = service.getProblem(id);
-        if (problem != null && problem.getStatus() == Status.RESOLVED) {
-            // passe en CLOSED
+        if (problem != null && problem.getStatus() != Status.CLOSED) { // On peut fermer si pas déjà fermé
             problem.setStatus(Status.CLOSED);
             service.updateProblem(problem);
 
@@ -137,6 +139,14 @@ public class ProblemController {
         return "redirect:/problems?status=CLOSED";
     }
 
+    private int extractYear(LocalDateTime date) {
+        return date.getYear();
+    }
+
+    private int extractMonth(LocalDateTime date) {
+        return date.getMonthValue();
+    }
+
     /**
      * Affiche la liste des problèmes.
      * - ADMIN      : voit tous.
@@ -146,50 +156,115 @@ public class ProblemController {
     @GetMapping
     public String getAllProblems(
             @RequestParam(name = "status", required = false) Status statusFilter,
+            @RequestParam(name = "priority", required = false) Priority priorityFilter,
+            @RequestParam(name = "year", required = false) Integer yearFilter,
+            @RequestParam(name = "month", required = false) Integer monthFilter,
+            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "8") int size,
             Model model,
             Authentication authentication
     ) {
         User currentUser = userService.findByLogin(authentication.getName());
 
-//        // 1) on récupère d'abord le sous-ensemble selon le rôle
-//        Iterable<Problem> problems;
-//        if (currentUser.getRole() == UserRole.MEMBER) {
-//            problems = service.getProblemsByTechnician(currentUser);
-//        } else if (currentUser.getRole() == UserRole.CLIENT) {
-//            problems = service.getProblemsByUser(currentUser);
-//        } else {
-//            problems = service.getProblems();
-//        }
-
-        // 1) ADMIN et MEMBER voient tout, CLIENT voit ses tickets
-        Iterable<Problem> problems;
+        // 1. Récupérer tous les tickets selon le rôle
+        Iterable<Problem> allProblems;
         if (currentUser.getRole() == UserRole.CLIENT) {
-            problems = service.getProblemsByUser(currentUser);
+            allProblems = service.getProblemsByUser(currentUser);
         } else {
-            problems = service.getProblems(); // ADMIN et MEMBER voient tout
+            // ADMIN et MEMBER voient tous les tickets
+            allProblems = service.getProblems();
         }
 
-        // 2) on applique le filtre de statut **sur ce sous-ensemble**, ou on enlève les CLOSED par défaut
-        List<Problem> filtered = StreamSupport.stream(problems.spliterator(), false)
-                .filter(p -> {
-                    if (statusFilter != null) {
-                        return p.getStatus() == statusFilter;
-                    } else {
-                        return p.getStatus() != Status.CLOSED;
-                    }
-                })
+        // 2. Années/mois disponibles (pour les filtres dropdown)
+        List<Integer> allYears = StreamSupport.stream(allProblems.spliterator(), false)
+                .map(p -> p.getCreatedAt().getYear())
+                .distinct()
+                .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
 
-        filtered.sort(Comparator.comparing(Problem::getCreatedAt).reversed());
+        List<Integer> allMonths;
+        if (yearFilter != null) {
+            allMonths = StreamSupport.stream(allProblems.spliterator(), false)
+                    .filter(p -> p.getCreatedAt().getYear() == yearFilter)
+                    .map(p -> p.getCreatedAt().getMonthValue())
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.toList());
+        } else {
+            allMonths = StreamSupport.stream(allProblems.spliterator(), false)
+                    .map(p -> p.getCreatedAt().getMonthValue())
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
 
-        model.addAttribute("problems", filtered);
+        // 3. Appliquer les filtres avancés (statut, priorité, année, mois, search)
+        List<Problem> filtered = StreamSupport.stream(allProblems.spliterator(), false)
+                .filter(p -> {
+                    if (statusFilter == null) {
+                        return p.getStatus() != Status.CLOSED;
+                    } else {
+                        return p.getStatus() == statusFilter;
+                    }
+                })
+                .filter(p -> priorityFilter == null || p.getPriority() == priorityFilter)
+                .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
+                .filter(p -> monthFilter == null || p.getCreatedAt().getMonthValue() == monthFilter)
+                .filter(p -> {
+                    if (search == null || search.trim().isEmpty()) return true;
+                    String lc = search.toLowerCase();
+                    return (p.getTitle() != null && p.getTitle().toLowerCase().contains(lc))
+                            || (p.getCategory() != null && p.getCategory().toLowerCase().contains(lc))
+                            || (p.getTicketUserInfo() != null && (
+                            (p.getTicketUserInfo().getFirstName() + " " + p.getTicketUserInfo().getLastName()).toLowerCase().contains(lc)
+                                    || (p.getTicketUserInfo().getEmail() != null && p.getTicketUserInfo().getEmail().toLowerCase().contains(lc))
+                    ))
+                            || (p.getUser() != null && p.getUser().getNomEntreprise() != null && p.getUser().getNomEntreprise().toLowerCase().contains(lc));
+                })
+                .sorted(Comparator.comparing(Problem::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        // 4. Pagination (page = 1-based pour l'utilisateur)
+        int totalProblems = filtered.size();
+        int totalPages = (int) Math.ceil((double) totalProblems / size);
+        int currentPage = Math.max(1, Math.min(page, totalPages == 0 ? 1 : totalPages));
+        int start = (currentPage - 1) * size;
+        int end = Math.min(start + size, totalProblems);
+        List<Problem> pageList = filtered.subList(start, end);
+
+        // 5. Affichage "1-10 sur XX"
+        model.addAttribute("pageStart", totalProblems == 0 ? 0 : start + 1);
+        model.addAttribute("pageEnd", end);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalProblems", totalProblems);
+
+        // 6. Pour le diagramme technicien : via ProblemService + ton DTO
+        List<TechnicianStatsDTO> technicianStats = service.getTechnicianStats(filtered, currentUser);
+
+        // 7. Attributs pour la vue
+        model.addAttribute("problems", pageList);
         model.addAttribute("allStatuses", Status.values());
         model.addAttribute("selectedStatus", statusFilter);
-        model.addAttribute("module", "problems");
+        model.addAttribute("allPriorities", Priority.values());
+        model.addAttribute("selectedPriority", priorityFilter);
+        model.addAttribute("allYears", allYears);
+        model.addAttribute("selectedYear", yearFilter);
+        model.addAttribute("allMonths", allMonths);
+        model.addAttribute("selectedMonth", monthFilter);
+        model.addAttribute("technicianStats", technicianStats);
+        model.addAttribute("search", search);
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("module", "problems");
+
+        model.addAttribute("nextPage", Math.min(currentPage + 1, totalPages)); // protection débordement
+        model.addAttribute("prevPage", Math.max(currentPage - 1, 1)); // protection
+
 
         return "listProblems";
     }
+
 
     private int priorityOrder(Priority p) {
         return switch (p) {
