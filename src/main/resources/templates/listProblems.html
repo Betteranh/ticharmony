@@ -100,6 +100,13 @@
                             </svg>
                         </button>
                     </div>
+
+                    <!-- Bouton Réinitialiser -->
+                    <button type="button"
+                            onclick="resetFilters()"
+                            class="mt-3 w-full py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold border border-gray-200 transition flex items-center justify-center gap-2">
+                        Réinitialiser
+                    </button>
                 </form>
             </div>
 
@@ -149,29 +156,29 @@
                                     <span th:if="${problem.user != null and problem.user.role != null and problem.user.role.name() == 'ADMIN'}"
                                           class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-pink-100 text-pink-600 border border-pink-200">Admin</span>
                                     <span th:classappend="
-              ${problem.priority != null and problem.priority.name() == 'LOW'}     ? 'bg-gray-50 text-gray-500 border border-gray-200' :
-              (${problem.priority != null and problem.priority.name() == 'MEDIUM'} ? 'bg-blue-50 text-blue-500 border border-blue-200' :
-              (${problem.priority != null and problem.priority.name() == 'HIGH'}   ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
-              (${problem.priority != null and problem.priority.name() == 'URGENT'} ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-gray-50 text-gray-500 border border-gray-200')))"
+                                      ${problem.priority != null and problem.priority.name() == 'LOW'}     ? 'bg-gray-50 text-gray-500 border border-gray-200' :
+                                      (${problem.priority != null and problem.priority.name() == 'MEDIUM'} ? 'bg-blue-50 text-blue-500 border border-blue-200' :
+                                      (${problem.priority != null and problem.priority.name() == 'HIGH'}   ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
+                                      (${problem.priority != null and problem.priority.name() == 'URGENT'} ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-gray-50 text-gray-500 border border-gray-200')))"
                                           class="ml-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium uppercase">
-              <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Faible</span>
-              <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Normale</span>
-              <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Élevée</span>
-              <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
-              <span th:if="${problem.priority == null}">-</span>
-            </span>
+                                      <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Faible</span>
+                                      <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Normale</span>
+                                      <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Élevée</span>
+                                      <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
+                                      <span th:if="${problem.priority == null}">-</span>
+                                    </span>
                                     <span th:classappend="
-              ${problem.status != null and problem.status.name() == 'OPEN'}        ? 'bg-blue-50 text-blue-600 border border-blue-200' :
-              (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
-              (${problem.status != null and problem.status.name() == 'RESOLVED'}   ? 'bg-green-50 text-green-700 border border-green-200' :
-              'bg-gray-50 text-gray-500 border border-gray-200'))"
+                                      ${problem.status != null and problem.status.name() == 'OPEN'}        ? 'bg-blue-50 text-blue-600 border border-blue-200' :
+                                      (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
+                                      (${problem.status != null and problem.status.name() == 'RESOLVED'}   ? 'bg-green-50 text-green-700 border border-green-200' :
+                                      'bg-gray-50 text-gray-500 border border-gray-200'))"
                                           class="ml-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium uppercase">
-              <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}">Ouvert</span>
-              <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}">En cours</span>
-              <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}">Résolu</span>
-              <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}">Fermé</span>
-              <span th:if="${problem.status == null}">-</span>
-            </span>
+                                      <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}">Ouvert</span>
+                                      <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}">En cours</span>
+                                      <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}">Résolu</span>
+                                      <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}">Fermé</span>
+                                      <span th:if="${problem.status == null}">-</span>
+                                    </span>
                                 </div>
                                 <!-- Actions -->
                                 <div sec:authorize="hasRole('ADMIN')" class="flex gap-1 flex-shrink-0">
@@ -203,14 +210,14 @@
                                     </form>
                                     <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}"
                                           class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 text-gray-400 text-xs font-semibold border border-gray-200 cursor-not-allowed">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                     stroke-width="2"
-                     viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12"/></svg>
-                Fermé
-            </span>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                 stroke-width="2"
+                                                 viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12"/></svg>
+                                            Fermé
+                                    </span>
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-5 text-gray-600 text-sm pl-1">
@@ -225,11 +232,11 @@
                                 <div>
                                     <span class="font-medium">Technicien :</span>
                                     <span th:if="${problem.technician != null}">
-                <span th:if="${problem.technician.id == currentUser.id}"
-                      class="font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full ml-1">Moi</span>
-                <span th:if="${problem.technician.id != currentUser.id}"
-                      th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
-            </span>
+                                        <span th:if="${problem.technician.id == currentUser.id}"
+                                              class="font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full ml-1">Moi</span>
+                                        <span th:if="${problem.technician.id != currentUser.id}"
+                                              th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
+                                    </span>
                                     <span th:if="${problem.technician == null}" class="italic text-gray-300">-</span>
                                 </div>
                                 <div>
@@ -265,6 +272,19 @@
         </div>
     </div>
     <th:block layout:fragment="scripts">
+        <script>
+            function resetFilters() {
+                // Met tous les selects à la valeur vide
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('priorityFilter').value = '';
+                document.getElementById('yearFilter').value = '';
+                document.getElementById('monthFilter').value = '';
+                document.getElementById('ticketSearch').value = '';
+
+                // Soumet le formulaire
+                document.getElementById('ticketSearch').closest('form').submit();
+            }
+        </script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const searchInput = document.getElementById('ticketSearch');

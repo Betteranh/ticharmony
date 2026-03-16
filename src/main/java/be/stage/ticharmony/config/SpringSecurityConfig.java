@@ -24,7 +24,7 @@ public class SpringSecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/", "/home", "/login").permitAll();
+                    auth.requestMatchers("/", "/home", "/login", "/infos-windows10").permitAll();
                     auth.requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll();
                     auth.requestMatchers("/admin/**", "/employees/**", "/registration/**", "/employeeSignup", "/adminDashboard", "/formUpdateProblem").hasRole("ADMIN");
                     auth.requestMatchers("/user/**", "/memberDashboard").hasRole("MEMBER");
@@ -64,7 +64,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12);
     }
 
 

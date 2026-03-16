@@ -67,6 +67,6 @@ public class EmployeeSignupController {
         user.setLangue("fr");
 
         userService.addUser(user);
-        return "redirect:/login?employeeRegistrationSuccess=true";
+        return "redirect:/employees";
     }
 }

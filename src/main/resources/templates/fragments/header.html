@@ -6,22 +6,22 @@
             <div class="flex items-center flex-1 min-w-0">
                 <a th:href="@{/}" class="flex items-center space-x-2 min-w-0">
                     <img th:src="@{/images/tic.png}" alt="Logo TIC Harmony" class="h-10 w-auto">
+                    <div class="flex flex-col leading-tight ml-2">
+                        <span class="font-bold text-gray-700 text-xl md:text-2xl mb-0.5">Tic Harmony</span>
+                        <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="!isAuthenticated()">
+                                L’informatique clé en main
+                            </span>
+                        <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('ADMIN')">
+                                Espace Administrateur
+                            </span>
+                        <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('MEMBER')">
+                                Espace Technicien
+                            </span>
+                        <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('CLIENT')">
+                                Espace Client
+                            </span>
+                    </div>
                 </a>
-                <div class="flex flex-col leading-tight ml-2">
-                    <span class="font-bold text-gray-700 text-xl md:text-2xl mb-0.5">Tic Harmony</span>
-                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="!isAuthenticated()">
-                        L’informatique clé en main
-                    </span>
-                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('ADMIN')">
-                        Espace Administrateur
-                    </span>
-                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('MEMBER')">
-                        Espace Technicien
-                    </span>
-                    <span class="text-xs md:text-sm text-gray-600 font-medium" sec:authorize="hasRole('CLIENT')">
-                        Espace Client
-                    </span>
-                </div>
             </div>
 
             <!-- CENTRE -->
