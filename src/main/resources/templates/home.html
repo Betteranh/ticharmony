@@ -4,107 +4,313 @@
       layout:decorate="~{layouts/main}">
 <head>
     <title>Accueil - TIC Harmony</title>
-    <!-- Tailwind déjà inclus via layout -->
+    <style>
+        /* Animations personnalisées pour la landing page */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .gradient-animate {
+            background-size: 200% 200%;
+            animation: gradient 15s ease infinite;
+        }
+
+        .pattern-dots {
+            background-image: radial-gradient(circle, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
-    <!-- HERO -->
-    <section class="flex flex-col items-center text-center py-20 px-3 bg-gradient-to-b from-blue-50 via-white to-white">
-        <img th:src="@{/images/tic.png}" alt="Tic Harmony"
-             class="mx-auto mb-8 w-32 md:w-40 drop-shadow-lg">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-snug mb-5 tracking-wide max-w-2xl mx-auto">
-            Votre partenaire informatique de confiance pour les
-            <span class="text-blue-700">ASBL</span> et <span class="text-blue-500">PME</span>
-        </h1>
-        <p class="text-lg text-gray-600 mb-8 max-w-xl mx-auto">
-            Tic Harmony accompagne votre organisation avec des solutions informatiques adaptées, un support
-            technique réactif et une gestion simplifiée de vos demandes d’assistance.
-        </p>
-        <div class="flex flex-col md:flex-row gap-4 justify-center">
-            <a th:href="@{/login}"
-               class="px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow flex items-center gap-2">
-                Accéder à votre espace
-            </a>
-            <a href="https://www.ordirec.eu/" target="_blank" rel="noopener"
-               class="px-7 py-3 bg-white border border-blue-600 text-blue-600 font-semibold rounded-xl transition shadow hover:bg-blue-50">
-                Découvrir notre magasin
-            </a>
+    <!-- HERO SECTION MODERNISÉ -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 gradient-animate pattern-dots">
+        <div class="absolute inset-0 bg-black opacity-20"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Contenu gauche -->
+                <div class="text-white space-y-6 animate-fadeIn">
+                    <div class="inline-block">
+                        <span class="bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                            🚀 Votre partenaire IT de confiance
+                        </span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight drop-shadow-lg">
+                        L'informatique <span class="text-yellow-400 drop-shadow-md">clé en main</span> pour votre entreprise
+                    </h1>
+
+                    <p class="text-xl text-white font-medium max-w-xl drop-shadow-md">
+                        Solutions complètes pour <strong>ASBL</strong> et <strong>PME</strong> :
+                        support technique, maintenance, et gestion de tickets simplifiée.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <a th:href="@{/login}"
+                           class="btn-primary inline-flex items-center justify-center gap-2 bg-white text-blue-600 hover:bg-blue-50 shadow-2xl group">
+                            <span>Accéder à votre espace</span>
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </a>
+
+                        <a href="https://www.ordirec.eu/" target="_blank" rel="noopener"
+                           class="inline-flex items-center justify-center gap-2 px-7 py-3 border-2 border-white text-white font-semibold rounded-xl transition hover:bg-white hover:text-blue-600 shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                            </svg>
+                            Notre magasin
+                        </a>
+                    </div>
+
+                    <!-- Stats rapides -->
+                    <div class="grid grid-cols-2 gap-8 pt-8 border-t border-white/30">
+                        <div>
+                            <div class="text-3xl font-bold text-yellow-400 drop-shadow-lg">15+</div>
+                            <div class="text-sm text-white font-semibold">Ans d'expérience</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-yellow-400 drop-shadow-lg">200+</div>
+                            <div class="text-sm text-white font-semibold">Clients satisfaits</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image/Illustration droite -->
+                <div class="hidden md:block">
+                    <div class="relative">
+                        <img th:src="@{/images/tic.png}" alt="Tic Harmony"
+                             class="w-full max-w-md mx-auto drop-shadow-2xl animate-float"/>
+
+                        <!-- Cercles décoratifs -->
+                        <div class="absolute -top-4 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+                        <div class="absolute -bottom-8 -left-4 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 1s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vague de séparation -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="#f8fafc"/>
+            </svg>
         </div>
     </section>
 
     <!-- ALERTE WINDOWS 10 -->
-    <div class="w-full flex justify-center my-12">
-        <a th:href="@{/infos-windows10}" class="block w-full max-w-5xl">
-            <img
-                    src="/images/w10rip.png"
-                    alt="Alerte Windows 10 non supporté"
-                    class=" shadow-2xl border border-blue-200 max-w-5xl w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
-                    style="background: #f8fafc;"
-            />
-        </a>
+    <div class="bg-gray-50 py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <a th:href="@{/infos-windows10}" class="block group">
+                <div class="relative overflow-hidden rounded-3xl shadow-2xl border-4 border-red-200 bg-gradient-to-r from-red-50 to-orange-50 transition-transform hover:scale-[1.02]">
+                    <img src="/images/w10rip.png"
+                         alt="Alerte Windows 10 non supporté"
+                         class="w-full h-auto object-cover"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <div class="text-white">
+                            <h3 class="text-2xl font-extrabold mb-2 drop-shadow-lg">⚠️ Windows 10 : Fin de support</h3>
+                            <p class="text-base font-semibold drop-shadow-md">Cliquez pour en savoir plus sur la migration</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 
-    <!-- DOMAINES D'EXPERTISE -->
-    <section id="services" class="py-12 bg-gradient-to-r from-blue-50 via-white to-white">
-        <h2 class="text-2xl font-bold text-center mb-8 text-gray-700">Nos domaines d'expertise</h2>
-        <div class="flex flex-wrap justify-center gap-6 px-2">
-            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
-                <div class="text-blue-500 text-4xl mb-3">🖥️</div>
-                <div class="font-bold mb-1">Matériel</div>
-                <div class="text-gray-500 text-sm text-center">Installation, maintenance et réparation de votre parc
-                    informatique
-                </div>
+    <!-- DOMAINES D'EXPERTISE MODERNISÉ -->
+    <section id="services" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+                    Nos domaines d'<span class="text-blue-600">expertise</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Des solutions complètes pour tous vos besoins informatiques
+                </p>
             </div>
-            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
-                <div class="text-green-500 text-4xl mb-3">🌐</div>
-                <div class="font-bold mb-1">Réseau</div>
-                <div class="text-gray-500 text-sm text-center">Configuration et sécurisation de votre infrastructure
-                    réseau
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Card 1 -->
+                <div class="group card-hover bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-3xl p-8 text-center shadow-lg animate-on-scroll">
+                    <div class="w-20 h-20 bg-blue-500 rounded-2xl mx-auto mb-6 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform shadow-xl">
+                        🖥️
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Matériel</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Installation, maintenance et réparation de votre parc informatique
+                    </p>
                 </div>
-            </div>
-            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
-                <div class="text-purple-500 text-4xl mb-3">💾</div>
-                <div class="font-bold mb-1">Logiciels</div>
-                <div class="text-gray-500 text-sm text-center">Installation, configuration et mise à jour de vos
-                    applications
+
+                <!-- Card 2 -->
+                <div class="group card-hover bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-3xl p-8 text-center shadow-lg animate-on-scroll" style="animation-delay: 0.1s;">
+                    <div class="w-20 h-20 bg-green-500 rounded-2xl mx-auto mb-6 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform shadow-xl">
+                        🌐
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Réseau</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Configuration et sécurisation de votre infrastructure réseau
+                    </p>
                 </div>
-            </div>
-            <div class="bg-white border rounded-2xl shadow-md p-6 w-60 flex flex-col items-center hover:scale-105 transition">
-                <div class="text-red-500 text-4xl mb-3">🔒</div>
-                <div class="font-bold mb-1">Sécurité</div>
-                <div class="text-gray-500 text-sm text-center">Protection et sauvegarde de vos données sensibles
+
+                <!-- Card 3 -->
+                <div class="group card-hover bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-3xl p-8 text-center shadow-lg animate-on-scroll" style="animation-delay: 0.2s;">
+                    <div class="w-20 h-20 bg-purple-500 rounded-2xl mx-auto mb-6 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform shadow-xl">
+                        💾
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Logiciels</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Installation, configuration et mise à jour de vos applications
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="group card-hover bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-3xl p-8 text-center shadow-lg animate-on-scroll" style="animation-delay: 0.3s;">
+                    <div class="w-20 h-20 bg-red-500 rounded-2xl mx-auto mb-6 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform shadow-xl">
+                        🔒
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Sécurité</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Protection et sauvegarde de vos données sensibles
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SYSTÈME DE TICKETS & ESPACE PERSO -->
-    <section class="flex flex-col md:flex-row justify-center items-center gap-10 py-14 px-3">
-        <div class="max-w-md">
-            <h3 class="text-xl font-bold mb-4 text-gray-700">Un système de tickets innovant pour votre tranquillité
-                d’esprit</h3>
-            <ul class="space-y-4 text-gray-600">
-                <li><span class="text-green-500 mr-2">✔</span>Support rapide et efficace</li>
-                <li><span class="text-blue-500 mr-2">✔</span>Équipe de techniciens experts</li>
-                <li><span class="text-purple-500 mr-2">✔</span>Suivi transparent</li>
-            </ul>
+    <!-- SYSTÈME DE TICKETS MODERNISÉ -->
+    <section class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Gauche - Avantages -->
+                <div class="space-y-8 animate-on-scroll">
+                    <div>
+                        <span class="inline-block bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                            💼 Gestion simplifiée
+                        </span>
+                        <h2 class="text-4xl font-extrabold text-gray-900 mb-4">
+                            Un système de tickets <span class="text-blue-600">innovant</span>
+                        </h2>
+                        <p class="text-lg text-gray-600">
+                            Gérez toutes vos demandes d'assistance en un seul endroit avec notre plateforme intuitive
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+                            <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Support rapide et efficace</h4>
+                                <p class="text-sm text-gray-600">Réponse garantie sous 24h</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+                            <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Équipe de techniciens experts</h4>
+                                <p class="text-sm text-gray-600">Certifiés et expérimentés</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+                            <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Suivi transparent</h4>
+                                <p class="text-sm text-gray-600">Historique complet de vos tickets</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Droite - Espaces personnalisés -->
+                <div class="glass-card rounded-3xl p-8 shadow-2xl animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">
+                        🎯 Votre espace personnalisé
+                    </h3>
+
+                    <div class="space-y-6">
+                        <div class="border-l-4 border-cyan-500 pl-6 py-4 bg-cyan-50 rounded-r-xl">
+                            <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                <span class="text-2xl">👤</span>
+                                Pour les clients (ASBL/PME)
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                Créez et suivez vos demandes d'assistance en temps réel
+                            </p>
+                        </div>
+
+                        <div class="border-l-4 border-green-500 pl-6 py-4 bg-green-50 rounded-r-xl">
+                            <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                <span class="text-2xl">🔧</span>
+                                Pour les techniciens
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                Gérez les interventions et documentez les solutions
+                            </p>
+                        </div>
+
+                        <div class="border-l-4 border-indigo-500 pl-6 py-4 bg-indigo-50 rounded-r-xl">
+                            <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                <span class="text-2xl">⚡</span>
+                                Pour les administrateurs
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                Supervisez l'ensemble des demandes et optimisez les ressources
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <a th:href="@{/login}"
+                           class="btn-primary w-full text-center inline-block">
+                            Commencer maintenant
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="bg-blue-100 border-blue-300 border rounded-2xl p-7 shadow-md w-full md:max-w-xs">
-            <div class="font-bold mb-2 text-gray-700">Votre espace personnalisé</div>
-            <ul class="text-sm text-blue-900 space-y-2">
-                <li>
-                    <span class="font-bold">Pour les clients (ASBL/PME)</span><br>
-                    Créez et suivez vos demandes d’assistance
-                </li>
-                <li>
-                    <span class="font-bold">Pour les techniciens</span><br>
-                    Gérez les interventions et documentez les solutions
-                </li>
-                <li>
-                    <span class="font-bold">Pour les administrateurs</span><br>
-                    Supervisez l’ensemble des demandes et optimisez les ressources
-                </li>
-            </ul>
+    </section>
+
+    <!-- CALL TO ACTION FINAL -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-6 drop-shadow-lg">
+                Prêt à simplifier votre gestion IT ?
+            </h2>
+            <p class="text-xl text-white font-semibold mb-8 max-w-2xl mx-auto drop-shadow-md">
+                Rejoignez les 200+ entreprises qui nous font confiance pour leur infrastructure informatique
+            </p>
+            <a th:href="@{/login}"
+               class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition shadow-2xl text-lg">
+                <span>Accéder à votre espace</span>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </a>
         </div>
     </section>
 </div>

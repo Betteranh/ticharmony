@@ -9,75 +9,112 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<div layout:fragment="content" class="max-w-7xl mx-auto w-full min-h-screen pt-20 pb-12">
+<div layout:fragment="content" class="max-w-7xl mx-auto w-full min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
 
     <!-- Header dashboard -->
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-extrabold text-[#22425d]">Tableau de bord</h1>
-        <span class="text-gray-500 text-base hidden md:block">Vue d'ensemble du système de tickets</span>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4">
+        <div>
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Tableau de bord
+            </h1>
+            <p class="text-gray-600 mt-2">Vue d'ensemble du système de tickets</p>
+        </div>
     </div>
 
     <!-- Stats Top -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <a th:href="@{/problems}" class="focus:outline-none group">
-                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
-                     th:text="${totalTickets}">10
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <a th:href="@{/problems}" class="group block">
+            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full -mr-8 -mt-8"></div>
+                <div class="relative">
+                    <div class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2"
+                         th:text="${totalTickets}">10</div>
+                    <div class="text-sm font-medium text-gray-600">Tickets total</div>
                 </div>
-            </a>
-            <div class="mt-1 text-sm text-gray-500">Tickets total</div>
-        </div>
-        <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <a th:href="@{/problems(status='OPEN')}" class="focus:outline-none group">
-                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
-                     th:text="${newTickets}">3
+            </div>
+        </a>
+        <a th:href="@{/problems(status='OPEN')}" class="group block">
+            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-sky-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-sky-500/10 to-blue-500/10 rounded-full -mr-8 -mt-8"></div>
+                <div class="relative">
+                    <div class="text-4xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent mb-2"
+                         th:text="${newTickets}">3</div>
+                    <div class="text-sm font-medium text-gray-600">Nouveaux tickets</div>
                 </div>
-            </a>
-            <div class="mt-1 text-sm text-gray-500">Nouveaux tickets</div>
-        </div>
-        <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <a th:href="@{/problems(status='IN_PROGRESS')}" class="focus:outline-none group">
-                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
-                     th:text="${inProgressTickets}">4
+            </div>
+        </a>
+        <a th:href="@{/problems(status='IN_PROGRESS')}" class="group block">
+            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-yellow-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full -mr-8 -mt-8"></div>
+                <div class="relative">
+                    <div class="text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-2"
+                         th:text="${inProgressTickets}">4</div>
+                    <div class="text-sm font-medium text-gray-600">En cours</div>
                 </div>
-            </a>
-            <div class="mt-1 text-sm text-gray-500">En cours</div>
-        </div>
-        <div class="rounded-2xl bg-white p-6 flex flex-col items-center border border-[#e5e7eb]">
-            <a th:href="@{/problems(status='RESOLVED')}" class="focus:outline-none group">
-                <div class="text-3xl font-bold text-[#25636a] group-hover:text-blue-600 transition"
-                     th:text="${resolvedTickets}">3
+            </div>
+        </a>
+        <a th:href="@{/problems(status='RESOLVED')}" class="group block">
+            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-green-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full -mr-8 -mt-8"></div>
+                <div class="relative">
+                    <div class="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2"
+                         th:text="${resolvedTickets}">3</div>
+                    <div class="text-sm font-medium text-gray-600">Résolus</div>
                 </div>
-            </a>
-            <div class="mt-1 text-sm text-gray-500">Résolus</div>
-        </div>
+            </div>
+        </a>
     </div>
 
     <!-- Charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <!-- Par statut -->
-        <div class="bg-white rounded-2xl p-2 border border-[#e5e7eb] flex flex-col h-[300px] overflow-hidden">
-            <div class="font-bold text-base mb-1 text-[#22425d] self-start">Répartition par statut</div>
-            <canvas id="statusChart" class="w-full h-full" style="max-height:270px; max-width:400px;"></canvas>
+        <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-lg">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl w-10 h-10 flex items-center justify-center shadow-md">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-lg text-gray-900">Répartition par statut</h3>
+            </div>
+            <div class="h-[280px]">
+                <canvas id="statusChart"></canvas>
+            </div>
         </div>
         <!-- Par priorité -->
-        <div class="bg-white rounded-2xl p-2 border border-[#e5e7eb] flex flex-col h-[300px] overflow-hidden">
-            <div class="font-bold text-base mb-1 text-[#22425d] self-start">Répartition par priorité</div>
-            <canvas id="priorityChart" class="w-full h-full" style="max-height:250px; max-width:570px;"></canvas>
+        <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-lg">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl w-10 h-10 flex items-center justify-center shadow-md">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-lg text-gray-900">Répartition par priorité</h3>
+            </div>
+            <div class="h-[280px]">
+                <canvas id="priorityChart"></canvas>
+            </div>
         </div>
     </div>
     <!-- Tickets récents nécessitant une attention -->
-    <div class="mt-8">
-        <div class="bg-white rounded-2xl border border-[#e5e7eb] p-6 mb-4">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-[#22425d]">Tickets récents nécessitant une attention</h2>
+    <div>
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl w-10 h-10 flex items-center justify-center shadow-md">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Tickets récents</h2>
+                </div>
                 <!-- Formulaire de filtre -->
-                <form method="get" class="flex items-center space-x-2">
-                    <label for="statusFilter" class="font-medium text-gray-700">Filtrer :</label>
+                <form method="get" class="flex items-center gap-3">
+                    <label for="statusFilter" class="font-medium text-gray-700 text-sm">Filtrer :</label>
                     <select id="statusFilter"
                             name="status"
                             onchange="this.form.submit()"
-                            class="border-gray-300 rounded px-2 py-1">
+                            class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         <option value=""
                                 th:selected="${selectedStatus == null or selectedStatus.isEmpty()}">
                             Tous (sauf Fermé)
@@ -97,52 +134,54 @@
                 Aucun ticket à afficher.
             </div>
             <div th:if="${!#lists.isEmpty(problems)}">
-                <ul class="flex flex-col gap-2">
+                <ul class="flex flex-col gap-3">
                     <li th:each="problem : ${problems}">
                         <a th:href="@{'/problems/' + ${problem.id}}"
-                           class="block rounded-xl border border-gray-200 bg-white px-5 py-4 transition hover:border-blue-400 hover:shadow group focus:ring-2 focus:ring-blue-200"
+                           class="block rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 px-6 py-5 transition-all duration-200 hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 group"
                            style="text-decoration: none;">
-                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
-                                <div>
-                                    <span class="font-semibold text-[#22425d] text-base md:text-lg" th:text="${problem.title}">Titre</span>
-                                    <!-- BADGE ADMIN -->
-                                    <span th:if="${problem.user != null and problem.user.role != null and problem.user.role.name() == 'ADMIN'}"
-                                          class="ml-2 px-2 py-0.5 text-xs font-bold rounded bg-pink-100 text-pink-600 align-middle border border-pink-200">Admin</span>
-                                    <span class="text-gray-500 text-xs md:text-sm ml-2">
-                            #<span th:text="${problem.id}"></span> –
-                            <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
-                            –
-                            <span th:if="${problem.technician != null}" th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
-                            <span th:if="${problem.technician == null}">Non assigné</span>
-                        </span>
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="font-bold text-gray-900 text-base md:text-lg group-hover:text-blue-600 transition" th:text="${problem.title}">Titre</span>
+                                        <span th:if="${problem.user != null and problem.user.role != null and problem.user.role.name() == 'ADMIN'}"
+                                              class="px-2 py-0.5 text-xs font-bold rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-sm">Admin</span>
+                                    </div>
+                                    <span class="text-gray-500 text-xs md:text-sm flex items-center gap-2 flex-wrap">
+                                        <span class="font-medium text-gray-700">#<span th:text="${problem.id}"></span></span>
+                                        <span>•</span>
+                                        <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
+                                        <span>•</span>
+                                        <span th:if="${problem.technician != null}" th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
+                                        <span th:if="${problem.technician == null}" class="text-orange-600 font-medium">Non assigné</span>
+                                    </span>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-2 mt-2 md:mt-0">
+                                <div class="flex flex-wrap items-center gap-2">
                                     <!-- Badge Statut -->
-                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold border"
+                                    <span class="px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm"
                                           th:classappend="
-                                ${problem.status != null and problem.status.name() == 'OPEN'} ? ' bg-blue-100 text-blue-700 border-blue-200' :
-                                (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? ' bg-yellow-100 text-yellow-700 border-yellow-200' :
-                                (${problem.status != null and problem.status.name() == 'RESOLVED'} ? ' bg-green-100 text-green-700 border-green-200' :
-                                (${problem.status != null and problem.status.name() == 'CLOSED'} ? ' bg-gray-100 text-gray-600 border-gray-200' : ' bg-gray-100 text-gray-600 border-gray-200')))
+                                ${problem.status != null and problem.status.name() == 'OPEN'} ? ' bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
+                                (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? ' bg-gradient-to-r from-yellow-500 to-orange-500 text-white' :
+                                (${problem.status != null and problem.status.name() == 'RESOLVED'} ? ' bg-gradient-to-r from-green-500 to-emerald-600 text-white' :
+                                (${problem.status != null and problem.status.name() == 'CLOSED'} ? ' bg-gray-200 text-gray-700' : ' bg-gray-200 text-gray-700')))
                               ">
-                            <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}">Ouvert</span>
-                            <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}">En cours</span>
-                            <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}">Résolu</span>
-                            <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}">Fermé</span>
-                        </span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}">Ouvert</span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}">En cours</span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}">Résolu</span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}">Fermé</span>
+                                    </span>
                                     <!-- Badge Priorité -->
-                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold border"
+                                    <span class="px-3 py-1.5 rounded-lg text-xs font-bold border-2"
                                           th:classappend="
-                                ${problem.priority != null and problem.priority.name() == 'LOW'} ? ' bg-gray-50 text-gray-600 border-gray-200' :
-                                (${problem.priority != null and problem.priority.name() == 'MEDIUM'} ? ' bg-blue-50 text-blue-700 border-blue-200' :
-                                (${problem.priority != null and problem.priority.name() == 'HIGH'} ? ' bg-yellow-50 text-yellow-700 border-yellow-200' :
-                                (${problem.priority != null and problem.priority.name() == 'URGENT'} ? ' bg-red-50 text-red-600 border-red-200' : ' bg-gray-100 text-gray-600 border-gray-200')))
+                                ${problem.priority != null and problem.priority.name() == 'LOW'} ? ' bg-gray-50 text-gray-700 border-gray-300' :
+                                (${problem.priority != null and problem.priority.name() == 'MEDIUM'} ? ' bg-blue-50 text-blue-700 border-blue-300' :
+                                (${problem.priority != null and problem.priority.name() == 'HIGH'} ? ' bg-yellow-50 text-yellow-700 border-yellow-400' :
+                                (${problem.priority != null and problem.priority.name() == 'URGENT'} ? ' bg-red-50 text-red-700 border-red-400' : ' bg-gray-100 text-gray-700 border-gray-300')))
                               ">
-                            <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Faible</span>
-                            <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Normale</span>
-                            <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Élevée</span>
-                            <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
-                        </span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Faible</span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Normale</span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Élevée</span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
+                                    </span>
                                 </div>
                             </div>
                         </a>
@@ -156,47 +195,150 @@
 <th:block layout:fragment="scripts">
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // Chart.js etc.
-        console.log("ticketsByStatusJs (RAW):", /*[[${ticketsByStatusJs}]]*/ "X");
-        console.log("ticketsByPriorityJs (RAW):", /*[[${ticketsByPriorityJs}]]*/ "Y");
-
+        // Chart.js configuration
         const ticketsByStatus = JSON.parse(/*[[${ticketsByStatusJs}]]*/ "[]");
         const ticketsByPriority = JSON.parse(/*[[${ticketsByPriorityJs}]]*/ "[]");
 
-        console.log("ticketsByStatus:", ticketsByStatus);
-        console.log("ticketsByPriority:", ticketsByPriority);
+        // Configuration commune pour tous les graphiques
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+        Chart.defaults.color = '#6b7280';
 
+        // Graphique Doughnut - Statut des tickets
         new Chart(document.getElementById('statusChart'), {
             type: 'doughnut',
             data: {
-                labels: ['Nouveau', 'En cours', 'Résolu', 'Fermé'],
+                labels: ['Ouvert', 'En cours', 'Résolu', 'Fermé'],
                 datasets: [{
                     data: ticketsByStatus,
-                    backgroundColor: ['#0ea5e9', '#fbbf24', '#22c55e', '#a3a3a3'],
-                    borderColor: '#fff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                plugins: {legend: {display: true, position: 'right'}},
-                cutout: '70%'
-            }
-        });
-        new Chart(document.getElementById('priorityChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Faible', 'Normale', 'Élevé', 'Critique'],
-                datasets: [{
-                    data: ticketsByPriority,
-                    backgroundColor: ['#22c55e', '#0ea5e9', '#fde047', '#f87171']
+                    backgroundColor: [
+                        'rgba(14, 165, 233, 0.8)',   // Bleu pour Ouvert
+                        'rgba(251, 191, 36, 0.8)',   // Jaune pour En cours
+                        'rgba(34, 197, 94, 0.8)',    // Vert pour Résolu
+                        'rgba(163, 163, 163, 0.8)'   // Gris pour Fermé
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 3,
+                    hoverOffset: 15,
+                    hoverBorderWidth: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {legend: {display: false}},
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12, weight: '500' },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} ticket${value > 1 ? 's' : ''} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '65%',
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+
+        // Graphique Bar - Priorités des tickets
+        new Chart(document.getElementById('priorityChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Faible', 'Normale', 'Élevée', 'Critique'],
+                datasets: [{
+                    label: 'Nombre de tickets',
+                    data: ticketsByPriority,
+                    backgroundColor: [
+                        'rgba(156, 163, 175, 0.8)',  // Gris pour Faible
+                        'rgba(59, 130, 246, 0.8)',   // Bleu pour Normale
+                        'rgba(251, 191, 36, 0.8)',   // Jaune pour Élevée
+                        'rgba(239, 68, 68, 0.8)'     // Rouge pour Critique
+                    ],
+                    borderColor: [
+                        'rgb(107, 114, 128)',
+                        'rgb(37, 99, 235)',
+                        'rgb(245, 158, 11)',
+                        'rgb(220, 38, 38)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    hoverBackgroundColor: [
+                        'rgba(156, 163, 175, 1)',
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(251, 191, 36, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.parsed.y} ticket${context.parsed.y > 1 ? 's' : ''}`;
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    y: {beginAtZero: true, ticks: {stepSize: 1}}
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { size: 11 },
+                            color: '#6b7280'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 12, weight: '500' },
+                            color: '#374151'
+                        },
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutQuart'
                 }
             }
         });

@@ -6,190 +6,231 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link th:href="@{/css/custom.css}" rel="stylesheet">
-</head>
-<body class="flex flex-col min-h-screen bg-blue-50">
+    <style>
+        .pattern-grid {
+            background-image:
+                linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
 
-<!-- Header (NO sec:authorize, always visible) -->
-<header class="fixed top-0 w-full z-50 glass-navbar transition-all duration-300 bg-white/80 backdrop-blur">
-    <div class="w-full bg-transparent">
-        <div class="max-w-7xl mx-auto flex items-center h-16 w-full px-4 sm:px-6 lg:px-8">
-            <!-- GAUCHE -->
-            <div class="flex items-center flex-1 min-w-0">
-                <a th:href="@{/}"
-                   class="flex items-center space-x-2 min-w-0 group hover:bg-transparent focus:outline-none"
-                   style="text-decoration: none;">
-                    <img th:src="@{/images/tic.png}" alt="Logo TIC Harmony" class="h-10 w-auto">
-                    <div class="flex flex-col leading-tight ml-2">
-                        <span class="font-bold text-gray-700 text-xl md:text-2xl mb-0.5">Tic Harmony</span>
-                        <span class="text-xs md:text-sm text-gray-600 font-medium">L’informatique clé en main</span>
-                    </div>
-                </a>
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .float-animation {
+            animation: float-slow 8s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pattern-grid">
+
+<!-- Header simplifié -->
+<header class="fixed top-0 w-full z-50 glass-navbar">
+    <div class="max-w-7xl mx-auto flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+        <a th:href="@{/}" class="flex items-center space-x-3 group">
+            <img th:src="@{/images/tic.png}" alt="Logo TIC Harmony" class="h-10 w-auto group-hover:scale-110 transition-transform">
+            <div class="flex flex-col leading-tight">
+                <span class="font-bold text-gray-800 text-xl">Tic Harmony</span>
+                <span class="text-xs text-gray-600 font-medium">L'informatique clé en main</span>
             </div>
-            <!-- CENTRE (désactivé) -->
-            <nav class="flex-1 flex justify-center"></nav>
-            <!-- DROITE : Connexion simple -->
-            <div class="flex items-center justify-end flex-1 min-w-0">
-                <a th:href="@{/login}"
-                   class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg transition text-base flex items-center gap-2">
-                    Se connecter
-                    <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" stroke-width="2"
-                         viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
+        </a>
+
+        <a th:href="@{/}" class="text-gray-600 hover:text-blue-600 font-medium transition flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Retour à l'accueil
+        </a>
     </div>
 </header>
 
-<!-- Espace principal -->
-<main class="flex-grow min-h-screen pt-20 flex items-center justify-center">
-    <div class="w-full max-w-md rounded-2xl shadow-2xl p-8 flex flex-col items-center glass-card animate-fadeIn">
-        <!-- Logo -->
-        <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-30 mx-auto mb-2 animate-pulse-custom"/>
-        <!-- Titre -->
-        <h1 class="text-3xl font-extrabold text-center mb-1">Connexion</h1>
-        <p class="text-gray-700 text-center mb-6">Accédez à votre espace TIC Harmony</p>
+<!-- Contenu principal -->
+<main class="flex-grow flex items-center justify-center px-4 pt-24 pb-12">
+    <div class="w-full max-w-6xl grid md:grid-cols-2 gap-12 items-center">
 
-        <!--        &lt;!&ndash; Boutons démo &ndash;&gt;-->
-        <!--        <div class="w-full mb-6">-->
-        <!--            <div class="flex flex-col gap-3">-->
-        <!--                <button type="button" onclick="quickLogin('client1', '12345678')"-->
-        <!--                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 shadow transition group">-->
-        <!--                    <div class="flex items-center justify-center h-10 w-10 rounded-full bg-cyan-200 text-cyan-800 group-hover:bg-cyan-300">-->
-        <!--                        &lt;!&ndash; Icône User &ndash;&gt;-->
-        <!--                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"-->
-        <!--                             stroke="currentColor">-->
-        <!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-        <!--                                  d="M15.232 17.232a4 4 0 00-6.464 0M12 11a4 4 0 100-8 4 4 0 000 8z"/>-->
-        <!--                        </svg>-->
-        <!--                    </div>-->
-        <!--                    <div class="flex flex-col items-start text-left">-->
-        <!--                        <span class="font-bold text-cyan-900 text-lg">Client</span>-->
-        <!--                        <span class="text-xs text-gray-500">client1 / 12345678</span>-->
-        <!--                    </div>-->
-        <!--                </button>-->
-        <!--                <button type="button" onclick="quickLogin('bob', '12345678')"-->
-        <!--                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 shadow transition group">-->
-        <!--                    <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-200 text-indigo-800 group-hover:bg-indigo-300">-->
-        <!--                        &lt;!&ndash; Icône Admin &ndash;&gt;-->
-        <!--                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"-->
-        <!--                             stroke="currentColor">-->
-        <!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-        <!--                                  d="M12 4l2.09 6.26L20 10.27l-5 3.64L16.18 20 12 16.9 7.82 20 9 13.91 4 10.27l5.91-.01L12 4z"/>-->
-        <!--                        </svg>-->
-        <!--                    </div>-->
-        <!--                    <div class="flex flex-col items-start text-left">-->
-        <!--                        <span class="font-bold text-indigo-900 text-lg">Administrateur</span>-->
-        <!--                        <span class="text-xs text-gray-500">bob / 12345678</span>-->
-        <!--                    </div>-->
-        <!--                </button>-->
-        <!--                <button type="button" onclick="quickLogin('anna', '12345678')"-->
-        <!--                        class="flex items-center gap-4 w-full p-4 rounded-xl border border-green-200 bg-green-50 hover:bg-green-100 shadow transition group">-->
-        <!--                    <div class="flex items-center justify-center h-10 w-10 rounded-full bg-green-200 text-green-800 group-hover:bg-green-300">-->
-        <!--                        &lt;!&ndash; Icône Tech &ndash;&gt;-->
-        <!--                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"-->
-        <!--                             stroke="currentColor">-->
-        <!--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-        <!--                                  d="M14.7 6.7a2 2 0 112.6 2.6l-9.1 9.1-3.2.6.6-3.2 9.1-9.1z"/>-->
-        <!--                        </svg>-->
-        <!--                    </div>-->
-        <!--                    <div class="flex flex-col items-start text-left">-->
-        <!--                        <span class="font-bold text-green-900 text-lg">Technicien</span>-->
-        <!--                        <span class="text-xs text-gray-500">anna / 12345678</span>-->
-        <!--                    </div>-->
-        <!--                </button>-->
-        <!--            </div>-->
-        <!--            <div class="my-6 flex items-center justify-center text-gray-400">-->
-        <!--                <span class="border-t border-gray-300 flex-grow mr-2"></span>-->
-        <!--                ou-->
-        <!--                <span class="border-t border-gray-300 flex-grow ml-2"></span>-->
-        <!--            </div>-->
-        <!--        </div>-->
+        <!-- Partie gauche - Illustration/Info -->
+        <div class="hidden md:flex flex-col space-y-8 animate-fadeIn">
+            <!-- Logo flottant -->
+            <div class="text-center">
+                <img th:src="@{/images/tic.png}" alt="Tic Harmony"
+                     class="w-48 mx-auto float-animation drop-shadow-2xl"/>
+            </div>
 
-        <!-- Formulaire de login -->
-        <form th:action="@{/login}" method="post" class="w-full" id="loginForm">
-            <div class="mb-4">
-                <label for="login" class="block text-gray-700 text-sm font-bold mb-2">Nom d'utilisateur</label>
-                <input type="text" name="login" id="login" maxlength="60" required
-                       placeholder="Votre nom d'utilisateur"
-                       class="input-modern"/>
+            <!-- Texte d'accueil -->
+            <div class="space-y-4 text-center">
+                <h1 class="text-4xl font-extrabold text-gray-900">
+                    Bienvenue sur <span class="text-blue-600">Tic Harmony</span>
+                </h1>
+                <p class="text-lg text-gray-600 max-w-md mx-auto">
+                    Votre plateforme de gestion informatique pour ASBL et PME
+                </p>
             </div>
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Mot de passe</label>
-                <input type="password" name="password" id="password" maxlength="60" required
-                       placeholder="Votre mot de passe"
-                       class="input-modern"/>
+
+            <!-- Points clés -->
+            <div class="space-y-4 max-w-md mx-auto">
+                <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-md">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">Support technique rapide</h3>
+                        <p class="text-sm text-gray-600">Réponse garantie sous 24h</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-md">
+                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">Sécurisé et fiable</h3>
+                        <p class="text-sm text-gray-600">Vos données sont protégées</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-md">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">Gestion simplifiée</h3>
+                        <p class="text-sm text-gray-600">Interface intuitive et moderne</p>
+                    </div>
+                </div>
             </div>
-            <!-- CSRF token -->
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit"
-                    class="btn-primary w-full flex items-center justify-center gap-2 mb-2">
-                <!-- Icône login -->
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                     stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3"/>
-                </svg>
-                Se connecter
-            </button>
-        </form>
+        </div>
+
+        <!-- Partie droite - Formulaire de connexion -->
+        <div class="w-full">
+            <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-100 animate-fadeIn" style="animation-delay: 0.2s;">
+                <!-- Titre -->
+                <div class="mb-8 text-center">
+                    <div class="inline-block p-3 bg-blue-100 rounded-2xl mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Connexion</h2>
+                    <p class="text-gray-600">Connectez-vous à votre espace personnel</p>
+                </div>
+
+                <!-- Formulaire -->
+                <form th:action="@{/login}" method="post" id="loginForm" class="space-y-6">
+                    <!-- Champ Username -->
+                    <div>
+                        <label for="login" class="block text-sm font-bold text-gray-700 mb-2">
+                            Nom d'utilisateur
+                        </label>
+                        <input type="text"
+                               name="login"
+                               id="login"
+                               maxlength="60"
+                               required
+                               placeholder="Entrez votre nom d'utilisateur"
+                               class="input-modern w-full"/>
+                    </div>
+
+                    <!-- Champ Password -->
+                    <div>
+                        <label for="password" class="block text-sm font-bold text-gray-700 mb-2">
+                            Mot de passe
+                        </label>
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               maxlength="60"
+                               required
+                               placeholder="Entrez votre mot de passe"
+                               class="input-modern w-full"/>
+                    </div>
+
+                    <!-- CSRF token -->
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <!-- Bouton de connexion -->
+                    <button type="submit"
+                            class="btn-primary w-full py-4 text-lg font-bold flex items-center justify-center gap-3 group">
+                        <span>Se connecter</span>
+                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- Séparateur -->
+                <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+                    <p class="text-xs text-gray-500">
+                        En vous connectant, vous acceptez nos conditions d'utilisation
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 
-<!-- Charger le JavaScript -->
-<script th:src="@{/js/app.js}"></script>
-
 <!-- Footer -->
-<footer class="bg-gray-900 text-gray-300 pt-8 mt-12">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:items-start">
-        <div class="mb-6 md:mb-0 text-center md:text-left">
-            <span class="font-bold text-lg">TIC Harmony</span>
-            <div class="mt-1 text-gray-400 text-sm">Rue des Tanneurs 60A,<br>1000 Bruxelles</div>
-        </div>
-        <div class="mb-6 md:mb-0 text-center">
-            <div class="font-semibold mb-2">Liens utiles</div>
-            <ul>
-                <li>
-                    <a th:href="@{/}" class="hover:underline">Accueil</a>
-                </li>
-                <li>
-                    <a th:href="@{/login}" class="hover:underline">Connexion</a>
-                </li>
-            </ul>
-        </div>
-        <div class="text-center md:text-right">
-            <div class="font-semibold mb-2">Contact</div>
+<footer class="bg-gray-900 text-gray-300 py-8 mt-auto">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-3 gap-8 mb-6">
+            <!-- Info entreprise -->
             <div>
-                <a href="mailto:info@tic-harmony.be" class="hover:underline">info@tic-harmony.be</a>
+                <h3 class="font-bold text-white text-lg mb-3">TIC Harmony</h3>
+                <p class="text-sm text-gray-400 mb-2">L'informatique clé en main</p>
+                <p class="text-sm text-gray-400">
+                    Rue des Tanneurs 60A<br>
+                    1000 Bruxelles
+                </p>
+            </div>
+
+            <!-- Liens rapides -->
+            <div>
+                <h3 class="font-bold text-white text-lg mb-3">Liens utiles</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a th:href="@{/}" class="text-gray-400 hover:text-white transition">Accueil</a></li>
+                    <li><a th:href="@{/login}" class="text-gray-400 hover:text-white transition">Connexion</a></li>
+                    <li><a th:href="@{/registration}" class="text-gray-400 hover:text-white transition">Inscription</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h3 class="font-bold text-white text-lg mb-3">Contact</h3>
+                <p class="text-sm text-gray-400">
+                    <a href="mailto:info@tic-harmony.be" class="hover:text-white transition">
+                        info@tic-harmony.be
+                    </a>
+                </p>
             </div>
         </div>
-    </div>
-    <div class="mt-8 flex flex-col items-center">
-        <div class="text-xs uppercase tracking-widest text-gray-400 mb-2">Avec le soutien de</div>
-        <div class="flex flex-row flex-wrap items-center justify-center gap-8 bg-gray-800 px-4 py-4 rounded-2xl shadow-inner max-w-2xl">
-            <img src="/images/BXL_logo.jpg" alt="Ville de Bruxelles"
-                 class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow"/>
-            <img src="/images/rbc-logo.png" alt="Finance Brussels"
-                 class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow"/>
-            <img src="/images/Region-de-Bruxelles-Capitale-1.jpg" alt="Région Bruxelles Capitale"
-                 class="h-12 w-auto object-contain grayscale hover:grayscale-0 hover:scale-105 transition duration-200 drop-shadow"/>
+
+        <!-- Logos partenaires -->
+        <div class="border-t border-gray-800 pt-6">
+            <p class="text-xs text-center text-gray-500 mb-4">Avec le soutien de</p>
+            <div class="flex flex-wrap items-center justify-center gap-6">
+                <img src="/images/BXL_logo.jpg" alt="Ville de Bruxelles" class="h-10 grayscale opacity-50 hover:opacity-100 hover:grayscale-0 transition"/>
+                <img src="/images/rbc-logo.png" alt="Finance Brussels" class="h-10 grayscale opacity-50 hover:opacity-100 hover:grayscale-0 transition"/>
+                <img src="/images/Region-de-Bruxelles-Capitale-1.jpg" alt="Région Bruxelles Capitale" class="h-10 grayscale opacity-50 hover:opacity-100 hover:grayscale-0 transition"/>
+            </div>
         </div>
-    </div>
-    <div class="mt-8 text-center text-gray-500 text-sm">
-        &copy; 2025 – TIC Harmony – Projet Helpdesk
-        <span class="ml-2 text-pink-400">♥</span>
+
+        <!-- Copyright -->
+        <div class="mt-6 pt-6 border-t border-gray-800 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; 2025 TIC Harmony – Tous droits réservés
+            </p>
+        </div>
     </div>
 </footer>
 
-<!--<script>-->
-<!--    function quickLogin(username, password) {-->
-<!--        document.getElementById('login').value = username;-->
-<!--        document.getElementById('password').value = password;-->
-<!--        setTimeout(function () {-->
-<!--            document.querySelector('form').submit();-->
-<!--        }, 150);-->
-<!--    }-->
-<!--</script>-->
+<!-- JavaScript -->
+<script th:src="@{/js/app.js}"></script>
 </body>
 </html>
