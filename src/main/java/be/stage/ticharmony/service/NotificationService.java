@@ -7,6 +7,7 @@ import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -59,5 +60,13 @@ public class NotificationService {
             n.setViewed(true);
             repo.save(n);
         });
+    }
+
+    /**
+     * Supprime toutes les notifications d'un type donné pour un problème
+     */
+    @Transactional
+    public void deleteNotificationsForProblem(Problem problem, NotificationType type) {
+        repo.deleteByProblemAndType(problem, type);
     }
 }

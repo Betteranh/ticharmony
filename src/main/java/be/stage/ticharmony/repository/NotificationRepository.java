@@ -13,4 +13,8 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
 
     List<Notification> findByUserAndProblemAndTypeAndViewedFalse(
             User user, Problem problem, NotificationType type);
+
+    List<Notification> findByProblemAndType(Problem problem, NotificationType type);
+
+    void deleteByProblemAndType(Problem problem, NotificationType type);
 }

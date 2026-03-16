@@ -118,7 +118,7 @@ public class ProblemController {
     }
 
     /**
-     * Validation finale par l’ADMIN → CLOSED
+     * Validation finale par l'ADMIN → CLOSED
      */
     @PostMapping("/{id}/close")
     @PreAuthorize("hasRole('ADMIN')")
@@ -128,10 +128,14 @@ public class ProblemController {
             problem.setStatus(Status.CLOSED);
             service.updateProblem(problem);
 
-            // marque la notification RESOLVED pour cet admin comme lue
-            User admin = userService.findByLogin(auth.getName());
-            notificationService.markReadForProblem(
-                    admin,
+            // Supprime toutes les notifications "nouveau ticket" pour ce problème
+            notificationService.deleteNotificationsForProblem(
+                    problem,
+                    NotificationType.NEW_PROBLEM
+            );
+
+            // Supprime toutes les notifications "ticket résolu" pour ce problème
+            notificationService.deleteNotificationsForProblem(
                     problem,
                     NotificationType.PROBLEM_CLOSED
             );
@@ -485,9 +489,8 @@ public class ProblemController {
         if (problem != null) {
             User admin = userService.findByLogin(auth.getName());
 
-            // 1) on marque la notification "nouveau ticket" comme lue pour cet admin
-            notificationService.markReadForProblem(
-                    admin,
+            // 1) on supprime toutes les notifications "nouveau ticket" pour ce problème
+            notificationService.deleteNotificationsForProblem(
                     problem,
                     NotificationType.NEW_PROBLEM
             );
