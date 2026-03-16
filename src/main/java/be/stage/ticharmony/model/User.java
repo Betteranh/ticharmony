@@ -1,6 +1,7 @@
 package be.stage.ticharmony.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,8 @@ public class User {
     private Long id;
 
     private String login;
+
+    @Size(max = 72, message = "Le mot de passe ne doit pas dépasser 72 caractères")
     private String password;
     private String firstname;
     private String lastname;
