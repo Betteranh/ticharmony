@@ -7,6 +7,7 @@
     <title layout:title-pattern="$CONTENT_TITLE – Tic Harmony">Tic Harmony</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
           rel="stylesheet">
+    <link th:href="@{/css/custom.css}" rel="stylesheet">
     <style>
         .glass-navbar {
             background: rgba(255, 255, 255, 0.75);
@@ -172,6 +173,10 @@
         }
     });
 </script>
+
+<!-- Application JavaScript -->
+<script th:src="@{/js/app.js}"></script>
+
 <th:block layout:fragment="scripts"></th:block>
 </body>
 </html>

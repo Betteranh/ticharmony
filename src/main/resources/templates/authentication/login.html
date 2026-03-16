@@ -5,14 +5,7 @@
     <title>Connexion – Tic Harmony</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        .glass-navbar {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 2px 16px rgba(44, 62, 80, 0.04);
-        }
-    </style>
+    <link th:href="@{/css/custom.css}" rel="stylesheet">
 </head>
 <body class="flex flex-col min-h-screen bg-blue-50">
 
@@ -51,10 +44,9 @@
 
 <!-- Espace principal -->
 <main class="flex-grow min-h-screen pt-20 flex items-center justify-center">
-    <div class="w-full max-w-md rounded-2xl shadow-2xl p-8 flex flex-col items-center
-                bg-white bg-opacity-60 backdrop-blur-lg">
+    <div class="w-full max-w-md rounded-2xl shadow-2xl p-8 flex flex-col items-center glass-card animate-fadeIn">
         <!-- Logo -->
-        <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-30 mx-auto mb-2"/>
+        <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="h-30 mx-auto mb-2 animate-pulse-custom"/>
         <!-- Titre -->
         <h1 class="text-3xl font-extrabold text-center mb-1">Connexion</h1>
         <p class="text-gray-700 text-center mb-6">Accédez à votre espace TIC Harmony</p>
@@ -116,23 +108,23 @@
         <!--        </div>-->
 
         <!-- Formulaire de login -->
-        <form th:action="@{/login}" method="post" class="w-full">
+        <form th:action="@{/login}" method="post" class="w-full" id="loginForm">
             <div class="mb-4">
-                <label for="login" class="block text-gray-700 text-sm font-bold mb-1">Nom d'utilisateur</label>
+                <label for="login" class="block text-gray-700 text-sm font-bold mb-2">Nom d'utilisateur</label>
                 <input type="text" name="login" id="login" maxlength="60" required
                        placeholder="Votre nom d'utilisateur"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-white bg-opacity-80"/>
+                       class="input-modern"/>
             </div>
             <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-1">Mot de passe</label>
+                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Mot de passe</label>
                 <input type="password" name="password" id="password" maxlength="60" required
                        placeholder="Votre mot de passe"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-white bg-opacity-80"/>
+                       class="input-modern"/>
             </div>
             <!-- CSRF token -->
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition flex items-center justify-center gap-2 mb-2">
+                    class="btn-primary w-full flex items-center justify-center gap-2 mb-2">
                 <!-- Icône login -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                      stroke="currentColor" class="w-5 h-5">
@@ -142,16 +134,11 @@
                 Se connecter
             </button>
         </form>
-
-        <!-- Message d'erreur -->
-        <div th:if="${param.loginError}" class="mt-4 text-red-600 text-center">
-            Nom d'utilisateur ou mot de passe incorrect.
-        </div>
-        <div th:if="${param.logoutSuccess}" class="mt-4 text-green-600 text-center">
-            Vous êtes déconnecté.
-        </div>
     </div>
 </main>
+
+<!-- Charger le JavaScript -->
+<script th:src="@{/js/app.js}"></script>
 
 <!-- Footer -->
 <footer class="bg-gray-900 text-gray-300 pt-8 mt-12">
