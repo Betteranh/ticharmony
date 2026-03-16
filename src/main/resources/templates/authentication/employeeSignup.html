@@ -33,6 +33,13 @@
 
             <!-- Formulaire -->
             <div class="p-8 md:p-10">
+                <!-- Note champs obligatoires -->
+                <div class="mb-6 p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                    <p class="text-sm text-gray-700">
+                        <span class="text-red-500 font-bold">*</span> Les champs marqués d'un astérisque sont obligatoires
+                    </p>
+                </div>
+
                 <form th:action="@{/employeeSignup}" method="post" th:object="${user}" class="space-y-6">
                     <!-- Section : Informations personnelles -->
                     <div class="space-y-4">
