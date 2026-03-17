@@ -165,7 +165,8 @@
         .acc-open     { --card-accent: #2563eb; }
         .acc-progress { --card-accent: #d97706; }
         .acc-resolved { --card-accent: #16a34a; }
-        .acc-closed   { --card-accent: #d6d3d1; }
+        .acc-closed   { --card-accent: #d6d3d1; opacity: 0.5; }
+        .ticket-row.is-closed { opacity: 0.5; }
 
         /* Empty state */
         .empty-state {
@@ -822,6 +823,7 @@
 
                     <div th:if="${!#lists.isEmpty(problems)}" id="tableBody">
                         <div th:each="problem : ${problems}"
+                             th:classappend="${problem.status != null and problem.status.name() == 'CLOSED'} ? ' is-closed' : ''"
                              class="ticket-row"
                              th:style="${problem.status != null and problem.status.name() == 'OPEN'} ? '--row-accent:#2563eb' :
                                        (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? '--row-accent:#d97706' :

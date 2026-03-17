@@ -4,844 +4,406 @@
       layout:decorate="~{layouts/main}">
 <head>
     <title>Tableau de bord admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body { background: #faf9f7 !important; }
+
         :root {
-            --d-bg:       #070d1a;
-            --d-surface:  #0c1628;
-            --d-card:     #0f1e33;
-            --d-card-h:   #132038;
-            --d-border:   #1b2d47;
-            --d-border-b: #253d5f;
-            --d-text:     #dde8f5;
-            --d-sub:      #6e90b5;
-            --d-muted:    #3d5470;
-            --blue:       #3b82f6;
-            --cyan:       #06b6d4;
-            --sky:        #38bdf8;
-            --amber:      #f59e0b;
-            --emerald:    #10b981;
-            --slate:      #6b7280;
-            --red:        #ef4444;
-            --orange:     #f97316;
+            --white:    #ffffff;
+            --cream:    #faf9f7;
+            --cream-d:  #ede9e3;
+            --text:     #1c1917;
+            --text-2:   #78716c;
+            --text-3:   #a8a29e;
+            --violet:   #7c3aed;
+            --violet-bg:#f5f3ff;
+            --violet-br:#ddd6fe;
+            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
         }
 
         .adm-root {
             font-family: 'DM Sans', sans-serif;
-            background: var(--d-bg);
-            color: var(--d-text);
-            min-height: calc(100vh - 64px);
-            padding: 2.5rem 0 5rem;
+            color: var(--text);
+            padding: 2.5rem 0 6rem;
         }
 
-        /* ── Atmospheric grid overlay ── */
-        .adm-root::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(59,130,246,.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59,130,246,.025) 1px, transparent 1px);
-            background-size: 64px 64px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .adm-root > * { position: relative; z-index: 1; }
-
-        /* ── Header banner ── */
-        .adm-header {
-            background: linear-gradient(135deg, #0d1e3a 0%, #080f20 60%, var(--d-bg) 100%);
-            border: 1px solid var(--d-border);
-            border-radius: 20px;
-            padding: 2.25rem 2.5rem;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-        .adm-header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 55% 90% at 95% 15%, rgba(59,130,246,.18) 0%, transparent 65%),
-                radial-gradient(ellipse 40% 60% at 5% 85%, rgba(6,182,212,.08) 0%, transparent 55%);
-            pointer-events: none;
-        }
-
-        .adm-header-eyebrow {
+        /* ── Greeting ── */
+        .greet-name {
             font-family: 'Sora', sans-serif;
-            font-size: .68rem;
-            font-weight: 600;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            color: var(--cyan);
-            margin-bottom: .35rem;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
+            font-size: 1.9rem; font-weight: 800;
+            color: var(--text); letter-spacing: -.035em;
+            line-height: 1.15; margin-bottom: .3rem;
         }
-        .adm-eyebrow-pulse {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--cyan);
-            box-shadow: 0 0 0 0 rgba(6,182,212,.6);
-            animation: pulseRing 2s ease-out infinite;
+        .greet-sub { font-size: .95rem; color: var(--text-2); margin-bottom: 1.75rem; }
+
+        /* ── Section label ── */
+        .zone-label {
+            font-family: 'Sora', sans-serif;
+            font-size: .68rem; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-3); margin-bottom: .6rem;
+        }
+
+        /* ── Action cards (Non assignés / À valider) ── */
+        .action-cards {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: .85rem; margin-bottom: .6rem;
+        }
+        @media (max-width: 560px) { .action-cards { grid-template-columns: 1fr; } }
+
+        .action-card {
+            background: var(--white);
+            border-radius: 16px; box-shadow: var(--sh);
+            padding: 1.3rem 1.5rem;
+            border-left: 4px solid var(--card-accent, var(--cream-d));
+            text-decoration: none; color: inherit;
+            display: flex; align-items: center; gap: 1.1rem;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .action-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.1); }
+
+        .action-num {
+            font-family: 'Sora', sans-serif;
+            font-size: 2.6rem; font-weight: 800;
+            line-height: 1; letter-spacing: -.05em;
             flex-shrink: 0;
         }
-        @keyframes pulseRing {
-            0%   { box-shadow: 0 0 0 0 rgba(6,182,212,.6); }
-            70%  { box-shadow: 0 0 0 7px rgba(6,182,212,0); }
-            100% { box-shadow: 0 0 0 0 rgba(6,182,212,0); }
-        }
-        .adm-header-title {
+        .action-info { flex: 1; }
+        .action-title {
             font-family: 'Sora', sans-serif;
-            font-size: 2.1rem;
-            font-weight: 800;
-            letter-spacing: -.035em;
-            line-height: 1.05;
-            color: var(--d-text);
+            font-size: .92rem; font-weight: 800; color: var(--text);
+            margin-bottom: .2rem;
         }
-        .adm-header-title span { color: var(--blue); }
-        .adm-header-sub {
-            font-size: .85rem;
-            color: var(--d-sub);
-            margin-top: .4rem;
-        }
+        .action-sub { font-size: .78rem; color: var(--text-3); line-height: 1.4; }
 
-        /* Clock */
-        .adm-clock {
-            text-align: right;
-            flex-shrink: 0;
+        /* Orange — non assignés */
+        .ac-orange[data-active="true"]  { --card-accent: #ea580c; }
+        .ac-orange[data-active="true"] .action-num { color: #ea580c; }
+        .ac-orange[data-active="false"] .action-num { color: #a8a29e; }
+
+        /* Green — à valider */
+        .ac-green[data-active="true"]  { --card-accent: #16a34a; }
+        .ac-green[data-active="true"] .action-num { color: #16a34a; }
+        .ac-green[data-active="false"] .action-num { color: #a8a29e; }
+
+        /* ── Overview strip (Actifs / En cours) ── */
+        .overview-strip {
+            background: var(--white); border-radius: 14px;
+            box-shadow: var(--sh); display: flex;
+            overflow: hidden; margin-bottom: 1.5rem;
         }
-        #dash-date {
+        .ov-item {
+            flex: 1; padding: .85rem 1.25rem;
+            border-right: 1px solid var(--cream-d);
+            text-decoration: none; color: inherit;
+            transition: background .12s;
+            display: flex; align-items: center; gap: .75rem;
+        }
+        .ov-item:last-child { border-right: none; }
+        .ov-item:hover { background: var(--cream); }
+        .ov-num {
             font-family: 'Sora', sans-serif;
-            font-size: .65rem;
-            color: var(--d-muted);
-            letter-spacing: .08em;
-            text-transform: uppercase;
+            font-size: 1.5rem; font-weight: 800;
+            line-height: 1; letter-spacing: -.03em;
         }
-        #dash-time {
-            font-family: 'Sora', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--d-text);
-            letter-spacing: .06em;
-            font-variant-numeric: tabular-nums;
-            margin-top: .1rem;
-            background: linear-gradient(135deg, #60a5fa, #38bdf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        #dash-secs {
-            font-size: 1rem;
-            opacity: .5;
+        .ov-lbl {
+            font-size: .72rem; font-weight: 700;
+            letter-spacing: .07em; text-transform: uppercase;
+            color: var(--text-3);
         }
 
-        /* ── Stat cards ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
-
-        .stat-card {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-top: 2px solid var(--card-accent, var(--blue));
-            border-radius: 16px;
-            padding: 1.5rem 1.4rem 1.3rem;
-            position: relative;
-            overflow: hidden;
-            display: block;
-            text-decoration: none;
-            transition: transform .2s ease, box-shadow .25s ease, background .2s ease;
-        }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse 80% 70% at 100% 0%, rgba(255,255,255,.03) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            bottom: -20px; right: -20px;
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            background: var(--card-accent, var(--blue));
-            filter: blur(32px);
-            opacity: .1;
-            transition: opacity .25s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 16px 48px rgba(0,0,0,.4), 0 0 0 1px var(--card-accent, var(--blue)) inset;
-            background: var(--d-card-h);
-        }
-        .stat-card:hover::after { opacity: .22; }
-
-        .stat-icon {
-            position: absolute;
-            top: 1.3rem; right: 1.3rem;
-            width: 38px; height: 38px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .stat-number {
-            font-family: 'Sora', sans-serif;
-            font-size: 3rem;
-            font-weight: 800;
-            line-height: 1;
-            letter-spacing: -.05em;
-            margin-bottom: .5rem;
-        }
-        .stat-label {
-            font-size: .7rem;
-            font-weight: 600;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--d-sub);
-        }
-        .stat-tag {
-            position: absolute;
-            bottom: 1rem; right: 1.2rem;
-            font-family: 'Sora', sans-serif;
-            font-size: .58rem;
-            font-weight: 700;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            color: var(--card-accent, var(--blue));
-            opacity: .55;
-        }
-
-        /* ── Charts ── */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        @media (max-width: 720px) { .charts-grid { grid-template-columns: 1fr; } }
-
-        .chart-card {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 16px;
-            padding: 1.5rem;
-        }
-        .chart-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* ── Urgent banner ── */
+        .urgent-banner {
+            background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 16px; padding: 1rem 1.4rem;
             margin-bottom: 1.25rem;
         }
-        .chart-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
+        .urgent-header {
+            display: flex; align-items: center; gap: .55rem;
+            margin-bottom: .75rem;
+            font-family: 'Sora', sans-serif; font-size: .8rem;
+            font-weight: 800; color: #dc2626;
+            letter-spacing: .05em; text-transform: uppercase;
         }
-        .chart-title {
-            font-family: 'Sora', sans-serif;
-            font-size: .88rem;
-            font-weight: 700;
-            letter-spacing: -.01em;
-            color: var(--d-text);
+        .urgent-row {
+            display: flex; align-items: center; gap: .75rem;
+            padding: .55rem .75rem;
+            background: #fff5f5; border: 1px solid #fecaca;
+            border-radius: 10px; text-decoration: none; color: inherit;
+            margin-bottom: .35rem; transition: background .12s;
         }
+        .urgent-row:last-child { margin-bottom: 0; }
+        .urgent-row:hover { background: #fee2e2; }
 
-        /* ── Ticket table section ── */
-        .ticket-section {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 16px;
+        /* ── Action lists grid ── */
+        .action-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 700px) { .action-grid { grid-template-columns: 1fr; } }
+
+        /* ── Section card ── */
+        .section-card {
+            background: var(--white);
+            border-radius: 16px; box-shadow: var(--sh);
             overflow: hidden;
         }
-        .ticket-section-header {
-            padding: 1.4rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            border-bottom: 1px solid var(--d-border);
-            flex-wrap: wrap;
+        .section-header {
+            padding: 1rem 1.4rem;
+            border-bottom: 1px solid var(--cream-d);
+            display: flex; align-items: center;
+            justify-content: space-between; gap: .75rem;
         }
-        .section-heading {
+        .section-title {
             font-family: 'Sora', sans-serif;
-            font-size: .95rem;
-            font-weight: 700;
-            letter-spacing: -.01em;
-            color: var(--d-text);
+            font-size: .92rem; font-weight: 800; color: var(--text);
         }
-        .filter-row {
-            display: flex;
-            align-items: center;
-            gap: .6rem;
+        .section-sub { font-size: .75rem; color: var(--text-3); margin-top: .1rem; }
+        .view-all {
+            font-size: .8rem; font-weight: 600; color: var(--violet);
+            text-decoration: none; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 3px;
+            transition: gap .15s;
         }
-        .filter-label {
-            font-size: .75rem;
-            color: var(--d-muted);
-            white-space: nowrap;
-        }
-        .filter-select {
-            background: var(--d-surface);
-            border: 1px solid var(--d-border-b);
-            color: var(--d-text);
-            border-radius: 8px;
-            padding: .38rem .85rem;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .78rem;
-            cursor: pointer;
-            outline: none;
-            transition: border-color .15s ease;
-            -webkit-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%236e90b5' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right .6rem center;
-            padding-right: 1.8rem;
-        }
-        .filter-select:focus { border-color: var(--blue); }
-        .filter-select option { background: #0c1628; }
+        .view-all:hover { gap: 6px; }
 
-        /* ── Table ── */
-        .ticket-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .ticket-table thead th {
-            padding: .6rem 1rem;
-            font-family: 'Sora', sans-serif;
-            font-size: .62rem;
-            font-weight: 700;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--d-muted);
-            text-align: left;
-            background: var(--d-surface);
-            border-bottom: 1px solid var(--d-border);
-            white-space: nowrap;
-        }
-        .ticket-table thead th:first-child { padding-left: 1.5rem; }
-        .ticket-table thead th:last-child  { padding-right: 1.5rem; text-align: right; }
-
+        /* ── Ticket rows ── */
         .ticket-row {
-            border-bottom: 1px solid rgba(27,45,71,.6);
-            cursor: pointer;
-            transition: background .12s ease;
-            text-decoration: none;
-            display: table-row;
+            display: flex; align-items: center; gap: .75rem;
+            padding: .85rem 1.4rem;
+            border-bottom: 1px solid var(--cream-d);
+            text-decoration: none; color: inherit;
+            border-left: 3px solid var(--row-accent, var(--cream-d));
+            transition: background .12s;
         }
         .ticket-row:last-child { border-bottom: none; }
-        .ticket-row:hover td { background: var(--d-card-h); }
+        .ticket-row:hover { background: var(--cream); }
 
-        .ticket-row td {
-            padding: .85rem 1rem;
-            vertical-align: middle;
-            transition: background .12s ease;
+        .t-id {
+            font-family: 'Sora', sans-serif; font-size: .68rem;
+            font-weight: 700; color: var(--text-3);
+            background: var(--cream); border: 1px solid var(--cream-d);
+            border-radius: 5px; padding: .12rem .4rem;
+            white-space: nowrap; flex-shrink: 0;
         }
-        .ticket-row td:first-child { padding-left: 1.5rem; }
-        .ticket-row td:last-child  { padding-right: 1.5rem; }
-
-        .ticket-id-cell {
-            font-family: 'Sora', sans-serif;
-            font-size: .68rem;
-            font-weight: 600;
-            color: var(--d-muted);
-            background: rgba(255,255,255,.03);
-            border: 1px solid var(--d-border);
-            border-radius: 5px;
-            padding: .15rem .45rem;
-            white-space: nowrap;
-            display: inline-block;
+        .t-title {
+            font-family: 'Sora', sans-serif; font-size: .85rem;
+            font-weight: 600; color: var(--text);
+            flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .ticket-title-cell {
-            font-family: 'Sora', sans-serif;
-            font-size: .85rem;
-            font-weight: 600;
-            color: var(--d-text);
-            max-width: 280px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .ticket-date-cell {
-            font-size: .78rem;
-            color: var(--d-sub);
-            white-space: nowrap;
-            font-variant-numeric: tabular-nums;
-        }
-        .ticket-tech-cell {
-            font-size: .8rem;
-            color: var(--d-sub);
-            white-space: nowrap;
-        }
-        .unassigned {
-            color: var(--amber);
-            font-weight: 600;
-            font-size: .75rem;
-        }
-
-        /* Status accent bar on left of row */
-        .ticket-row td:first-child {
-            position: relative;
-        }
-        .ticket-row td:first-child::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 3px;
-            background: var(--row-accent, var(--d-border));
-            border-radius: 0 2px 2px 0;
-        }
+        .t-meta { font-size: .78rem; color: var(--text-3); white-space: nowrap; flex-shrink: 0; }
 
         /* ── Badges ── */
         .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: .3rem;
-            padding: .2rem .55rem;
-            border-radius: 6px;
-            font-size: .64rem;
-            font-weight: 700;
-            letter-spacing: .05em;
-            text-transform: uppercase;
-            white-space: nowrap;
+            display: inline-flex; align-items: center; gap: .25rem;
+            padding: .2rem .55rem; border-radius: 6px;
+            font-family: 'Sora', sans-serif; font-size: .65rem;
+            font-weight: 700; letter-spacing: .04em;
+            text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
         }
-        .bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-        .b-open     { background: rgba(56,189,248,.1);  color: var(--sky);     border: 1px solid rgba(56,189,248,.22);  }
-        .b-progress { background: rgba(245,158,11,.1);  color: var(--amber);   border: 1px solid rgba(245,158,11,.22);  }
-        .b-resolved { background: rgba(16,185,129,.1);  color: var(--emerald); border: 1px solid rgba(16,185,129,.22);  }
-        .b-closed   { background: rgba(107,114,128,.1); color: #9ca3af;        border: 1px solid rgba(107,114,128,.22); }
-        .b-urgent   { background: rgba(239,68,68,.13);  color: var(--red);     border: 1px solid rgba(239,68,68,.25);   }
-        .b-high     { background: rgba(249,115,22,.1);  color: var(--orange);  border: 1px solid rgba(249,115,22,.22);  }
-        .b-medium   { background: rgba(59,130,246,.1);  color: #93c5fd;        border: 1px solid rgba(59,130,246,.22);  }
-        .b-low      { background: rgba(100,116,139,.08);color: #94a3b8;        border: 1px solid rgba(100,116,139,.18); }
+        .b-urgent { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+        .b-high   { background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; }
+        .b-medium { background:var(--violet-bg); color:var(--violet); border:1px solid var(--violet-br); }
+        .b-low    { background:#f5f5f4; color:#a8a29e; border:1px solid #e7e5e4; }
 
-        .ticket-arrow-cell {
-            text-align: right;
-        }
-        .arrow-icon {
-            color: var(--d-muted);
-            transition: transform .15s ease, color .15s ease;
-            display: inline-block;
-        }
-        .ticket-row:hover .arrow-icon { transform: translateX(4px); color: var(--blue); }
+        .t-arrow { color: var(--text-3); flex-shrink: 0; transition: transform .15s, color .15s; }
+        .ticket-row:hover .t-arrow { transform: translateX(4px); color: var(--violet); }
 
         /* ── Empty state ── */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 1rem;
-            color: var(--d-muted);
-        }
-        .empty-state p { font-size: .85rem; margin-top: .75rem; }
+        .empty { text-align: center; padding: 2.5rem 1rem; color: var(--text-3); font-size: .85rem; }
 
-        /* ── Fade-up entrance ── */
+        /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0);    }
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        .fu { opacity: 0; animation: fadeUp .5s ease forwards; }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: var(--d-bg); }
-        ::-webkit-scrollbar-thumb { background: var(--d-border-b); border-radius: 3px; }
+        .fu { opacity: 0; animation: fadeUp .35s ease forwards; }
+        .d1 { animation-delay: .03s; } .d2 { animation-delay: .08s; }
+        .d3 { animation-delay: .13s; } .d4 { animation-delay: .18s; }
+        .d5 { animation-delay: .23s; }
     </style>
 </head>
 
 <div layout:fragment="content" class="adm-root">
 
-    <!-- ╔══ HEADER ══╗ -->
-    <div class="adm-header fu" style="animation-delay:.04s">
-        <div class="flex items-start justify-between gap-4">
-            <div>
-                <div class="adm-header-eyebrow">
-                    <span class="adm-eyebrow-pulse"></span>
-                    Administration · TicHarmony
+    <!-- Greeting -->
+    <div class="fu d1">
+        <h1 class="greet-name">Bonjour, <span th:text="${currentUser.firstname}">Admin</span> 👋</h1>
+        <p class="greet-sub">Voici l'état des demandes en ce moment.</p>
+    </div>
+
+    <!-- ── Actions requises ── -->
+    <div class="zone-label fu d2">Actions requises</div>
+    <div class="action-cards fu d2">
+
+        <!-- Non assignés -->
+        <a th:href="@{/problems(unassigned=true)}"
+           class="action-card ac-orange"
+           th:attr="data-active=${#lists.size(nonAssignedList) > 0}">
+            <div class="action-num" th:text="${#lists.size(nonAssignedList)}">0</div>
+            <div class="action-info">
+                <div class="action-title">Non assignés</div>
+                <div class="action-sub"
+                     th:text="${#lists.size(nonAssignedList) == 0}
+                              ? 'Tous les tickets ont un technicien'
+                              : (${#lists.size(nonAssignedList) == 1} ? '1 ticket attend un technicien' : ${#lists.size(nonAssignedList)} + ' tickets attendent un technicien')">
                 </div>
-                <h1 class="adm-header-title">
-                    Bonjour, <span th:text="${currentUser.firstname}">Admin</span>
-                </h1>
-                <p class="adm-header-sub">Vue d'ensemble du système de tickets en temps réel</p>
             </div>
-            <div class="adm-clock hidden md:block">
-                <div id="dash-date"></div>
-                <div id="dash-time">--:--<span id="dash-secs">:--</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ╔══ STATS ══╗ -->
-    <div class="stats-grid">
-
-        <a th:href="@{/problems}" class="stat-card fu" style="--card-accent:#3b82f6; animation-delay:.08s">
-            <div class="stat-icon" style="background:rgba(59,130,246,.12)">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                    <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-                </svg>
-            </div>
-            <div class="stat-number" style="color:#60a5fa" data-counter th:attr="data-target=${totalTickets}">0</div>
-            <div class="stat-label">Total actifs</div>
-            <div class="stat-tag">Tous statuts</div>
-        </a>
-
-        <a th:href="@{/problems(status='OPEN')}" class="stat-card fu" style="--card-accent:#38bdf8; animation-delay:.12s">
-            <div class="stat-icon" style="background:rgba(56,189,248,.12)">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-            </div>
-            <div class="stat-number" style="color:#38bdf8" data-counter th:attr="data-target=${newTickets}">0</div>
-            <div class="stat-label">Nouveaux</div>
-            <div class="stat-tag">Ouvert</div>
-        </a>
-
-        <a th:href="@{/problems(status='IN_PROGRESS')}" class="stat-card fu" style="--card-accent:#f59e0b; animation-delay:.16s">
-            <div class="stat-icon" style="background:rgba(245,158,11,.12)">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
-                </svg>
-            </div>
-            <div class="stat-number" style="color:#f59e0b" data-counter th:attr="data-target=${inProgressTickets}">0</div>
-            <div class="stat-label">En cours</div>
-            <div class="stat-tag">Traitement</div>
-        </a>
-
-        <a th:href="@{/problems(status='RESOLVED')}" class="stat-card fu" style="--card-accent:#10b981; animation-delay:.20s">
-            <div class="stat-icon" style="background:rgba(16,185,129,.12)">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-            </div>
-            <div class="stat-number" style="color:#10b981" data-counter th:attr="data-target=${resolvedTickets}">0</div>
-            <div class="stat-label">Résolus</div>
-            <div class="stat-tag">Clôturés</div>
-        </a>
-
-    </div>
-
-    <!-- ╔══ CHARTS ══╗ -->
-    <div class="charts-grid">
-
-        <div class="chart-card fu" style="animation-delay:.24s">
-            <div class="chart-header">
-                <div class="chart-dot" style="background:#38bdf8"></div>
-                <span class="chart-title">Répartition par statut</span>
-            </div>
-            <div style="height:240px"><canvas id="statusChart"></canvas></div>
-        </div>
-
-        <div class="chart-card fu" style="animation-delay:.28s">
-            <div class="chart-header">
-                <div class="chart-dot" style="background:#f59e0b"></div>
-                <span class="chart-title">Répartition par priorité</span>
-            </div>
-            <div style="height:240px"><canvas id="priorityChart"></canvas></div>
-        </div>
-
-    </div>
-
-    <!-- ╔══ TICKETS TABLE ══╗ -->
-    <div class="ticket-section fu" style="animation-delay:.32s">
-
-        <div class="ticket-section-header">
-            <div class="section-heading">Tickets récents</div>
-            <form method="get" class="filter-row">
-                <span class="filter-label">Filtrer :</span>
-                <select id="statusFilter" name="status" onchange="this.form.submit()" class="filter-select">
-                    <option value=""
-                            th:selected="${selectedStatus == null or selectedStatus.isEmpty()}">
-                        Tous (sauf Fermé)
-                    </option>
-                    <option th:each="s : ${allStatuses}"
-                            th:value="${s.name()}"
-                            th:text="${s.name() == 'OPEN' ? 'Ouvert' :
-                              (s.name() == 'IN_PROGRESS' ? 'En cours' :
-                              (s.name() == 'RESOLVED' ? 'Résolu' :
-                              (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"
-                            th:selected="${s.name()} == ${selectedStatus}">
-                    </option>
-                </select>
-            </form>
-        </div>
-
-        <!-- Empty state -->
-        <div th:if="${#lists.isEmpty(problems)}" class="empty-state">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                 style="margin:0 auto;display:block;opacity:.3">
-                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                <rect x="9" y="3" width="6" height="4" rx="2"/>
-                <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);flex-shrink:0;">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
             </svg>
-            <p>Aucun ticket à afficher.</p>
+        </a>
+
+        <!-- À valider -->
+        <a th:href="@{/problems(status='RESOLVED')}"
+           class="action-card ac-green"
+           th:attr="data-active=${#lists.size(resolvedList) > 0}">
+            <div class="action-num" th:text="${#lists.size(resolvedList)}">0</div>
+            <div class="action-info">
+                <div class="action-title">À valider</div>
+                <div class="action-sub"
+                     th:text="${#lists.size(resolvedList) == 0}
+                              ? 'Aucune résolution en attente'
+                              : (${#lists.size(resolvedList) == 1} ? '1 résolution à confirmer' : ${#lists.size(resolvedList)} + ' résolutions à confirmer')">
+                </div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);flex-shrink:0;">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+        </a>
+
+    </div>
+
+    <!-- ── Vue d'ensemble ── -->
+    <div class="zone-label fu d3" style="margin-top:1.5rem;">Vue d'ensemble</div>
+    <div class="overview-strip fu d3">
+        <a th:href="@{/problems}" class="ov-item">
+            <div class="ov-num" style="color:#2563eb;" th:text="${totalTickets}">0</div>
+            <div class="ov-lbl">Actifs</div>
+        </a>
+        <a th:href="@{/problems(status='IN_PROGRESS')}" class="ov-item">
+            <div class="ov-num" style="color:#d97706;" th:text="${inProgressTickets}">0</div>
+            <div class="ov-lbl">En cours</div>
+        </a>
+        <a th:href="@{/problems(status='OPEN')}" class="ov-item">
+            <div class="ov-num" style="color:#6366f1;" th:text="${newTickets}">0</div>
+            <div class="ov-lbl">Ouverts</div>
+        </a>
+    </div>
+
+    <!-- Urgent banner -->
+    <div th:if="${!#lists.isEmpty(urgentList)}" class="urgent-banner fu d4">
+        <div class="urgent-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Tickets critiques — action requise
+            <span style="background:#fecaca;color:#dc2626;border-radius:99px;padding:.1rem .5rem;font-size:.75rem;"
+                  th:text="${#lists.size(urgentList)}"></span>
+        </div>
+        <div th:each="p : ${urgentList}">
+            <a th:href="@{'/problems/' + ${p.id}}" class="urgent-row">
+                <span style="font-family:'Sora',sans-serif;font-size:.68rem;font-weight:700;color:#dc2626;background:#fecaca;border-radius:5px;padding:.1rem .4rem;flex-shrink:0;"
+                      th:text="'#' + ${p.id}"></span>
+                <span style="font-family:'Sora',sans-serif;font-size:.87rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                      th:text="${p.title}"></span>
+                <span style="font-size:.78rem;color:#dc2626;flex-shrink:0;"
+                      th:text="${p.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${p.user.nomEntreprise}"></span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Action lists -->
+    <div class="action-grid fu d5">
+
+        <!-- Non assignés -->
+        <div class="section-card">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Non assignés</div>
+                    <div class="section-sub">À attribuer à un technicien</div>
+                </div>
+                <a th:href="@{/problems(unassigned=true)}" class="view-all">
+                    Tout voir
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+            <div th:if="${#lists.isEmpty(nonAssignedList)}" class="empty">✅ Tous les tickets sont assignés</div>
+            <div th:if="${!#lists.isEmpty(nonAssignedList)}">
+                <a th:each="p : ${nonAssignedList}" th:href="@{'/problems/' + ${p.id}}"
+                   class="ticket-row" style="--row-accent:#ea580c;">
+                    <span class="t-id">#<span th:text="${p.id}"></span></span>
+                    <span class="t-title" th:text="${p.title}"></span>
+                    <span class="t-meta" th:text="${p.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${p.user.nomEntreprise}"></span>
+                    <span th:if="${p.priority.name() == 'URGENT'}" class="badge b-urgent">⚠ Critique</span>
+                    <span th:if="${p.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
+                    <span th:if="${p.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
+                    <span th:if="${p.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
+                    <svg class="t-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
         </div>
 
-        <!-- Table -->
-        <div th:if="${!#lists.isEmpty(problems)}" style="overflow-x:auto">
-            <table class="ticket-table">
-                <thead>
-                    <tr>
-                        <th>ID · Titre</th>
-                        <th>Date</th>
-                        <th>Assigné à</th>
-                        <th>Statut</th>
-                        <th>Priorité</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <th:block th:each="problem : ${problems}">
-                        <tr class="ticket-row"
-                            onclick="window.location.href=this.dataset.href"
-                            th:attr="data-href=@{'/problems/' + ${problem.id}}"
-                            th:style="${problem.status != null and problem.status.name() == 'OPEN'}       ? '--row-accent:#38bdf8' :
-                                      (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? '--row-accent:#f59e0b' :
-                                      (${problem.status != null and problem.status.name() == 'RESOLVED'}   ? '--row-accent:#10b981' : '--row-accent:#3d5470'))">
-
-                            <!-- ID + Title -->
-                            <td>
-                                <div style="display:flex;align-items:center;gap:.6rem">
-                                    <span class="ticket-id-cell">#<span th:text="${problem.id}"></span></span>
-                                    <span class="ticket-title-cell" th:text="${problem.title}">Titre</span>
-                                </div>
-                            </td>
-
-                            <!-- Date -->
-                            <td class="ticket-date-cell"
-                                th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></td>
-
-                            <!-- Technician -->
-                            <td class="ticket-tech-cell">
-                                <span th:if="${problem.technician != null}"
-                                      th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
-                                <span th:if="${problem.technician == null}" class="unassigned">Non assigné</span>
-                            </td>
-
-                            <!-- Status -->
-                            <td>
-                                <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}" class="badge b-open">
-                                    <span class="bdot" style="background:#38bdf8"></span>Ouvert
-                                </span>
-                                <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}" class="badge b-progress">
-                                    <span class="bdot" style="background:#f59e0b"></span>En cours
-                                </span>
-                                <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}" class="badge b-resolved">
-                                    <span class="bdot" style="background:#10b981"></span>Résolu
-                                </span>
-                                <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}" class="badge b-closed">
-                                    <span class="bdot" style="background:#6b7280"></span>Fermé
-                                </span>
-                            </td>
-
-                            <!-- Priority -->
-                            <td>
-                                <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                                <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
-                                <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
-                                <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">Critique</span>
-                            </td>
-
-                            <!-- Arrow -->
-                            <td class="ticket-arrow-cell">
-                                <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                    <polyline points="12 5 19 12 12 19"/>
-                                </svg>
-                            </td>
-
-                        </tr>
-                    </th:block>
-                </tbody>
-            </table>
+        <!-- Résolus à valider -->
+        <div class="section-card">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Résolus — à valider</div>
+                    <div class="section-sub">Résolutions soumises par les techniciens</div>
+                </div>
+                <a th:href="@{/problems(status='RESOLVED')}" class="view-all">
+                    Tout voir
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+            <div th:if="${#lists.isEmpty(resolvedList)}" class="empty">Aucune résolution en attente</div>
+            <div th:if="${!#lists.isEmpty(resolvedList)}">
+                <a th:each="p : ${resolvedList}" th:href="@{'/problems/' + ${p.id}}"
+                   class="ticket-row" style="--row-accent:#16a34a;">
+                    <span class="t-id">#<span th:text="${p.id}"></span></span>
+                    <span class="t-title" th:text="${p.title}"></span>
+                    <span class="t-meta" th:text="${p.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${p.user.nomEntreprise}"></span>
+                    <span class="t-meta"
+                          th:if="${p.technician != null}"
+                          th:text="${p.technician.firstname + ' ' + p.technician.lastname}"></span>
+                    <svg class="t-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
         </div>
 
     </div>
+
+    <!-- Lien tous les tickets -->
+    <div style="text-align:center;margin-top:1.5rem;" class="fu d5">
+        <a th:href="@{/problems}"
+           style="font-size:.88rem;font-weight:600;color:var(--text-3);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:color .15s;"
+           onmouseover="this.style.color='var(--violet)'" onmouseout="this.style.color='var(--text-3)'">
+            Voir tous les tickets
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+        </a>
+    </div>
+
 </div>
-
-<th:block layout:fragment="scripts">
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-
-        /* ── Live clock ── */
-        (function () {
-            var dateEl = document.getElementById('dash-date');
-            var timeEl = document.getElementById('dash-time');
-            var secsEl = document.getElementById('dash-secs');
-            if (!dateEl || !timeEl) return;
-            var days   = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-            var months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-            function tick() {
-                var n = new Date();
-                dateEl.textContent = days[n.getDay()] + ' ' + n.getDate() + ' ' + months[n.getMonth()] + ' ' + n.getFullYear();
-                var h = String(n.getHours()).padStart(2,'0');
-                var m = String(n.getMinutes()).padStart(2,'0');
-                var s = String(n.getSeconds()).padStart(2,'0');
-                timeEl.childNodes[0].textContent = h + ':' + m;
-                if (secsEl) secsEl.textContent = ':' + s;
-            }
-            tick();
-            setInterval(tick, 1000);
-        })();
-
-        /* ── Animated counters ── */
-        function animateCounter(el) {
-            var target = parseInt(el.getAttribute('data-target') || '0', 10);
-            var start = null;
-            var dur = 900;
-            function step(ts) {
-                if (!start) start = ts;
-                var p = Math.min((ts - start) / dur, 1);
-                var ease = 1 - Math.pow(1 - p, 3);
-                el.textContent = Math.round(ease * target);
-                if (p < 1) requestAnimationFrame(step);
-                else el.textContent = target;
-            }
-            requestAnimationFrame(step);
-        }
-        var counterIO = new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) {
-                if (e.isIntersecting) { animateCounter(e.target); counterIO.unobserve(e.target); }
-            });
-        }, { threshold: 0.5 });
-        document.querySelectorAll('[data-counter]').forEach(function (el) { counterIO.observe(el); });
-
-        /* ── Chart.js defaults ── */
-        Chart.defaults.color = '#6e90b5';
-        Chart.defaults.font.family = "'DM Sans', sans-serif";
-
-        var byStatus   = JSON.parse(/*[[${ticketsByStatusJs}]]*/ "[]");
-        var byPriority = JSON.parse(/*[[${ticketsByPriorityJs}]]*/ "[]");
-
-        /* Doughnut — statut */
-        new Chart(document.getElementById('statusChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Ouvert', 'En cours', 'Résolu', 'Fermé'],
-                datasets: [{
-                    data: byStatus,
-                    backgroundColor: [
-                        'rgba(56,189,248,.82)',
-                        'rgba(245,158,11,.82)',
-                        'rgba(16,185,129,.82)',
-                        'rgba(107,114,128,.5)'
-                    ],
-                    borderColor: '#0f1e33',
-                    borderWidth: 3,
-                    hoverOffset: 14,
-                    hoverBorderWidth: 3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '68%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 16,
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                            font: { size: 11, weight: '500' }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: '#0c1628',
-                        borderColor: '#1b2d47',
-                        borderWidth: 1,
-                        padding: 12,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function (ctx) {
-                                var v = ctx.parsed || 0;
-                                var total = ctx.dataset.data.reduce(function (a, b) { return a + b; }, 0);
-                                var pct = total > 0 ? ((v / total) * 100).toFixed(1) : '0.0';
-                                return '  ' + ctx.label + ' : ' + v + ' (' + pct + '%)';
-                            }
-                        }
-                    }
-                },
-                animation: { animateRotate: true, animateScale: true, duration: 1000, easing: 'easeInOutQuart' }
-            }
-        });
-
-        /* Bar — priorité */
-        new Chart(document.getElementById('priorityChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Faible', 'Normale', 'Élevée', 'Critique'],
-                datasets: [{
-                    label: 'Tickets',
-                    data: byPriority,
-                    backgroundColor: [
-                        'rgba(100,116,139,.6)',
-                        'rgba(59,130,246,.7)',
-                        'rgba(249,115,22,.7)',
-                        'rgba(239,68,68,.7)'
-                    ],
-                    borderColor: ['#64748b','#3b82f6','#f97316','#ef4444'],
-                    borderWidth: 1.5,
-                    borderRadius: 8,
-                    borderSkipped: false,
-                    hoverBackgroundColor: [
-                        'rgba(100,116,139,.88)',
-                        'rgba(59,130,246,.88)',
-                        'rgba(249,115,22,.88)',
-                        'rgba(239,68,68,.88)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#0c1628',
-                        borderColor: '#1b2d47',
-                        borderWidth: 1,
-                        padding: 12,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function (ctx) {
-                                var v = ctx.parsed.y;
-                                return '  ' + v + ' ticket' + (v > 1 ? 's' : '');
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 1, font: { size: 11 } },
-                        grid: { color: 'rgba(255,255,255,.04)', drawBorder: false },
-                        border: { display: false }
-                    },
-                    x: {
-                        ticks: { font: { size: 12, weight: '500' }, color: '#6e90b5' },
-                        grid: { display: false, drawBorder: false },
-                        border: { display: false }
-                    }
-                },
-                animation: { duration: 1000, easing: 'easeInOutQuart' }
-            }
-        });
-
-        /*]]>*/
-    </script>
-</th:block>
-
 </html>

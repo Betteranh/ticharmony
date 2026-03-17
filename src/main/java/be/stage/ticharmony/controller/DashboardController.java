@@ -104,11 +104,26 @@ public class DashboardController {
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
 
-        List<Problem> nonAssigned = filteredProblems.stream()
-                .filter(p -> p.getTechnician() == null)
+        List<Problem> nonAssigned = all.stream()
+                .filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .collect(Collectors.toList());
 
-        model.addAttribute("problems", nonAssigned);
+        List<Problem> resolvedList = all.stream()
+                .filter(p -> p.getStatus() == Status.RESOLVED)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        List<Problem> urgentList = all.stream()
+                .filter(p -> p.getPriority() == Priority.URGENT
+                        && p.getStatus() != Status.CLOSED
+                        && p.getStatus() != Status.RESOLVED)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("nonAssignedList", nonAssigned);
+        model.addAttribute("resolvedList", resolvedList);
+        model.addAttribute("urgentList", urgentList);
         model.addAttribute("module", "dashboard");
 
         return "dashboard/adminDashboard";
@@ -190,12 +205,18 @@ public class DashboardController {
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
 
-        List<Problem> inProgressTicketsList = filteredProblems.stream()
+        List<Problem> openList = all.stream()
+                .filter(p -> p.getStatus() == Status.OPEN)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        List<Problem> inProgressList = all.stream()
                 .filter(p -> p.getStatus() == Status.IN_PROGRESS)
                 .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .collect(Collectors.toList());
 
-        model.addAttribute("problems", inProgressTicketsList);
+        model.addAttribute("openList", openList);
+        model.addAttribute("inProgressList", inProgressList);
         model.addAttribute("module", "dashboard");
 
         return "dashboard/memberDashboard";
