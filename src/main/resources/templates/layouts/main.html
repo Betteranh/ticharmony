@@ -1,7 +1,8 @@
 <!-- src/main/resources/templates/layouts/main.html -->
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity5">
 <head>
     <meta charset="utf-8">
     <title layout:title-pattern="$CONTENT_TITLE – Tic Harmony">Tic Harmony</title>
@@ -151,17 +152,6 @@
 </div>
 <!-- /Drawer Notifications -->
 
-<!-- Shadow on navbar on scroll -->
-<script>
-    document.addEventListener('scroll', function () {
-        const nav = document.querySelector('.glass-navbar');
-        if (window.scrollY > 10) {
-            nav.classList.add('shadow-lg');
-        } else {
-            nav.classList.remove('shadow-lg');
-        }
-    });
-</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const toast = document.getElementById('already-logged-toast');

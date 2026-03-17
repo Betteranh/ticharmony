@@ -458,7 +458,7 @@
 
                 <h1 class="hero-title">
                     Bonjour,
-                    <span th:if="${currentUser != null}" th:text="${currentUser.firstname}">Client</span>
+                    <span th:if="${currentUser != null}" th:text="${currentUser.nomEntreprise ?: currentUser.firstname}">Client</span>
                 </h1>
                 <p class="hero-sub">
                     Votre espace TicHarmony — signalez un problème ou suivez l'avancement de vos demandes en cours.
