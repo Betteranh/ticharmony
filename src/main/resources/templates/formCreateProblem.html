@@ -19,7 +19,6 @@
             --violet-bg:#f5f3ff;
             --violet-br:#ddd6fe;
             --red:      #dc2626;
-            --green:    #16a34a;
             --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
         }
 
@@ -27,7 +26,7 @@
             font-family: 'DM Sans', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
-            max-width: 680px;
+            max-width: 660px;
             margin: 0 auto;
         }
 
@@ -59,7 +58,7 @@
         .page-sub {
             font-size: .95rem;
             color: var(--text-2);
-            margin-bottom: 2.25rem;
+            margin-bottom: 2rem;
         }
 
         /* ── Step card ── */
@@ -67,37 +66,15 @@
             background: var(--white);
             border-radius: 18px;
             box-shadow: var(--sh);
-            padding: 2rem;
+            padding: 1.75rem 2rem;
             margin-bottom: 1rem;
         }
-        .step-header {
-            display: flex;
-            align-items: center;
-            gap: .85rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--cream-d);
-        }
-        .step-num {
-            width: 34px; height: 34px;
-            border-radius: 50%;
-            background: var(--violet);
-            color: #fff;
+        .step-question {
             font-family: 'Sora', sans-serif;
-            font-size: .95rem;
+            font-size: 1.1rem;
             font-weight: 800;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .step-title {
-            font-family: 'Sora', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
             color: var(--text);
-        }
-        .step-subtitle {
-            font-size: .82rem;
-            color: var(--text-3);
+            margin-bottom: 1.25rem;
         }
 
         /* ── Labels & inputs ── */
@@ -117,7 +94,7 @@
             border-radius: 10px;
             color: var(--text);
             font-family: 'DM Sans', sans-serif;
-            font-size: .92rem;
+            font-size: .95rem;
             outline: none;
             transition: border-color .2s, box-shadow .2s, background .2s;
         }
@@ -127,24 +104,30 @@
             background: var(--white);
             box-shadow: 0 0 0 3px rgba(124,58,237,.1);
         }
-        textarea.fc-input { resize: none; min-height: 130px; line-height: 1.6; }
+        textarea.fc-input {
+            resize: none;
+            min-height: 140px;
+            line-height: 1.65;
+            font-size: 1rem;
+        }
 
         /* ── Category grid ── */
         .cat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: .6rem;
+            gap: .55rem;
+            margin-top: .75rem;
         }
         @media (max-width: 480px) { .cat-grid { grid-template-columns: 1fr; } }
 
         .cat-card {
             display: flex;
             align-items: center;
-            gap: .75rem;
-            padding: .9rem 1rem;
+            gap: .7rem;
+            padding: .8rem .95rem;
             background: var(--cream);
             border: 2px solid var(--cream-d);
-            border-radius: 12px;
+            border-radius: 11px;
             cursor: pointer;
             transition: border-color .15s, background .15s;
             position: relative;
@@ -152,45 +135,15 @@
         .cat-card:hover { border-color: var(--violet-br); background: var(--violet-bg); }
         .cat-card.selected { border-color: var(--violet); background: var(--violet-bg); }
         .cat-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
-        .cat-emoji { font-size: 1.4rem; flex-shrink: 0; line-height: 1; }
+        .cat-emoji { font-size: 1.3rem; flex-shrink: 0; line-height: 1; }
         .cat-name {
             font-family: 'Sora', sans-serif;
-            font-size: .83rem;
+            font-size: .82rem;
             font-weight: 700;
             color: var(--text);
         }
-        .cat-desc { font-size: .73rem; color: var(--text-3); margin-top: .1rem; }
+        .cat-desc { font-size: .72rem; color: var(--text-3); margin-top: .1rem; }
 
-        /* ── Priority list ── */
-        .prio-list { display: flex; flex-direction: column; gap: .5rem; }
-
-        .prio-card {
-            display: flex;
-            align-items: center;
-            gap: .85rem;
-            padding: .9rem 1rem;
-            background: var(--cream);
-            border: 2px solid var(--cream-d);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: border-color .15s, background .15s;
-            position: relative;
-        }
-        .prio-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
-        .prio-card:hover { border-color: var(--violet-br); background: var(--violet-bg); }
-        .prio-card.sel-low    { border-color: #94a3b8; background: #f8fafc; }
-        .prio-card.sel-medium { border-color: #3b82f6; background: #eff6ff; }
-        .prio-card.sel-high   { border-color: #f97316; background: #fff7ed; }
-        .prio-card.sel-urgent { border-color: var(--red); background: #fef2f2; }
-
-        .prio-emoji { font-size: 1.2rem; flex-shrink: 0; }
-        .prio-name {
-            font-family: 'Sora', sans-serif;
-            font-size: .88rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-        .prio-desc { font-size: .78rem; color: var(--text-2); }
 
         /* ── Error ── */
         .fc-error {
@@ -201,6 +154,7 @@
             color: var(--red);
             font-size: .88rem;
             font-weight: 600;
+            margin-bottom: 1rem;
         }
 
         /* ── Buttons ── */
@@ -208,11 +162,11 @@
             display: inline-flex;
             align-items: center;
             gap: 9px;
-            padding: .95rem 2rem;
+            padding: 1rem 2.25rem;
             background: var(--violet);
             color: #fff;
             font-family: 'Sora', sans-serif;
-            font-size: .95rem;
+            font-size: 1rem;
             font-weight: 700;
             border: none;
             border-radius: 12px;
@@ -221,10 +175,13 @@
             transition: background .15s, transform .15s;
         }
         .btn-submit:hover { background: #6d28d9; transform: translateY(-1px); }
+        .btn-submit svg { transition: transform .15s; }
+        .btn-submit:hover svg { transform: translateX(3px); }
+
         .btn-cancel {
             display: inline-flex;
             align-items: center;
-            padding: .95rem 1.6rem;
+            padding: 1rem 1.6rem;
             background: var(--white);
             border: 1px solid var(--cream-d);
             color: var(--text-2);
@@ -240,7 +197,7 @@
         /* ── Contact footer ── */
         .contact-footer {
             text-align: center;
-            margin-top: 1.75rem;
+            margin-top: 1.5rem;
             font-size: .85rem;
             color: var(--text-3);
         }
@@ -257,11 +214,12 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
-        .d1 { animation-delay: .04s; }
-        .d2 { animation-delay: .1s;  }
-        .d3 { animation-delay: .16s; }
-        .d4 { animation-delay: .22s; }
-        .d5 { animation-delay: .28s; }
+        .d1 { animation-delay: .03s; }
+        .d2 { animation-delay: .09s; }
+        .d3 { animation-delay: .15s; }
+        .d4 { animation-delay: .21s; }
+        .d5 { animation-delay: .27s; }
+        .d6 { animation-delay: .33s; }
     </style>
 </head>
 
@@ -283,24 +241,68 @@
         Retour
     </a>
 
-    <!-- Titre -->
     <div class="fu d1">
         <h1 class="page-title">Signaler un problème</h1>
-        <p class="page-sub">Remplissez les 3 étapes ci-dessous — notre équipe vous répond sous 24h.</p>
+        <p class="page-sub">Notre équipe vous répond dans les 24 heures.</p>
     </div>
 
     <form method="post" th:action="@{/problems/save}" th:object="${problem}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-        <!-- Étape 1 — Vos coordonnées -->
+        <!-- 1. Qu'est-ce qui se passe ? -->
         <div class="step-card fu d2">
-            <div class="step-header">
-                <div class="step-num">1</div>
-                <div>
-                    <div class="step-title">Vos coordonnées</div>
-                    <div class="step-subtitle">Pour que nous puissions vous recontacter</div>
-                </div>
+            <div class="step-question">Qu'est-ce qui se passe ? 🖥️</div>
+
+            <div class="mb-4">
+                <label for="title" class="fc-label">En une phrase <span class="req">*</span></label>
+                <input type="text" id="title" th:field="*{title}" maxlength="120"
+                       placeholder="Ex : Mon ordinateur ne s'allume plus"
+                       class="fc-input" required/>
             </div>
+            <div>
+                <label for="description" class="fc-label">Décrivez ce qui se passe <span class="req">*</span></label>
+                <textarea id="description" th:field="*{description}"
+                          placeholder="Expliquez-nous le problème avec vos propres mots. Depuis quand ? Y a-t-il un message à l'écran ? Qu'avez-vous essayé ?"
+                          class="fc-input" required></textarea>
+            </div>
+        </div>
+
+        <!-- 2. Catégorie -->
+        <div class="step-card fu d3">
+            <div class="step-question">Ça concerne quoi ? 🗂️</div>
+            <p style="font-size:.88rem; color:var(--text-3); margin-bottom:.75rem;">Sélectionnez la case qui correspond à votre problème.</p>
+            <div class="cat-grid" id="catGrid">
+                <label class="cat-card" data-cat>
+                    <input type="radio" th:field="*{category}" value="Réseau et connectivité" required>
+                    <span class="cat-emoji">🌐</span>
+                    <div><div class="cat-name">Internet / Réseau</div><div class="cat-desc">Connexion, Wi-Fi…</div></div>
+                </label>
+                <label class="cat-card" data-cat>
+                    <input type="radio" th:field="*{category}" value="Matériel informatique" required>
+                    <span class="cat-emoji">🖥️</span>
+                    <div><div class="cat-name">Matériel</div><div class="cat-desc">Ordinateur, imprimante…</div></div>
+                </label>
+                <label class="cat-card" data-cat>
+                    <input type="radio" th:field="*{category}" value="Logiciels et applications" required>
+                    <span class="cat-emoji">📱</span>
+                    <div><div class="cat-name">Logiciel / Application</div><div class="cat-desc">Programme, erreur…</div></div>
+                </label>
+                <label class="cat-card" data-cat>
+                    <input type="radio" th:field="*{category}" value="Sécurité informatique" required>
+                    <span class="cat-emoji">🔒</span>
+                    <div><div class="cat-name">Sécurité / Accès</div><div class="cat-desc">Mot de passe, virus…</div></div>
+                </label>
+                <label class="cat-card" data-cat>
+                    <input type="radio" th:field="*{category}" value="Autre" required>
+                    <span class="cat-emoji">💬</span>
+                    <div><div class="cat-name">Autre</div><div class="cat-desc">Non listé ci-dessus</div></div>
+                </label>
+            </div>
+        </div>
+
+        <!-- 3. Vos coordonnées -->
+        <div class="step-card fu d4">
+            <div class="step-question">Qui faites-vous cette demande ? 👤</div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
@@ -328,113 +330,8 @@
             </div>
         </div>
 
-        <!-- Étape 2 — Le problème -->
-        <div class="step-card fu d3">
-            <div class="step-header">
-                <div class="step-num">2</div>
-                <div>
-                    <div class="step-title">Quel est le problème ?</div>
-                    <div class="step-subtitle">Décrivez-le simplement, sans termes techniques</div>
-                </div>
-            </div>
-
-            <!-- Catégorie -->
-            <div class="mb-4">
-                <label class="fc-label">Ça concerne quoi ? <span class="req">*</span></label>
-                <div class="cat-grid" id="catGrid">
-                    <label class="cat-card" data-cat>
-                        <input type="radio" th:field="*{category}" value="Réseau et connectivité" required>
-                        <span class="cat-emoji">🌐</span>
-                        <div><div class="cat-name">Internet / Réseau</div><div class="cat-desc">Connexion, Wi-Fi…</div></div>
-                    </label>
-                    <label class="cat-card" data-cat>
-                        <input type="radio" th:field="*{category}" value="Matériel informatique" required>
-                        <span class="cat-emoji">🖥️</span>
-                        <div><div class="cat-name">Matériel</div><div class="cat-desc">Ordinateur, imprimante…</div></div>
-                    </label>
-                    <label class="cat-card" data-cat>
-                        <input type="radio" th:field="*{category}" value="Logiciels et applications" required>
-                        <span class="cat-emoji">📱</span>
-                        <div><div class="cat-name">Logiciel / Application</div><div class="cat-desc">Programme, erreur…</div></div>
-                    </label>
-                    <label class="cat-card" data-cat>
-                        <input type="radio" th:field="*{category}" value="Sécurité informatique" required>
-                        <span class="cat-emoji">🔒</span>
-                        <div><div class="cat-name">Sécurité / Accès</div><div class="cat-desc">Mot de passe, virus…</div></div>
-                    </label>
-                    <label class="cat-card" data-cat>
-                        <input type="radio" th:field="*{category}" value="Autre" required>
-                        <span class="cat-emoji">💬</span>
-                        <div><div class="cat-name">Autre</div><div class="cat-desc">Non listé ci-dessus</div></div>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Titre -->
-            <div class="mb-4">
-                <label for="title" class="fc-label">En une phrase, quel est le problème ? <span class="req">*</span></label>
-                <input type="text" id="title" th:field="*{title}" maxlength="120"
-                       placeholder="Ex : Mon ordinateur ne s'allume plus depuis ce matin"
-                       class="fc-input" required/>
-            </div>
-
-            <!-- Description -->
-            <div>
-                <label for="description" class="fc-label">Décrivez le problème en détail <span class="req">*</span></label>
-                <textarea id="description" th:field="*{description}" rows="5"
-                          placeholder="Que se passe-t-il ? Depuis quand ? Avez-vous un message d'erreur ?"
-                          class="fc-input" required></textarea>
-            </div>
-        </div>
-
-        <!-- Étape 3 — Urgence -->
-        <div class="step-card fu d4">
-            <div class="step-header">
-                <div class="step-num">3</div>
-                <div>
-                    <div class="step-title">C'est urgent ?</div>
-                    <div class="step-subtitle">Choisissez ce qui correspond le mieux à votre situation</div>
-                </div>
-            </div>
-
-            <div class="prio-list" id="prioList">
-                <label class="prio-card" data-prio="low">
-                    <input type="radio" th:field="*{priority}" value="LOW" required>
-                    <span class="prio-emoji">🟢</span>
-                    <div>
-                        <div class="prio-name">Pas urgent</div>
-                        <div class="prio-desc">Je peux continuer à travailler normalement</div>
-                    </div>
-                </label>
-                <label class="prio-card" data-prio="medium">
-                    <input type="radio" th:field="*{priority}" value="MEDIUM" required>
-                    <span class="prio-emoji">🔵</span>
-                    <div>
-                        <div class="prio-name">Normal</div>
-                        <div class="prio-desc">Cela ralentit mon travail</div>
-                    </div>
-                </label>
-                <label class="prio-card" data-prio="high">
-                    <input type="radio" th:field="*{priority}" value="HIGH" required>
-                    <span class="prio-emoji">🟠</span>
-                    <div>
-                        <div class="prio-name">Urgent</div>
-                        <div class="prio-desc">Impact important sur mon activité aujourd'hui</div>
-                    </div>
-                </label>
-                <label class="prio-card" data-prio="urgent">
-                    <input type="radio" th:field="*{priority}" value="URGENT" required>
-                    <span class="prio-emoji">🔴</span>
-                    <div>
-                        <div class="prio-name">Critique — Tout est bloqué !</div>
-                        <div class="prio-desc">Je ne peux plus travailler du tout</div>
-                    </div>
-                </label>
-            </div>
-        </div>
-
         <!-- Erreur -->
-        <div th:if="${errorMessage}" class="fc-error fu d4" th:text="${errorMessage}"></div>
+        <div th:if="${errorMessage}" class="fc-error" th:text="${errorMessage}"></div>
 
         <!-- Boutons -->
         <div class="flex flex-col sm:flex-row gap-3 fu d5">
@@ -449,9 +346,8 @@
             <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="btn-cancel">Annuler</a>
         </div>
 
-        <!-- Contact d'urgence -->
         <p class="contact-footer fu d5">
-            Problème critique ? Appelez-nous directement :
+            Problème critique ? Appelez-nous :
             <a href="tel:+32495576535">+32 (0) 495 57 65 35</a>
         </p>
 
@@ -461,6 +357,7 @@
 <th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
+        /* Category selection */
         document.querySelectorAll('[data-cat]').forEach(function(card) {
             var radio = card.querySelector('input[type=radio]');
             if (radio && radio.checked) card.classList.add('selected');
@@ -469,17 +366,7 @@
                 card.classList.add('selected');
             });
         });
-        document.querySelectorAll('[data-prio]').forEach(function(card) {
-            var radio = card.querySelector('input[type=radio]');
-            var prio = card.getAttribute('data-prio');
-            if (radio && radio.checked) card.classList.add('sel-' + prio);
-            card.addEventListener('click', function() {
-                document.querySelectorAll('[data-prio]').forEach(function(c) {
-                    c.classList.remove('sel-low','sel-medium','sel-high','sel-urgent');
-                });
-                card.classList.add('sel-' + prio);
-            });
-        });
+
         /*]]>*/
     </script>
 </th:block>

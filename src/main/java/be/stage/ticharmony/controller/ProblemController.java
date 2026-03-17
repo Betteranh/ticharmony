@@ -164,6 +164,7 @@ public class ProblemController {
             @RequestParam(name = "year", required = false) Integer yearFilter,
             @RequestParam(name = "month", required = false) Integer monthFilter,
             @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "unassigned", required = false) Boolean unassigned,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "8") int size,
             Model model,
@@ -178,6 +179,19 @@ public class ProblemController {
         } else {
             // ADMIN et MEMBER voient tous les tickets
             allProblems = service.getProblems();
+        }
+
+        // 2b. Stats globales pour la bande de résumé (admin/membre uniquement)
+        if (currentUser.getRole() != UserRole.CLIENT) {
+            List<Problem> allList = StreamSupport.stream(allProblems.spliterator(), false).collect(Collectors.toList());
+            long countOpen       = allList.stream().filter(p -> p.getStatus() == Status.OPEN).count();
+            long countInProgress = allList.stream().filter(p -> p.getStatus() == Status.IN_PROGRESS).count();
+            long countUnassigned = allList.stream().filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED).count();
+            long countUrgent     = allList.stream().filter(p -> p.getPriority() == Priority.URGENT && p.getStatus() != Status.CLOSED).count();
+            model.addAttribute("countOpen",       countOpen);
+            model.addAttribute("countInProgress", countInProgress);
+            model.addAttribute("countUnassigned", countUnassigned);
+            model.addAttribute("countUrgent",     countUrgent);
         }
 
         // 2. Années/mois disponibles (pour les filtres dropdown)
@@ -213,6 +227,7 @@ public class ProblemController {
                     }
                 })
                 .filter(p -> priorityFilter == null || p.getPriority() == priorityFilter)
+                .filter(p -> unassigned == null || !unassigned || p.getTechnician() == null)
                 .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
                 .filter(p -> monthFilter == null || p.getCreatedAt().getMonthValue() == monthFilter)
                 .filter(p -> {
@@ -259,6 +274,7 @@ public class ProblemController {
         model.addAttribute("selectedMonth", monthFilter);
         model.addAttribute("technicianStats", technicianStats);
         model.addAttribute("search", search);
+        model.addAttribute("unassigned", unassigned);
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("module", "problems");
 

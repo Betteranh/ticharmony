@@ -4,659 +4,890 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Liste des Tickets</title>
+    <title>Mes demandes – TicHarmony</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body { background: #faf9f7 !important; }
+
         :root {
-            --d-bg:      #070d1a;
-            --d-surface: #0c1628;
-            --d-card:    #0f1e33;
-            --d-card-h:  #132038;
-            --d-border:  #1b2d47;
-            --d-border-b:#253d5f;
-            --d-text:    #dde8f5;
-            --d-sub:     #6e90b5;
-            --d-muted:   #3d5470;
-            --blue:      #3b82f6;
-            --blue-l:    #60a5fa;
-            --sky:       #38bdf8;
-            --teal:      #14b8a6;
-            --amber:     #f59e0b;
-            --emerald:   #10b981;
-            --red:       #ef4444;
-            --orange:    #f97316;
-            --slate-c:   #64748b;
+            --white:    #ffffff;
+            --cream:    #faf9f7;
+            --cream-d:  #ede9e3;
+            --text:     #1c1917;
+            --text-2:   #78716c;
+            --text-3:   #a8a29e;
+            --violet:   #7c3aed;
+            --violet-bg:#f5f3ff;
+            --violet-br:#ddd6fe;
+            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --sh-lg:    0 8px 32px rgba(0,0,0,.09), 0 3px 10px rgba(0,0,0,.05);
         }
 
         .lp-root {
             font-family: 'DM Sans', sans-serif;
-            background: var(--d-bg);
-            color: var(--d-text);
-            min-height: calc(100vh - 64px);
-            padding: 2.5rem 0 5rem;
+            color: var(--text);
+            padding: 2.5rem 0 6rem;
         }
 
-        /* ── Page header ── */
-        .lp-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .lp-header-icon {
-            width: 44px; height: 44px;
-            border-radius: 12px;
-            background: rgba(59,130,246,.13);
-            border: 1px solid rgba(59,130,246,.22);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
         .lp-title {
             font-family: 'Sora', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 800;
+            color: var(--text);
             letter-spacing: -.03em;
-            color: var(--d-text);
+            margin-bottom: .25rem;
         }
-        .lp-sub {
-            font-size: .82rem;
-            color: var(--d-sub);
-            margin-top: .1rem;
-        }
+        .lp-sub { font-size: .9rem; color: var(--text-2); margin-bottom: 2rem; }
 
-        /* ── Card base ── */
-        .lp-card {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 16px;
-            padding: 1.4rem;
-        }
-        .lp-card-title {
-            font-family: 'Sora', sans-serif;
-            font-size: .88rem;
-            font-weight: 700;
-            color: var(--d-text);
+        /* ════════════════════════════════════════
+           VUE CLIENT
+        ════════════════════════════════════════ */
+
+        /* Status tabs */
+        .status-tabs {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 1.1rem;
-        }
-        .lp-card-title-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        /* ── Filter selects ── */
-        .filter-label {
-            font-family: 'Sora', sans-serif;
-            font-size: .68rem;
-            font-weight: 600;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            color: var(--d-muted);
-            display: block;
-            margin-bottom: .4rem;
-        }
-        .filter-select {
-            width: 100%;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border-b);
-            color: var(--d-text);
-            border-radius: 8px;
-            padding: .5rem .9rem;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .83rem;
-            cursor: pointer;
-            outline: none;
-            transition: border-color .15s ease;
-            -webkit-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%236e90b5' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right .65rem center;
-            padding-right: 1.8rem;
-            margin-bottom: .85rem;
-        }
-        .filter-select:focus { border-color: var(--blue); }
-        .filter-select:disabled { opacity: .4; cursor: not-allowed; }
-        .filter-select option { background: #0c1628; }
-
-        /* Search input */
-        .search-wrap { position: relative; margin-bottom: .85rem; }
-        .search-icon {
-            position: absolute;
-            left: .75rem;
-            top: 50%; transform: translateY(-50%);
-            pointer-events: none;
-            color: var(--d-muted);
-        }
-        .filter-input {
-            width: 100%;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border-b);
-            color: var(--d-text);
-            border-radius: 8px;
-            padding: .5rem .9rem .5rem 2.2rem;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .83rem;
-            outline: none;
-            transition: border-color .15s ease;
-        }
-        .filter-input::placeholder { color: var(--d-muted); }
-        .filter-input:focus { border-color: var(--blue); }
-        .reset-search-btn {
-            position: absolute;
-            right: .65rem;
-            top: 50%; transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--d-muted);
-            padding: 2px;
-            transition: color .15s ease;
-        }
-        .reset-search-btn:hover { color: var(--d-sub); }
-
-        /* Reset button */
-        .btn-reset {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: .55rem 1rem;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border-b);
-            border-radius: 8px;
-            color: var(--d-sub);
-            font-family: 'Sora', sans-serif;
-            font-size: .78rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background .15s ease, border-color .15s ease, color .15s ease;
-        }
-        .btn-reset:hover {
-            background: var(--d-card-h);
-            border-color: var(--d-border-b);
-            color: var(--d-text);
-        }
-
-        /* ── Pagination info ── */
-        .pag-info {
-            font-size: .78rem;
-            color: var(--d-sub);
-            margin-bottom: 1rem;
-        }
-        .pag-info strong { color: var(--d-text); font-weight: 700; }
-
-        /* ── Ticket row ── */
-        .ticket-row {
-            background: var(--d-surface);
-            border: 1px solid var(--d-border);
-            border-left: 3px solid var(--row-accent, var(--d-border));
-            border-radius: 12px;
-            padding: 1rem 1.1rem 1rem 1.2rem;
-            cursor: pointer;
-            transition: background .15s ease, border-color .15s ease, transform .15s ease;
-            margin-bottom: .5rem;
-        }
-        .ticket-row:last-child { margin-bottom: 0; }
-        .ticket-row:hover {
-            background: var(--d-card-h);
-            border-color: var(--row-accent, var(--d-border-b));
-            border-left-color: var(--row-accent, var(--blue));
-            transform: translateX(3px);
-        }
-        .ticket-row.mine {
-            --row-accent: var(--teal);
-            background: rgba(20,184,166,.05);
-        }
-
-        .ticket-id {
-            font-family: 'Sora', sans-serif;
-            font-size: .67rem;
-            font-weight: 600;
-            color: var(--d-muted);
-            background: rgba(255,255,255,.04);
-            border: 1px solid var(--d-border);
-            border-radius: 5px;
-            padding: .1rem .4rem;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .ticket-title {
-            font-family: 'Sora', sans-serif;
-            font-size: .9rem;
-            font-weight: 700;
-            color: var(--d-text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* ── Badges ── */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: .28rem;
-            padding: .18rem .55rem;
-            border-radius: 5px;
-            font-family: 'Sora', sans-serif;
-            font-size: .65rem;
-            font-weight: 700;
-            letter-spacing: .04em;
-            text-transform: uppercase;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-        .b-open     { background:rgba(56,189,248,.1); color:var(--sky);     border:1px solid rgba(56,189,248,.22); }
-        .b-progress { background:rgba(245,158,11,.1); color:var(--amber);   border:1px solid rgba(245,158,11,.22); }
-        .b-resolved { background:rgba(16,185,129,.1); color:var(--emerald); border:1px solid rgba(16,185,129,.22); }
-        .b-closed   { background:rgba(107,114,128,.1);color:#9ca3af;        border:1px solid rgba(107,114,128,.22);}
-        .b-urgent   { background:rgba(239,68,68,.1);  color:var(--red);     border:1px solid rgba(239,68,68,.22);  }
-        .b-high     { background:rgba(249,115,22,.1); color:var(--orange);  border:1px solid rgba(249,115,22,.22); }
-        .b-medium   { background:rgba(59,130,246,.1); color:#93c5fd;        border:1px solid rgba(59,130,246,.22); }
-        .b-low      { background:rgba(100,116,139,.09);color:#94a3b8;       border:1px solid rgba(100,116,139,.2); }
-        .b-admin    { background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff; }
-        .b-mine     { background:rgba(20,184,166,.12);color:#2dd4bf;        border:1px solid rgba(20,184,166,.22); }
-
-        /* ── Ticket meta grid ── */
-        .ticket-meta-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: .5rem;
-            margin-top: .75rem;
-        }
-        @media (max-width: 700px) {
-            .ticket-meta-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        .meta-item {
-            display: flex;
-            align-items: flex-start;
             gap: .4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
         }
-        .meta-label {
-            font-size: .67rem;
-            color: var(--d-muted);
-            font-weight: 500;
-            margin-bottom: .1rem;
-        }
-        .meta-value {
-            font-family: 'Sora', sans-serif;
-            font-size: .78rem;
-            font-weight: 600;
-            color: var(--d-text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .meta-value.unassigned { color: var(--amber); }
-        .meta-value.mine-tag   { color: var(--teal); }
-
-        /* ── Admin action buttons ── */
-        .act-btn {
+        .status-tab {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            width: 30px; height: 30px;
-            border-radius: 7px;
-            border: 1px solid var(--d-border-b);
-            background: var(--d-surface);
-            color: var(--d-sub);
-            text-decoration: none;
-            cursor: pointer;
-            transition: background .15s ease, color .15s ease, border-color .15s ease;
-            flex-shrink: 0;
-        }
-        .act-btn:hover { background: var(--d-card-h); color: var(--d-text); border-color: var(--d-border-b); }
-        .act-btn.edit:hover  { color: var(--blue-l); border-color: rgba(59,130,246,.3); }
-        .act-btn.close:hover { color: var(--red);    border-color: rgba(239,68,68,.3);  }
-
-        /* ── Pagination ── */
-        .pag-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 34px; height: 34px;
-            padding: 0 .65rem;
-            border-radius: 8px;
+            gap: 6px;
+            padding: .45rem 1rem;
+            border-radius: 99px;
             font-family: 'Sora', sans-serif;
             font-size: .8rem;
             font-weight: 700;
             text-decoration: none;
-            transition: background .15s ease, color .15s ease;
+            border: 1.5px solid var(--cream-d);
+            background: var(--white);
+            color: var(--text-2);
+            transition: border-color .15s, background .15s, color .15s;
         }
-        .pag-btn.active {
-            background: var(--blue);
+        .status-tab:hover { background: var(--cream); color: var(--text); }
+        .status-tab.active {
+            background: var(--violet);
+            border-color: var(--violet);
             color: #fff;
-            box-shadow: 0 4px 12px rgba(59,130,246,.3);
         }
-        .pag-btn:not(.active) {
-            background: var(--d-surface);
-            border: 1px solid var(--d-border-b);
-            color: var(--d-sub);
+        .tab-count {
+            background: rgba(255,255,255,.25);
+            border-radius: 99px;
+            padding: 0 .35rem;
+            font-size: .7rem;
         }
-        .pag-btn:not(.active):hover {
-            background: var(--d-card-h);
-            color: var(--d-text);
+        .status-tab:not(.active) .tab-count {
+            background: var(--cream-d);
+            color: var(--text-3);
         }
 
-        /* ── Empty state ── */
+        /* Ticket card (client) */
+        .tc-card {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--sh);
+            border-left: 5px solid var(--card-accent, var(--cream-d));
+            padding: 1.4rem 1.6rem;
+            margin-bottom: .75rem;
+            cursor: pointer;
+            transition: box-shadow .18s, transform .18s;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        .tc-card:hover { box-shadow: var(--sh-lg); transform: translateY(-2px); }
+
+        .tc-status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .6rem;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+        .tc-status-label {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-family: 'Sora', sans-serif;
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            padding: .28rem .7rem;
+            border-radius: 99px;
+        }
+        .tc-date {
+            font-size: .78rem;
+            color: var(--text-3);
+        }
+        .tc-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: .5rem;
+            line-height: 1.35;
+        }
+        .tc-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+        .tc-meta-item {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+            font-size: .82rem;
+            color: var(--text-2);
+        }
+        .tc-tech-assigned {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            font-size: .82rem;
+            font-weight: 600;
+            color: #16a34a;
+        }
+        .tc-tech-unassigned {
+            font-size: .82rem;
+            color: var(--text-3);
+        }
+
+        /* Status color helpers */
+        .s-open     { background:#eff6ff;  color:#2563eb; }
+        .s-progress { background:#fffbeb;  color:#d97706; }
+        .s-resolved { background:#f0fdf4;  color:#16a34a; }
+        .s-closed   { background:#f5f5f4;  color:#78716c; }
+
+        .acc-open     { --card-accent: #2563eb; }
+        .acc-progress { --card-accent: #d97706; }
+        .acc-resolved { --card-accent: #16a34a; }
+        .acc-closed   { --card-accent: #d6d3d1; }
+
+        /* Empty state */
         .empty-state {
             text-align: center;
-            padding: 3.5rem 1rem;
-            color: var(--d-muted);
+            padding: 4rem 1rem;
+            color: var(--text-3);
         }
+        .empty-icon {
+            width: 64px; height: 64px;
+            border-radius: 18px;
+            background: var(--cream);
+            border: 1px solid var(--cream-d);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        /* ════════════════════════════════════════
+           VUE ADMIN / MEMBRE  (partagé)
+        ════════════════════════════════════════ */
+
+        .lp-card {
+            background: var(--white);
+            border-radius: 18px;
+            box-shadow: var(--sh);
+            padding: 1.5rem;
+        }
+        .lp-card-title {
+            font-family: 'Sora', sans-serif;
+            font-size: .82rem;
+            font-weight: 700;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 1rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--text-2);
+            margin-bottom: .3rem;
+        }
+        .filter-select, .filter-input {
+            width: 100%;
+            background: var(--cream);
+            border: 1px solid var(--cream-d);
+            color: var(--text);
+            border-radius: 9px;
+            padding: .55rem .9rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .85rem;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s, background .15s;
+            margin-bottom: .75rem;
+        }
+        .filter-select:focus, .filter-input:focus {
+            border-color: var(--violet);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+        }
+        .filter-select {
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right .65rem center;
+            padding-right: 1.8rem;
+            cursor: pointer;
+        }
+        .filter-select:disabled { opacity: .45; cursor: not-allowed; }
+
+        .search-wrap { position: relative; margin-bottom: .75rem; }
+        .search-icon {
+            position: absolute; left: .75rem; top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none; color: var(--text-3);
+        }
+        .filter-input { padding-left: 2.2rem; margin-bottom: 0; }
+        .filter-input::placeholder { color: var(--text-3); }
+        .reset-search-btn {
+            position: absolute; right: .65rem; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--text-3); padding: 2px; transition: color .15s;
+        }
+        .reset-search-btn:hover { color: var(--violet); }
+
+        .btn-reset {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: .55rem 1rem;
+            background: var(--cream);
+            border: 1px solid var(--cream-d);
+            border-radius: 9px;
+            color: var(--text-2);
+            font-family: 'Sora', sans-serif;
+            font-size: .78rem; font-weight: 600;
+            cursor: pointer; margin-top: .75rem;
+            transition: background .15s, color .15s;
+        }
+        .btn-reset:hover { background: var(--cream-d); color: var(--text); }
+
+        .pag-info { font-size: .82rem; color: var(--text-2); margin-bottom: 1.25rem; }
+        .pag-info strong { color: var(--text); font-weight: 700; }
+
+        /* Ticket row (admin) */
+        .ticket-row {
+            background: var(--white);
+            border: 1px solid var(--cream-d);
+            border-left: 4px solid var(--row-accent, var(--cream-d));
+            border-radius: 13px;
+            padding: 1rem 1.1rem;
+            cursor: pointer;
+            transition: box-shadow .18s, transform .18s;
+            margin-bottom: .6rem;
+        }
+        .ticket-row:last-child { margin-bottom: 0; }
+        .ticket-row:hover { box-shadow: var(--sh-lg); transform: translateY(-2px); }
+
+        .ticket-id {
+            font-family: 'Sora', sans-serif; font-size: .7rem; font-weight: 700;
+            color: var(--text-3); background: var(--cream);
+            border: 1px solid var(--cream-d);
+            border-radius: 5px; padding: .1rem .45rem;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .ticket-title {
+            font-family: 'Sora', sans-serif; font-size: .92rem; font-weight: 700;
+            color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: .28rem;
+            padding: .22rem .6rem; border-radius: 6px;
+            font-family: 'Sora', sans-serif; font-size: .67rem; font-weight: 700;
+            letter-spacing: .04em; text-transform: uppercase;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .b-open     { background:#eff6ff;  color:#2563eb; border:1px solid #bfdbfe; }
+        .b-progress { background:#fffbeb;  color:#d97706; border:1px solid #fde68a; }
+        .b-resolved { background:#f0fdf4;  color:#16a34a; border:1px solid #bbf7d0; }
+        .b-closed   { background:#f5f5f4;  color:#78716c; border:1px solid #e7e5e4; }
+        .b-urgent   { background:#fef2f2;  color:#dc2626; border:1px solid #fecaca; }
+        .b-high     { background:#fff7ed;  color:#ea580c; border:1px solid #fed7aa; }
+        .b-medium   { background:var(--violet-bg); color:var(--violet); border:1px solid var(--violet-br); }
+        .b-low      { background:#f5f5f4;  color:#a8a29e; border:1px solid #e7e5e4; }
+        .b-mine     { background:#f0fdf4;  color:#16a34a; border:1px solid #bbf7d0; }
+
+        .ticket-meta-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: .5rem; margin-top: .8rem;
+        }
+        @media (max-width: 700px) { .ticket-meta-grid { grid-template-columns: repeat(2, 1fr); } }
+        .meta-item { display: flex; align-items: flex-start; gap: .4rem; }
+        .meta-label { font-size: .68rem; color: var(--text-3); font-weight: 500; margin-bottom: .1rem; }
+        .meta-value {
+            font-family: 'Sora', sans-serif; font-size: .8rem; font-weight: 600; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .meta-value.unassigned { color: #d97706; }
+        .meta-value.mine-tag   { color: #16a34a; }
+
+        .act-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 8px;
+            border: 1px solid var(--cream-d); background: var(--cream);
+            color: var(--text-2); text-decoration: none; cursor: pointer;
+            transition: background .15s, color .15s, border-color .15s; flex-shrink: 0;
+        }
+        .act-btn:hover { background: var(--cream-d); color: var(--text); }
+        .act-btn.edit:hover  { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+        .act-btn.close:hover { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+
+        .pag-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 36px; height: 36px; padding: 0 .7rem; border-radius: 9px;
+            font-family: 'Sora', sans-serif; font-size: .82rem; font-weight: 700;
+            text-decoration: none; transition: background .15s, color .15s;
+        }
+        .pag-btn.active { background: var(--violet); color: #fff; box-shadow: 0 4px 12px rgba(124,58,237,.25); }
+        .pag-btn:not(.active) { background: var(--white); border: 1px solid var(--cream-d); color: var(--text-2); }
+        .pag-btn:not(.active):hover { background: var(--cream); color: var(--text); }
+
+        /* ── Stat chips ── */
+        .stat-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .6rem 1.1rem;
+            background: var(--white);
+            border: 1.5px solid var(--cream-d);
+            border-radius: 12px;
+            box-shadow: var(--sh);
+            text-decoration: none;
+            color: var(--text);
+            font-family: 'Sora', sans-serif;
+            font-size: .83rem;
+            font-weight: 600;
+            transition: box-shadow .15s, transform .15s, border-color .15s;
+            cursor: pointer;
+        }
+        .stat-chip:hover { box-shadow: var(--sh-lg); transform: translateY(-1px); }
+        .stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .stat-label { color: var(--text-2); }
+        .stat-count {
+            font-size: .8rem;
+            font-weight: 800;
+            background: var(--cream);
+            color: var(--text);
+            border-radius: 99px;
+            padding: .05rem .5rem;
+            min-width: 22px;
+            text-align: center;
+        }
+        .stat-chip--active-blue  { border-color: #bfdbfe; background: #eff6ff; }
+        .stat-chip--active-amber { border-color: #fde68a; background: #fffbeb; }
+        .stat-chip--active-red   { border-color: #fecaca; background: #fef2f2; }
 
         /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity:0; transform:translateY(16px); }
-            to   { opacity:1; transform:translateY(0); }
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        .fu { opacity:0; animation:fadeUp .5s ease forwards; }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-track { background:var(--d-bg); }
-        ::-webkit-scrollbar-thumb { background:var(--d-border-b); border-radius:3px; }
+        .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
+        .d1 { animation-delay: .04s; }
+        .d2 { animation-delay: .10s; }
+        .d3 { animation-delay: .16s; }
     </style>
 </head>
 
 <div layout:fragment="content" class="lp-root">
 
-    <!-- ╔══ HEADER ══╗ -->
-    <div class="lp-header fu" style="animation-delay:.04s">
-        <div class="lp-header-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                <rect x="9" y="3" width="6" height="4" rx="2"/>
-                <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
+    <!-- ════════════════════════════════════════
+         VUE CLIENT
+    ════════════════════════════════════════ -->
+    <div sec:authorize="hasRole('CLIENT')">
+
+        <div class="fu d1">
+            <h1 class="lp-title">Mes demandes</h1>
+            <p class="lp-sub">Retrouvez ici tous vos signalements et leur état d'avancement.</p>
+        </div>
+
+        <!-- Tabs de statut -->
+        <div class="status-tabs fu d2">
+            <a th:href="@{/problems}"
+               th:classappend="${selectedStatus == null} ? ' active' : ''"
+               class="status-tab">
+                Toutes
+                <span class="tab-count" th:text="${totalProblems}">0</span>
+            </a>
+            <a th:href="@{/problems(status='OPEN')}"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'OPEN'} ? ' active' : ''"
+               class="status-tab">
+                <span style="width:7px;height:7px;border-radius:50%;background:#2563eb;display:inline-block"></span>
+                Ouvert
+            </a>
+            <a th:href="@{/problems(status='IN_PROGRESS')}"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'IN_PROGRESS'} ? ' active' : ''"
+               class="status-tab">
+                <span style="width:7px;height:7px;border-radius:50%;background:#d97706;display:inline-block"></span>
+                En cours
+            </a>
+            <a th:href="@{/problems(status='RESOLVED')}"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'RESOLVED'} ? ' active' : ''"
+               class="status-tab">
+                <span style="width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block"></span>
+                Résolu
+            </a>
+            <a th:href="@{/problems(status='CLOSED')}"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'CLOSED'} ? ' active' : ''"
+               class="status-tab">
+                <span style="width:7px;height:7px;border-radius:50%;background:#a8a29e;display:inline-block"></span>
+                Fermé
+            </a>
+        </div>
+
+        <!-- Recherche client -->
+        <div class="fu d3" style="position:relative;margin-bottom:1.25rem;">
+            <svg style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-3)"
+                 width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
+            <input type="text" id="clientSearch"
+                   placeholder="Rechercher par demandeur, titre ou catégorie…"
+                   oninput="filterClientCards()"
+                   style="width:100%;padding:.75rem 1rem .75rem 2.5rem;background:var(--white);border:1px solid var(--cream-d);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none;box-shadow:var(--sh);transition:border-color .15s,box-shadow .15s;"
+                   onfocus="this.style.borderColor='var(--violet)';this.style.boxShadow='0 0 0 3px rgba(124,58,237,.1)'"
+                   onblur="this.style.borderColor='var(--cream-d)';this.style.boxShadow='var(--sh)'"/>
         </div>
-        <div>
-            <div class="lp-title">Liste des tickets</div>
-            <div class="lp-sub">Gérez et suivez tous les tickets de support</div>
+
+        <!-- Vide -->
+        <div th:if="${#lists.isEmpty(problems)}" class="empty-state fu d3">
+            <div class="empty-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <p style="font-size:1.05rem;font-weight:700;color:var(--text-2);margin-bottom:.4rem">
+                <span th:if="${selectedStatus == null}">Tout va bien !</span>
+                <span th:if="${selectedStatus != null}">Aucune demande trouvée</span>
+            </p>
+            <p style="font-size:.88rem;color:var(--text-3)">
+                <span th:if="${selectedStatus == null}">Vous n'avez aucune demande en cours.</span>
+                <span th:if="${selectedStatus != null}">Aucun résultat pour ce filtre.</span>
+            </p>
         </div>
-    </div>
 
-    <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Cartes tickets -->
+        <div th:if="${!#lists.isEmpty(problems)}" id="clientCards" class="fu d3">
+            <a th:each="problem : ${problems}"
+               th:href="@{/problems/{id}(id=${problem.id})}"
+               class="tc-card"
+               th:classappend="${problem.status != null and problem.status.name() == 'OPEN'} ? ' acc-open' :
+                               (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? ' acc-progress' :
+                               (${problem.status != null and problem.status.name() == 'RESOLVED'} ? ' acc-resolved' : ' acc-closed'))">
 
-        <!-- ╔══ SIDEBAR GAUCHE ══╗ -->
-        <div class="lg:w-72 w-full flex-shrink-0 space-y-4 fu" style="animation-delay:.08s">
+                <div class="tc-status-row">
+                    <!-- Statut -->
+                    <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}"
+                          class="tc-status-label s-open">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#2563eb;display:inline-block"></span>
+                        En attente de traitement
+                    </span>
+                    <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}"
+                          class="tc-status-label s-progress">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#d97706;display:inline-block;animation:pg 1.5s ease-in-out infinite"></span>
+                        En cours de traitement
+                    </span>
+                    <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}"
+                          class="tc-status-label s-resolved">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block"></span>
+                        Résolu
+                    </span>
+                    <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}"
+                          class="tc-status-label s-closed">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#a8a29e;display:inline-block"></span>
+                        Fermé
+                    </span>
 
-            <!-- Filtres -->
-            <div class="lp-card">
-                <div class="lp-card-title">
-                    <div class="lp-card-title-dot" style="background:var(--blue)"></div>
-                    Recherche &amp; Filtres
+                    <span class="tc-date"
+                          th:text="${'Envoyé le ' + #temporals.format(problem.createdAt, 'dd/MM/yyyy')}">—</span>
                 </div>
-                <form method="get">
-                    <label for="statusFilter" class="filter-label">Statut</label>
-                    <select id="statusFilter" name="status" onchange="this.form.submit()" class="filter-select">
-                        <option value="" th:selected="${selectedStatus == null}">Tous (sauf Fermé)</option>
-                        <option th:each="s : ${allStatuses}"
-                                th:value="${s}"
-                                th:text="${s.name() == 'OPEN' ? 'Ouvert' :
-                                        (s.name() == 'IN_PROGRESS' ? 'En cours' :
-                                        (s.name() == 'RESOLVED' ? 'Résolu' :
-                                        (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"
-                                th:selected="${s} == ${selectedStatus}">
-                        </option>
-                    </select>
 
-                    <label for="priorityFilter" class="filter-label">Priorité</label>
-                    <select id="priorityFilter" name="priority" onchange="this.form.submit()" class="filter-select">
-                        <option value="" th:selected="${selectedPriority == null}">Toutes</option>
-                        <option th:each="p : ${allPriorities}"
-                                th:value="${p}"
-                                th:text="${p.name() == 'LOW' ? 'Faible' :
-                                        (p.name() == 'MEDIUM' ? 'Normale' :
-                                        (p.name() == 'HIGH' ? 'Élevée' :
-                                        (p.name() == 'URGENT' ? 'Critique' : p.name())))}"
-                                th:selected="${p} == ${selectedPriority}">
-                        </option>
-                    </select>
+                <div class="tc-title" th:text="${problem.title}">Titre de la demande</div>
 
-                    <label for="yearFilter" class="filter-label">Année</label>
-                    <select id="yearFilter" name="year" onchange="this.form.submit()" class="filter-select">
-                        <option value="" th:selected="${selectedYear == null}">Toutes</option>
-                        <option th:each="y : ${allYears}" th:value="${y}" th:text="${y}"
-                                th:selected="${y == selectedYear}"></option>
-                    </select>
-
-                    <label for="monthFilter" class="filter-label">Mois</label>
-                    <select id="monthFilter" name="month" onchange="this.form.submit()" class="filter-select"
-                            th:disabled="${#lists.isEmpty(allMonths)}">
-                        <option value="" th:selected="${selectedMonth == null}">Tous</option>
-                        <option th:each="m : ${allMonths}"
-                                th:value="${m}"
-                                th:text="${#dates.format(#dates.create(selectedYear != null ? selectedYear : 2022, m, 1), 'MMMM')}"
-                                th:selected="${m == selectedMonth}"></option>
-                    </select>
-
-                    <label for="ticketSearch" class="filter-label">Recherche</label>
-                    <div class="search-wrap">
-                        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                        <input type="text" name="search" id="ticketSearch"
-                               th:value="${search}"
-                               placeholder="Titre, catégorie…"
-                               class="filter-input"/>
-                        <button type="button" id="resetSearch" class="reset-search-btn hidden"
-                                onclick="resetTicketSearch()">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <button type="button" onclick="resetFilters()" class="btn-reset">
+                <div class="tc-meta">
+                    <!-- Demandeur -->
+                    <span class="tc-meta-item" th:if="${problem.ticketUserInfo != null}">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="1 4 1 10 7 10"/>
-                            <path d="M3.51 15a9 9 0 1 0 .49-5"/>
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
                         </svg>
-                        Réinitialiser
-                    </button>
-                </form>
-            </div>
+                        <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}">Demandeur</span>
+                    </span>
 
-            <!-- Chart techniciens -->
-            <div class="lp-card">
-                <div class="lp-card-title">
-                    <div class="lp-card-title-dot" style="background:var(--amber)"></div>
-                    Répartition par technicien
+                    <span class="tc-meta-item">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                            <line x1="7" y1="7" x2="7.01" y2="7"/>
+                        </svg>
+                        <span th:text="${problem.category}">Catégorie</span>
+                    </span>
+
+                    <!-- Technicien assigné -->
+                    <span th:if="${problem.technician != null}" class="tc-tech-assigned">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        Suivi par <span th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}">Prénom Nom</span>
+                    </span>
+                    <span th:if="${problem.technician == null}" class="tc-tech-unassigned">
+                        Technicien en cours d'attribution…
+                    </span>
                 </div>
-                <div style="height:240px">
-                    <canvas id="chartTechnicians"></canvas>
-                </div>
-                <div th:if="${technicianStats == null or #lists.isEmpty(technicianStats)}"
-                     style="text-align:center;font-size:.77rem;color:var(--d-muted);margin-top:.5rem">
-                    Aucun ticket assigné sur cette période.
-                </div>
-            </div>
+            </a>
+        </div>
+
+        <!-- Pagination client -->
+        <div id="pagination-bottom" class="flex justify-center gap-1.5 mt-5 flex-wrap fu d3" th:if="${totalPages > 1}">
+            <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+               th:href="@{/problems(page=${i},size=8,status=${selectedStatus})} + '#pagination-bottom'"
+               th:classappend="${currentPage == i} ? ' active' : ''"
+               class="pag-btn">
+                <span th:text="${i}"></span>
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- ════════════════════════════════════════
+         VUE ADMIN / MEMBRE
+    ════════════════════════════════════════ -->
+    <div sec:authorize="hasAnyRole('ADMIN','MEMBER')">
+
+        <div class="fu d1" style="margin-bottom:2rem">
+            <h1 class="lp-title">Tous les tickets</h1>
+            <p class="lp-sub">Gérez et suivez tous les tickets de support.</p>
+        </div>
+
+        <!-- Bande de stats -->
+        <div class="flex flex-wrap gap-3 mb-5 fu d2">
+
+            <a th:href="@{/problems(status='OPEN')}"
+               class="stat-chip"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'OPEN'} ? ' stat-chip--active-blue' : ''">
+                <span class="stat-dot" style="background:#2563eb"></span>
+                <span class="stat-label">Ouverts</span>
+                <span class="stat-count" th:text="${countOpen}">0</span>
+            </a>
+
+            <a th:href="@{/problems(status='IN_PROGRESS')}"
+               class="stat-chip"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'IN_PROGRESS'} ? ' stat-chip--active-amber' : ''">
+                <span class="stat-dot" style="background:#d97706"></span>
+                <span class="stat-label">En cours</span>
+                <span class="stat-count" th:text="${countInProgress}">0</span>
+            </a>
+
+            <a th:href="@{/problems(status='OPEN',priority='URGENT')}"
+               class="stat-chip"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'OPEN' and selectedPriority != null and selectedPriority.name() == 'URGENT'} ? ' stat-chip--active-red' : ''"
+               th:style="${countUrgent > 0} ? 'border-color:#fecaca;' : ''">
+                <span class="stat-dot" th:style="${countUrgent > 0} ? 'background:#dc2626' : 'background:#a8a29e'"></span>
+                <span class="stat-label">Urgents</span>
+                <span class="stat-count"
+                      th:text="${countUrgent}"
+                      th:style="${countUrgent > 0} ? 'color:#dc2626;background:#fef2f2;' : ''">0</span>
+            </a>
+
+            <a th:href="@{/problems(unassigned=true)}"
+               class="stat-chip"
+               th:classappend="${unassigned != null and unassigned} ? ' stat-chip--active-amber' : ''"
+               th:style="${countUnassigned > 0 and (unassigned == null or !unassigned)} ? 'border-color:#fde68a;' : ''">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                     th:stroke="${countUnassigned > 0} ? '#d97706' : '#a8a29e'"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span class="stat-label">Non assignés</span>
+                <span class="stat-count"
+                      th:text="${countUnassigned}"
+                      th:style="${countUnassigned > 0} ? 'color:#d97706;background:#fffbeb;' : ''">0</span>
+            </a>
 
         </div>
 
-        <!-- ╔══ LISTE TICKETS ══╗ -->
-        <div class="flex-1 min-w-0 fu" style="animation-delay:.13s">
-            <div class="lp-card">
+        <div class="flex flex-col lg:flex-row gap-5 items-start">
 
-                <!-- Pagination info -->
-                <div class="pag-info mb-4">
-                    Affichage
-                    <strong th:text="${pageStart}">1</strong>–<strong th:text="${pageEnd}">8</strong>
-                    sur <strong th:text="${totalProblems}">0</strong> ticket<span th:if="${totalProblems > 1}">s</span>
-                </div>
+            <!-- Sidebar -->
+            <div class="lg:w-64 w-full flex-shrink-0 space-y-4 fu d2">
 
-                <!-- Empty state -->
-                <div th:if="${#lists.isEmpty(problems)}" class="empty-state">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                         style="margin:0 auto 1rem;display:block;opacity:.3">
-                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                        <rect x="9" y="3" width="6" height="4" rx="2"/>
-                        <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
-                    </svg>
-                    <p style="font-size:.9rem;font-weight:600;margin-bottom:.3rem">Aucun ticket trouvé</p>
-                    <p style="font-size:.78rem">Modifiez vos filtres pour voir plus de résultats</p>
-                </div>
+                <div class="lp-card">
+                    <div class="lp-card-title">Filtres</div>
+                    <form method="get">
+                        <label for="statusFilter" class="filter-label">Statut</label>
+                        <select id="statusFilter" name="status" onchange="this.form.submit()" class="filter-select">
+                            <option value="" th:selected="${selectedStatus == null}">Tous (sauf Fermé)</option>
+                            <option th:each="s : ${allStatuses}"
+                                    th:value="${s}"
+                                    th:text="${s.name() == 'OPEN' ? 'Ouvert' :
+                                            (s.name() == 'IN_PROGRESS' ? 'En cours' :
+                                            (s.name() == 'RESOLVED' ? 'Résolu' :
+                                            (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"
+                                    th:selected="${s} == ${selectedStatus}">
+                            </option>
+                        </select>
 
-                <!-- Ticket rows -->
-                <div th:if="${!#lists.isEmpty(problems)}" id="tableBody">
-                    <div th:each="problem : ${problems}"
-                         th:classappend="${problem.technician != null and problem.technician.id == currentUser.id} ? 'mine' : ''"
-                         class="ticket-row"
-                         th:style="${problem.status != null and problem.status.name() == 'OPEN'} ? '--row-accent:#38bdf8' :
-                                   (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? '--row-accent:#f59e0b' :
-                                   (${problem.status != null and problem.status.name() == 'RESOLVED'} ? '--row-accent:#10b981' : '--row-accent:#6b7280'))"
-                         th:onclick="'window.location.href=\'' + @{/problems/{id}(id=${problem.id})} + '\';'">
+                        <label for="priorityFilter" class="filter-label">Priorité</label>
+                        <select id="priorityFilter" name="priority" onchange="this.form.submit()" class="filter-select">
+                            <option value="" th:selected="${selectedPriority == null}">Toutes</option>
+                            <option th:each="p : ${allPriorities}"
+                                    th:value="${p}"
+                                    th:text="${p.name() == 'LOW' ? 'Faible' :
+                                            (p.name() == 'MEDIUM' ? 'Normale' :
+                                            (p.name() == 'HIGH' ? 'Élevée' :
+                                            (p.name() == 'URGENT' ? 'Critique' : p.name())))}"
+                                    th:selected="${p} == ${selectedPriority}">
+                            </option>
+                        </select>
 
-                        <!-- Top row: id + title + badges + actions -->
-                        <div class="flex items-start justify-between gap-3">
-                            <div style="flex:1;min-width:0">
-                                <div class="flex items-center gap-2 flex-wrap mb-1">
-                                    <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
-                                    <span class="ticket-title" th:text="${problem.title}">Titre</span>
-                                </div>
-                                <div class="flex items-center gap-1.5 flex-wrap">
-                                    <!-- Admin badge -->
-                                    <span th:if="${problem.user != null and problem.user.role != null and problem.user.role.name() == 'ADMIN'}"
-                                          class="badge b-admin">Admin</span>
-                                    <!-- Mine badge -->
-                                    <span th:if="${problem.technician != null and problem.technician.id == currentUser.id}"
-                                          class="badge b-mine">
-                                        <span class="bdot" style="background:#14b8a6"></span>Mon ticket
-                                    </span>
-                                    <!-- Status badge -->
-                                    <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}"      class="badge b-open">
-                                        <span class="bdot" style="background:#38bdf8"></span>Ouvert
-                                    </span>
-                                    <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}" class="badge b-progress">
-                                        <span class="bdot" style="background:#f59e0b"></span>En cours
-                                    </span>
-                                    <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}"  class="badge b-resolved">
-                                        <span class="bdot" style="background:#10b981"></span>Résolu
-                                    </span>
-                                    <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}"    class="badge b-closed">
-                                        <span class="bdot" style="background:#6b7280"></span>Fermé
-                                    </span>
-                                    <!-- Priority badge -->
-                                    <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                                    <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
-                                    <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
-                                    <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">Critique</span>
-                                </div>
-                            </div>
+                        <label for="yearFilter" class="filter-label">Année</label>
+                        <select id="yearFilter" name="year" onchange="this.form.submit()" class="filter-select">
+                            <option value="" th:selected="${selectedYear == null}">Toutes</option>
+                            <option th:each="y : ${allYears}" th:value="${y}" th:text="${y}"
+                                    th:selected="${y == selectedYear}"></option>
+                        </select>
 
-                            <!-- Admin actions -->
-                            <div sec:authorize="hasRole('ADMIN')" class="flex items-center gap-1.5 flex-shrink-0"
-                                 onclick="event.stopPropagation()">
-                                <a th:href="@{'/problems/update/' + ${problem.id}}"
-                                   class="act-btn edit" title="Modifier">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                    </svg>
-                                </a>
-                                <form th:action="@{'/problems/' + ${problem.id} + '/close'}"
-                                      method="post"
-                                      th:if="${problem.status != null and problem.status.name() != 'CLOSED'}"
-                                      style="display:inline">
-                                    <button type="submit" class="act-btn close" title="Clôturer"
-                                            onclick="return confirm('Clôturer ce ticket ?')">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
+                        <label for="monthFilter" class="filter-label">Mois</label>
+                        <select id="monthFilter" name="month" onchange="this.form.submit()" class="filter-select"
+                                th:disabled="${#lists.isEmpty(allMonths)}">
+                            <option value="" th:selected="${selectedMonth == null}">Tous</option>
+                            <option th:each="m : ${allMonths}"
+                                    th:value="${m}"
+                                    th:text="${#dates.format(#dates.create(selectedYear != null ? selectedYear : 2022, m, 1), 'MMMM')}"
+                                    th:selected="${m == selectedMonth}"></option>
+                        </select>
+
+                        <label for="ticketSearch" class="filter-label">Recherche</label>
+                        <div class="search-wrap">
+                            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <input type="text" name="search" id="ticketSearch"
+                                   th:value="${search}"
+                                   placeholder="Titre, catégorie…"
+                                   class="filter-input"/>
+                            <button type="button" id="resetSearch" class="reset-search-btn hidden"
+                                    onclick="resetTicketSearch()">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
                         </div>
 
-                        <!-- Meta grid -->
-                        <div class="ticket-meta-grid">
-                            <div class="meta-item">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--d-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
-                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                                    <line x1="7" y1="7" x2="7.01" y2="7"/>
-                                </svg>
-                                <div style="min-width:0">
-                                    <div class="meta-label">Catégorie</div>
-                                    <div class="meta-value" th:text="${problem.category}">—</div>
-                                </div>
-                            </div>
-                            <div class="meta-item">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--d-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                                    <polyline points="9 22 9 12 15 12 15 22"/>
-                                </svg>
-                                <div style="min-width:0">
-                                    <div class="meta-label">Entreprise</div>
-                                    <div class="meta-value"
-                                         th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}">—</div>
-                                </div>
-                            </div>
-                            <div class="meta-item">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--d-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                <div style="min-width:0">
-                                    <div class="meta-label">Technicien</div>
-                                    <div th:if="${problem.technician != null}">
-                                        <div th:if="${problem.technician.id == currentUser.id}" class="meta-value mine-tag">Moi</div>
-                                        <div th:if="${problem.technician.id != currentUser.id}" class="meta-value"
-                                             th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></div>
+                        <button type="button" onclick="resetFilters()" class="btn-reset">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="1 4 1 10 7 10"/>
+                                <path d="M3.51 15a9 9 0 1 0 .49-5"/>
+                            </svg>
+                            Réinitialiser
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Chart techniciens -->
+                <div class="lp-card">
+                    <div class="lp-card-title">Par technicien</div>
+                    <div style="height:220px">
+                        <canvas id="chartTechnicians"></canvas>
+                    </div>
+                    <div th:if="${technicianStats == null or #lists.isEmpty(technicianStats)}"
+                         style="text-align:center;font-size:.77rem;color:var(--text-3);margin-top:.5rem">
+                        Aucun ticket assigné sur cette période.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Liste tickets -->
+            <div class="flex-1 min-w-0 fu d3">
+                <div class="lp-card">
+
+                    <div class="pag-info">
+                        <strong th:text="${totalProblems}">0</strong>
+                        ticket<span th:if="${totalProblems > 1}">s</span>
+                        <span th:if="${totalProblems > 0}">
+                            — page <strong th:text="${currentPage}">1</strong> sur <strong th:text="${totalPages}">1</strong>
+                        </span>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(problems)}" class="empty-state">
+                        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"
+                             style="margin:0 auto 1rem;display:block;opacity:.2">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="2"/>
+                            <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
+                        </svg>
+                        <p style="font-size:.95rem;font-weight:700;color:var(--text-2);margin-bottom:.3rem">Aucun ticket trouvé</p>
+                        <p style="font-size:.83rem;color:var(--text-3)">Modifiez vos filtres pour voir plus de résultats</p>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(problems)}" id="tableBody">
+                        <div th:each="problem : ${problems}"
+                             class="ticket-row"
+                             th:style="${problem.status != null and problem.status.name() == 'OPEN'} ? '--row-accent:#2563eb' :
+                                       (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? '--row-accent:#d97706' :
+                                       (${problem.status != null and problem.status.name() == 'RESOLVED'} ? '--row-accent:#16a34a' : '--row-accent:#d6d3d1'))"
+                             th:onclick="'window.location.href=\'' + @{/problems/{id}(id=${problem.id})} + '\';'">
+
+                            <div class="flex items-start justify-between gap-3">
+                                <div style="flex:1;min-width:0">
+                                    <div class="flex items-center gap-2 flex-wrap mb-1.5">
+                                        <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
+                                        <span class="ticket-title" th:text="${problem.title}">Titre</span>
                                     </div>
-                                    <div th:if="${problem.technician == null}" class="meta-value unassigned">Non assigné</div>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span th:if="${problem.technician != null and problem.technician.id == currentUser.id}"
+                                              class="badge b-mine">
+                                            <span class="bdot" style="background:#16a34a"></span>Mon ticket
+                                        </span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}" class="badge b-open">
+                                            <span class="bdot" style="background:#2563eb"></span>Ouvert
+                                        </span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}" class="badge b-progress">
+                                            <span class="bdot" style="background:#d97706"></span>En cours
+                                        </span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}" class="badge b-resolved">
+                                            <span class="bdot" style="background:#16a34a"></span>Résolu
+                                        </span>
+                                        <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}" class="badge b-closed">
+                                            <span class="bdot" style="background:#a8a29e"></span>Fermé
+                                        </span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
+                                        <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">Critique</span>
+                                    </div>
+                                </div>
+
+                                <div sec:authorize="hasRole('ADMIN')" class="flex items-center gap-1.5 flex-shrink-0"
+                                     onclick="event.stopPropagation()">
+                                    <a th:href="@{'/problems/update/' + ${problem.id}}"
+                                       class="act-btn edit" title="Modifier">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                    </a>
+                                    <form th:action="@{'/problems/' + ${problem.id} + '/close'}"
+                                          method="post"
+                                          th:if="${problem.status != null and problem.status.name() != 'CLOSED'}"
+                                          style="display:inline">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <button type="submit" class="act-btn close" title="Clôturer"
+                                                onclick="return confirm('Clôturer ce ticket ?')">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-                            <div class="meta-item">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--d-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                                    <line x1="3" y1="10" x2="21" y2="10"/>
-                                </svg>
-                                <div>
-                                    <div class="meta-label">Créé le</div>
-                                    <div class="meta-value" th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}">—</div>
+
+                            <div class="ticket-meta-grid">
+                                <div class="meta-item">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
+                                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                    </svg>
+                                    <div style="min-width:0">
+                                        <div class="meta-label">Catégorie</div>
+                                        <div class="meta-value" th:text="${problem.category}">—</div>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                        <polyline points="9 22 9 12 15 12 15 22"/>
+                                    </svg>
+                                    <div style="min-width:0">
+                                        <div class="meta-label">Entreprise</div>
+                                        <div class="meta-value"
+                                             th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}">—</div>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                    <div style="min-width:0">
+                                        <div class="meta-label">Technicien</div>
+                                        <div th:if="${problem.technician != null}">
+                                            <div th:if="${problem.technician.id == currentUser.id}" class="meta-value mine-tag">Moi</div>
+                                            <div th:if="${problem.technician.id != currentUser.id}" class="meta-value"
+                                                 th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></div>
+                                        </div>
+                                        <div th:if="${problem.technician == null}" class="meta-value unassigned">Non assigné</div>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                    <div>
+                                        <div class="meta-label">Créé le</div>
+                                        <div class="meta-value" th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}">—</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Pagination -->
-                <div id="pagination-bottom" class="flex justify-center gap-1.5 mt-5 flex-wrap" th:if="${totalPages > 1}">
-                    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-                       th:href="@{/problems(page=${i},size=8,status=${selectedStatus},priority=${selectedPriority},year=${selectedYear},month=${selectedMonth},search=${search})} + '#pagination-bottom'"
-                       th:classappend="${currentPage == i} ? ' active' : ''"
-                       class="pag-btn">
-                        <span th:text="${i}"></span>
-                    </a>
-                </div>
+                    <div id="pagination-bottom" class="flex justify-center gap-1.5 mt-5 flex-wrap" th:if="${totalPages > 1}">
+                        <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+                           th:href="@{/problems(page=${i},size=8,status=${selectedStatus},priority=${selectedPriority},year=${selectedYear},month=${selectedMonth},search=${search})} + '#pagination-bottom'"
+                           th:classappend="${currentPage == i} ? ' active' : ''"
+                           class="pag-btn">
+                            <span th:text="${i}"></span>
+                        </a>
+                    </div>
 
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
+        function filterClientCards() {
+            var q     = document.getElementById('clientSearch').value.trim().toLowerCase();
+            var cards = document.querySelectorAll('#clientCards .tc-card');
+            cards.forEach(function(card) {
+                card.style.display = card.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
         function resetFilters() {
-            document.getElementById('statusFilter').value   = '';
-            document.getElementById('priorityFilter').value = '';
-            document.getElementById('yearFilter').value     = '';
-            document.getElementById('monthFilter').value    = '';
-            document.getElementById('ticketSearch').value   = '';
-            document.getElementById('ticketSearch').closest('form').submit();
+            var sf = document.getElementById('statusFilter');
+            var pf = document.getElementById('priorityFilter');
+            var yf = document.getElementById('yearFilter');
+            var mf = document.getElementById('monthFilter');
+            var ts = document.getElementById('ticketSearch');
+            if (sf) sf.value = '';
+            if (pf) pf.value = '';
+            if (yf) yf.value = '';
+            if (mf) mf.value = '';
+            if (ts) { ts.value = ''; ts.closest('form').submit(); }
         }
 
         function resetTicketSearch() {
-            document.getElementById('ticketSearch').value = '';
+            var el = document.getElementById('ticketSearch');
+            if (el) { el.value = ''; }
             document.getElementById('resetSearch').classList.add('hidden');
             filterTickets();
         }
@@ -665,20 +896,23 @@
             var input    = document.getElementById('ticketSearch');
             var resetBtn = document.getElementById('resetSearch');
             var body     = document.getElementById('tableBody');
-            var q        = input.value.trim().toLowerCase();
+            if (!input) return;
+            var q = input.value.trim().toLowerCase();
             if (body) {
                 Array.from(body.children).forEach(function (row) {
                     row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
                 });
             }
-            resetBtn.classList.toggle('hidden', q === '');
+            if (resetBtn) resetBtn.classList.toggle('hidden', q === '');
         }
 
         document.addEventListener('DOMContentLoaded', function () {
             var searchInput = document.getElementById('ticketSearch');
-            var form        = searchInput.closest('form');
-            searchInput.addEventListener('input', filterTickets);
-            form.addEventListener('submit', function (e) { e.preventDefault(); });
+            if (searchInput) {
+                var form = searchInput.closest('form');
+                searchInput.addEventListener('input', filterTickets);
+                if (form) form.addEventListener('submit', function (e) { e.preventDefault(); });
+            }
             if (window.location.hash === '#pagination-bottom') {
                 var pag = document.getElementById('pagination-bottom');
                 if (pag) pag.scrollIntoView({ behavior: 'smooth' });
@@ -689,11 +923,11 @@
 
     <script th:if="${technicianStats != null and !#lists.isEmpty(technicianStats)}" th:inline="javascript">
         /*<![CDATA[*/
-        Chart.defaults.color   = '#6e90b5';
+        Chart.defaults.color       = '#78716c';
         Chart.defaults.font.family = "'DM Sans', sans-serif";
 
         var labels = /*[[${technicianStats.![technicianName]}]]*/ [];
-        var data   = /*[[${technicianStats.![ticketCount]}]]*/   [];
+        var data   = /*[[${technicianStats.![ticketCount]}]]*/ [];
 
         if (document.getElementById('chartTechnicians') && typeof Chart !== 'undefined') {
             new Chart(document.getElementById('chartTechnicians').getContext('2d'), {
@@ -703,8 +937,8 @@
                     datasets: [{
                         label: 'Tickets assignés',
                         data: data,
-                        backgroundColor: 'rgba(59,130,246,.7)',
-                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(124,58,237,.15)',
+                        borderColor: '#7c3aed',
                         borderWidth: 1.5,
                         borderRadius: 6,
                         borderSkipped: false
@@ -716,9 +950,11 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#0c1628',
-                            borderColor: '#1b2d47',
+                            backgroundColor: '#ffffff',
+                            borderColor: '#ede9e3',
                             borderWidth: 1,
+                            titleColor: '#1c1917',
+                            bodyColor: '#78716c',
                             padding: 10,
                             cornerRadius: 8,
                             callbacks: {
@@ -732,17 +968,20 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1, font: { size: 11 }, callback: function (v) { return Number.isInteger(v) ? v : null; } },
-                            grid: { color: 'rgba(255,255,255,.04)', drawBorder: false },
+                            ticks: {
+                                stepSize: 1, font: { size: 11 }, color: '#a8a29e',
+                                callback: function (v) { return Number.isInteger(v) ? v : null; }
+                            },
+                            grid: { color: 'rgba(0,0,0,.05)', drawBorder: false },
                             border: { display: false }
                         },
                         x: {
-                            ticks: { font: { size: 11 }, color: '#6e90b5' },
+                            ticks: { font: { size: 11 }, color: '#a8a29e' },
                             grid: { display: false, drawBorder: false },
                             border: { display: false }
                         }
                     },
-                    animation: { duration: 900, easing: 'easeInOutQuart' }
+                    animation: { duration: 700, easing: 'easeInOutQuart' }
                 }
             });
         }
