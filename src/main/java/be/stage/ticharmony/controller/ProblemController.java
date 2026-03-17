@@ -62,9 +62,7 @@ public class ProblemController {
             service.updateProblem(problem);
         }
 
-        model.addAttribute("problem", problem);
-        model.addAttribute("module", "problems");
-        return "formResolveProblem";
+        return "redirect:/problems/" + id;
     }
 
     /**
@@ -165,6 +163,7 @@ public class ProblemController {
             @RequestParam(name = "month", required = false) Integer monthFilter,
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "unassigned", required = false) Boolean unassigned,
+            @RequestParam(name = "technicianId", required = false) Long technicianId,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "8") int size,
             Model model,
@@ -181,9 +180,9 @@ public class ProblemController {
             allProblems = service.getProblems();
         }
 
-        // 2b. Stats globales pour la bande de résumé (admin/membre uniquement)
+        // 2b. Stats globales (admin/membre uniquement)
+        List<Problem> allList = StreamSupport.stream(allProblems.spliterator(), false).collect(Collectors.toList());
         if (currentUser.getRole() != UserRole.CLIENT) {
-            List<Problem> allList = StreamSupport.stream(allProblems.spliterator(), false).collect(Collectors.toList());
             long countOpen       = allList.stream().filter(p -> p.getStatus() == Status.OPEN).count();
             long countInProgress = allList.stream().filter(p -> p.getStatus() == Status.IN_PROGRESS).count();
             long countUnassigned = allList.stream().filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED).count();
@@ -192,6 +191,13 @@ public class ProblemController {
             model.addAttribute("countInProgress", countInProgress);
             model.addAttribute("countUnassigned", countUnassigned);
             model.addAttribute("countUrgent",     countUrgent);
+
+            // Stats techniciens sur tous les tickets (pas juste filtrés)
+            List<TechnicianStatsDTO> allTechStats = service.getTechnicianStats(allList, currentUser);
+            long maxTechCount = allTechStats.stream().mapToLong(TechnicianStatsDTO::getTicketCount).max().orElse(1);
+            model.addAttribute("allTechStats",  allTechStats);
+            model.addAttribute("maxTechCount",  maxTechCount);
+            model.addAttribute("technicianId",  technicianId);
         }
 
         // 2. Années/mois disponibles (pour les filtres dropdown)
@@ -228,6 +234,7 @@ public class ProblemController {
                 })
                 .filter(p -> priorityFilter == null || p.getPriority() == priorityFilter)
                 .filter(p -> unassigned == null || !unassigned || p.getTechnician() == null)
+                .filter(p -> technicianId == null || (p.getTechnician() != null && p.getTechnician().getId().equals(technicianId)))
                 .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
                 .filter(p -> monthFilter == null || p.getCreatedAt().getMonthValue() == monthFilter)
                 .filter(p -> {
@@ -259,9 +266,6 @@ public class ProblemController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalProblems", totalProblems);
 
-        // 6. Pour le diagramme technicien : via ProblemService + ton DTO
-        List<TechnicianStatsDTO> technicianStats = service.getTechnicianStats(filtered, currentUser);
-
         // 7. Attributs pour la vue
         model.addAttribute("problems", pageList);
         model.addAttribute("allStatuses", Status.values());
@@ -272,7 +276,6 @@ public class ProblemController {
         model.addAttribute("selectedYear", yearFilter);
         model.addAttribute("allMonths", allMonths);
         model.addAttribute("selectedMonth", monthFilter);
-        model.addAttribute("technicianStats", technicianStats);
         model.addAttribute("search", search);
         model.addAttribute("unassigned", unassigned);
         model.addAttribute("currentUser", currentUser);

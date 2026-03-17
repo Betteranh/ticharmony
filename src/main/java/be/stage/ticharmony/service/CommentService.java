@@ -7,6 +7,7 @@ import be.stage.ticharmony.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ public class CommentService {
         comment.setProblem(problem);
         comment.setAuthor(author);
         comment.setContent(content);
+        comment.setCreatedAt(LocalDateTime.now());
         return commentRepository.save(comment);
     }
 }

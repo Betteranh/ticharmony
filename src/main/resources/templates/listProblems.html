@@ -6,8 +6,7 @@
 <head>
     <title>Mes demandes – TicHarmony</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
+<style>
         body { background: #faf9f7 !important; }
 
         :root {
@@ -352,6 +351,65 @@
         .pag-btn:not(.active) { background: var(--white); border: 1px solid var(--cream-d); color: var(--text-2); }
         .pag-btn:not(.active):hover { background: var(--cream); color: var(--text); }
 
+        /* ── Tech chips (sidebar) ── */
+        .tech-chip {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .55rem .7rem;
+            border-radius: 10px;
+            border: 1.5px solid transparent;
+            text-decoration: none;
+            color: var(--text);
+            transition: background .15s, border-color .15s;
+            cursor: pointer;
+        }
+        .tech-chip:hover { background: var(--cream); border-color: var(--cream-d); }
+        .tech-chip--active { background: var(--violet-bg); border-color: var(--violet-br); }
+        .tech-avatar {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: var(--cream-d);
+            color: var(--text-2);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Sora', sans-serif;
+            font-size: .75rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        .tech-chip--active .tech-avatar { background: var(--violet); color: #fff; }
+        .tech-name {
+            font-family: 'Sora', sans-serif;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tech-count {
+            font-family: 'Sora', sans-serif;
+            font-size: .75rem;
+            font-weight: 800;
+            color: var(--text-2);
+            flex-shrink: 0;
+        }
+        .tech-chip--active .tech-count { color: var(--violet); }
+        .tech-bar-bg {
+            height: 3px;
+            background: var(--cream-d);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .tech-bar-fill {
+            height: 100%;
+            background: var(--violet);
+            border-radius: 99px;
+            transition: width .3s ease;
+        }
+        .tech-chip--active .tech-bar-fill { background: var(--violet); }
+
         /* ── Stat chips ── */
         .stat-chip {
             display: inline-flex;
@@ -694,15 +752,46 @@
                     </form>
                 </div>
 
-                <!-- Chart techniciens -->
+                <!-- Filtres techniciens -->
                 <div class="lp-card">
                     <div class="lp-card-title">Par technicien</div>
-                    <div style="height:220px">
-                        <canvas id="chartTechnicians"></canvas>
+
+                    <div th:if="${allTechStats == null or #lists.isEmpty(allTechStats)}"
+                         style="font-size:.8rem;color:var(--text-3);text-align:center;padding:.5rem 0">
+                        Aucun ticket assigné.
                     </div>
-                    <div th:if="${technicianStats == null or #lists.isEmpty(technicianStats)}"
-                         style="text-align:center;font-size:.77rem;color:var(--text-3);margin-top:.5rem">
-                        Aucun ticket assigné sur cette période.
+
+                    <div th:if="${allTechStats != null and !#lists.isEmpty(allTechStats)}" style="display:flex;flex-direction:column;gap:.45rem;">
+                        <!-- Tous -->
+                        <a th:href="@{/problems(status=${selectedStatus},priority=${selectedPriority},year=${selectedYear},month=${selectedMonth},search=${search})}"
+                           class="tech-chip"
+                           th:classappend="${technicianId == null} ? ' tech-chip--active' : ''">
+                            <span class="tech-avatar" style="background:var(--violet-bg);color:var(--violet);">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </span>
+                            <span class="tech-name">Tous</span>
+                        </a>
+
+                        <a th:each="ts : ${allTechStats}"
+                           th:href="@{/problems(technicianId=${ts.technicianId},status=${selectedStatus},priority=${selectedPriority},year=${selectedYear},month=${selectedMonth},search=${search})}"
+                           class="tech-chip"
+                           th:classappend="${technicianId != null and technicianId == ts.technicianId} ? ' tech-chip--active' : ''">
+                            <span class="tech-avatar"
+                                  th:text="${#strings.substring(ts.technicianName, 0, 1)}">T</span>
+                            <div style="flex:1;min-width:0;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
+                                    <span class="tech-name" th:text="${ts.technicianName}">Nom</span>
+                                    <span class="tech-count" th:text="${ts.ticketCount}">0</span>
+                                </div>
+                                <div class="tech-bar-bg">
+                                    <div class="tech-bar-fill"
+                                         th:style="'width:' + ${maxTechCount > 0 ? (ts.ticketCount * 100 / maxTechCount) : 0} + '%'"></div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
@@ -921,72 +1010,6 @@
         /*]]>*/
     </script>
 
-    <script th:if="${technicianStats != null and !#lists.isEmpty(technicianStats)}" th:inline="javascript">
-        /*<![CDATA[*/
-        Chart.defaults.color       = '#78716c';
-        Chart.defaults.font.family = "'DM Sans', sans-serif";
-
-        var labels = /*[[${technicianStats.![technicianName]}]]*/ [];
-        var data   = /*[[${technicianStats.![ticketCount]}]]*/ [];
-
-        if (document.getElementById('chartTechnicians') && typeof Chart !== 'undefined') {
-            new Chart(document.getElementById('chartTechnicians').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Tickets assignés',
-                        data: data,
-                        backgroundColor: 'rgba(124,58,237,.15)',
-                        borderColor: '#7c3aed',
-                        borderWidth: 1.5,
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#ffffff',
-                            borderColor: '#ede9e3',
-                            borderWidth: 1,
-                            titleColor: '#1c1917',
-                            bodyColor: '#78716c',
-                            padding: 10,
-                            cornerRadius: 8,
-                            callbacks: {
-                                label: function (ctx) {
-                                    var v = ctx.parsed.y;
-                                    return '  ' + v + ' ticket' + (v > 1 ? 's' : '');
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1, font: { size: 11 }, color: '#a8a29e',
-                                callback: function (v) { return Number.isInteger(v) ? v : null; }
-                            },
-                            grid: { color: 'rgba(0,0,0,.05)', drawBorder: false },
-                            border: { display: false }
-                        },
-                        x: {
-                            ticks: { font: { size: 11 }, color: '#a8a29e' },
-                            grid: { display: false, drawBorder: false },
-                            border: { display: false }
-                        }
-                    },
-                    animation: { duration: 700, easing: 'easeInOutQuart' }
-                }
-            });
-        }
-        /*]]>*/
-    </script>
 </th:block>
 
 </html>
