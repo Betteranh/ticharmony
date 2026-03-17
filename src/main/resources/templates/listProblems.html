@@ -594,7 +594,8 @@
                                 </svg>
                                 <div style="min-width:0">
                                     <div class="meta-label">Entreprise</div>
-                                    <div class="meta-value" th:text="${problem.user.nomEntreprise}">—</div>
+                                    <div class="meta-value"
+                                         th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}">—</div>
                                 </div>
                             </div>
                             <div class="meta-item">

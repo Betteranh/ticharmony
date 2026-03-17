@@ -456,7 +456,8 @@
                         </div>
                         <div>
                             <div class="info-label">Client</div>
-                            <div class="info-value" th:text="${problem.user.nomEntreprise}">Entreprise</div>
+                            <div class="info-value"
+                                 th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}">Entreprise</div>
                         </div>
                     </div>
 

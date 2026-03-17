@@ -4,35 +4,31 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Créer un nouveau ticket</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+    <title>Signaler un problème</title>
     <style>
+        body { background: #faf9f7 !important; }
+
         :root {
-            --d-bg:      #070d1a;
-            --d-surface: #0c1628;
-            --d-card:    #0f1e33;
-            --d-card-h:  #132038;
-            --d-border:  #1b2d47;
-            --d-border-b:#253d5f;
-            --d-text:    #dde8f5;
-            --d-sub:     #6e90b5;
-            --d-muted:   #3d5470;
-            --blue:      #3b82f6;
-            --blue-l:    #60a5fa;
-            --sky:       #38bdf8;
-            --amber:     #f59e0b;
-            --emerald:   #10b981;
-            --red:       #ef4444;
-            --orange:    #f97316;
-            --slate-c:   #64748b;
+            --white:    #ffffff;
+            --cream:    #faf9f7;
+            --cream-d:  #ede9e3;
+            --text:     #1c1917;
+            --text-2:   #78716c;
+            --text-3:   #a8a29e;
+            --violet:   #7c3aed;
+            --violet-bg:#f5f3ff;
+            --violet-br:#ddd6fe;
+            --red:      #dc2626;
+            --green:    #16a34a;
+            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
         }
 
         .fc-root {
             font-family: 'DM Sans', sans-serif;
-            background: var(--d-bg);
-            color: var(--d-text);
-            min-height: calc(100vh - 64px);
-            padding: 2.5rem 0 5rem;
+            color: var(--text);
+            padding: 2.5rem 0 6rem;
+            max-width: 680px;
+            margin: 0 auto;
         }
 
         /* ── Back link ── */
@@ -40,679 +36,446 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-size: .83rem;
+            font-size: .85rem;
             font-weight: 600;
-            color: var(--d-sub);
+            color: var(--text-3);
             text-decoration: none;
-            transition: color .15s ease;
-            margin-bottom: 1.75rem;
+            margin-bottom: 2rem;
+            transition: color .15s;
         }
-        .back-link:hover { color: var(--blue-l); }
-        .back-link svg { transition: transform .15s ease; }
+        .back-link:hover { color: var(--violet); }
+        .back-link svg { transition: transform .15s; }
         .back-link:hover svg { transform: translateX(-3px); }
 
-        /* ── Page header ── */
-        .fc-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        .fc-header-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            background: rgba(59,130,246,.14);
-            border: 1px solid rgba(59,130,246,.25);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            animation: iconFloat 3s ease-in-out infinite;
-        }
-        @keyframes iconFloat {
-            0%,100% { transform: translateY(0); }
-            50%      { transform: translateY(-5px); }
-        }
-        .fc-title {
+        /* ── Page title ── */
+        .page-title {
             font-family: 'Sora', sans-serif;
-            font-size: 1.9rem;
+            font-size: 1.8rem;
             font-weight: 800;
+            color: var(--text);
             letter-spacing: -.03em;
-            color: var(--d-text);
-            margin-bottom: .4rem;
+            margin-bottom: .3rem;
         }
-        .fc-title span { color: var(--blue-l); }
-        .fc-subtitle {
-            font-size: .88rem;
-            color: var(--d-sub);
-        }
-
-        /* ── Form card ── */
-        .form-card {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 20px;
-            padding: 2.5rem;
+        .page-sub {
+            font-size: .95rem;
+            color: var(--text-2);
+            margin-bottom: 2.25rem;
         }
 
-        /* ── Section headers ── */
-        .section-header {
+        /* ── Step card ── */
+        .step-card {
+            background: var(--white);
+            border-radius: 18px;
+            box-shadow: var(--sh);
+            padding: 2rem;
+            margin-bottom: 1rem;
+        }
+        .step-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding-bottom: .75rem;
-            border-bottom: 1px solid var(--d-border);
+            gap: .85rem;
             margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--cream-d);
         }
-        .section-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .section-title {
+        .step-num {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: var(--violet);
+            color: #fff;
             font-family: 'Sora', sans-serif;
             font-size: .95rem;
+            font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1rem;
             font-weight: 700;
-            color: var(--d-text);
+            color: var(--text);
+        }
+        .step-subtitle {
+            font-size: .82rem;
+            color: var(--text-3);
         }
 
-        /* ── Labels ── */
+        /* ── Labels & inputs ── */
         .fc-label {
             display: block;
-            font-family: 'Sora', sans-serif;
-            font-size: .78rem;
+            font-size: .82rem;
             font-weight: 600;
-            letter-spacing: .04em;
-            text-transform: uppercase;
-            color: var(--d-sub);
-            margin-bottom: .55rem;
+            color: var(--text-2);
+            margin-bottom: .4rem;
         }
         .fc-label .req { color: var(--red); }
-
-        /* ── Inputs ── */
         .fc-input {
             width: 100%;
-            padding: .7rem 1rem;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border-b);
+            padding: .75rem 1rem;
+            background: var(--cream);
+            border: 1px solid var(--cream-d);
             border-radius: 10px;
-            color: var(--d-text);
+            color: var(--text);
             font-family: 'DM Sans', sans-serif;
-            font-size: .9rem;
+            font-size: .92rem;
             outline: none;
-            transition: border-color .2s ease, box-shadow .2s ease;
+            transition: border-color .2s, box-shadow .2s, background .2s;
         }
-        .fc-input::placeholder { color: var(--d-muted); }
+        .fc-input::placeholder { color: var(--text-3); }
         .fc-input:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+            border-color: var(--violet);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
         }
-        .fc-input.textarea { resize: none; min-height: 140px; }
+        textarea.fc-input { resize: none; min-height: 130px; line-height: 1.6; }
 
-        /* ── Char count ── */
-        .fc-hint {
-            font-size: .73rem;
-            color: var(--d-muted);
-            margin-top: .4rem;
-        }
-
-        /* ── Category radio grid ── */
+        /* ── Category grid ── */
         .cat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: .6rem;
         }
-        @media (max-width: 520px) { .cat-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .cat-grid { grid-template-columns: 1fr; } }
 
         .cat-card {
             display: flex;
-            align-items: flex-start;
-            gap: .65rem;
+            align-items: center;
+            gap: .75rem;
             padding: .9rem 1rem;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border);
+            background: var(--cream);
+            border: 2px solid var(--cream-d);
             border-radius: 12px;
             cursor: pointer;
-            transition: border-color .15s ease, background .15s ease;
+            transition: border-color .15s, background .15s;
             position: relative;
         }
-        .cat-card:hover {
-            border-color: var(--d-border-b);
-            background: var(--d-card-h);
-        }
-        .cat-card.selected {
-            border-color: var(--blue);
-            background: rgba(59,130,246,.08);
-        }
-        .cat-card input[type=radio] {
-            position: absolute;
-            opacity: 0;
-            width: 0; height: 0;
-        }
-        .cat-emoji {
-            font-size: 1.2rem;
-            line-height: 1;
-            margin-top: .1rem;
-        }
+        .cat-card:hover { border-color: var(--violet-br); background: var(--violet-bg); }
+        .cat-card.selected { border-color: var(--violet); background: var(--violet-bg); }
+        .cat-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
+        .cat-emoji { font-size: 1.4rem; flex-shrink: 0; line-height: 1; }
         .cat-name {
             font-family: 'Sora', sans-serif;
-            font-size: .82rem;
+            font-size: .83rem;
             font-weight: 700;
-            color: var(--d-text);
-            margin-bottom: .15rem;
+            color: var(--text);
         }
-        .cat-desc {
-            font-size: .72rem;
-            color: var(--d-muted);
-        }
+        .cat-desc { font-size: .73rem; color: var(--text-3); margin-top: .1rem; }
 
-        /* ── Priority radio list ── */
+        /* ── Priority list ── */
         .prio-list { display: flex; flex-direction: column; gap: .5rem; }
 
         .prio-card {
             display: flex;
             align-items: center;
             gap: .85rem;
-            padding: .85rem 1rem;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border);
-            border-left: 3px solid transparent;
-            border-radius: 10px;
+            padding: .9rem 1rem;
+            background: var(--cream);
+            border: 2px solid var(--cream-d);
+            border-radius: 12px;
             cursor: pointer;
-            transition: border-color .15s ease, background .15s ease;
+            transition: border-color .15s, background .15s;
+            position: relative;
         }
-        .prio-card:hover { background: var(--d-card-h); border-color: var(--d-border-b); }
-        .prio-card.sel-low     { border-left-color: var(--slate-c); background: rgba(100,116,139,.07); }
-        .prio-card.sel-medium  { border-left-color: var(--blue);    background: rgba(59,130,246,.07);  }
-        .prio-card.sel-high    { border-left-color: var(--amber);   background: rgba(245,158,11,.07);  }
-        .prio-card.sel-urgent  { border-left-color: var(--red);     background: rgba(239,68,68,.07);   }
-        .prio-card input[type=radio] {
-            position: absolute;
-            opacity: 0;
-            width: 0; height: 0;
-        }
-        .prio-badge {
-            padding: .18rem .6rem;
-            border-radius: 6px;
+        .prio-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
+        .prio-card:hover { border-color: var(--violet-br); background: var(--violet-bg); }
+        .prio-card.sel-low    { border-color: #94a3b8; background: #f8fafc; }
+        .prio-card.sel-medium { border-color: #3b82f6; background: #eff6ff; }
+        .prio-card.sel-high   { border-color: #f97316; background: #fff7ed; }
+        .prio-card.sel-urgent { border-color: var(--red); background: #fef2f2; }
+
+        .prio-emoji { font-size: 1.2rem; flex-shrink: 0; }
+        .prio-name {
             font-family: 'Sora', sans-serif;
-            font-size: .68rem;
+            font-size: .88rem;
             font-weight: 700;
-            letter-spacing: .05em;
-            text-transform: uppercase;
-            white-space: nowrap;
-            flex-shrink: 0;
+            color: var(--text);
         }
-        .pb-low    { background: rgba(100,116,139,.15); color: #94a3b8; border: 1px solid rgba(100,116,139,.25); }
-        .pb-medium { background: rgba(59,130,246,.12);  color: #93c5fd; border: 1px solid rgba(59,130,246,.25);  }
-        .pb-high   { background: rgba(245,158,11,.12);  color: var(--amber); border: 1px solid rgba(245,158,11,.25); }
-        .pb-urgent { background: rgba(239,68,68,.12);   color: var(--red);   border: 1px solid rgba(239,68,68,.25);  }
+        .prio-desc { font-size: .78rem; color: var(--text-2); }
 
-        .prio-desc {
-            font-size: .8rem;
-            color: var(--d-sub);
-            flex: 1;
-        }
-
-        /* ── Description tips ── */
-        .desc-tips {
-            margin-top: .75rem;
-            padding: .9rem 1.1rem;
-            background: rgba(59,130,246,.06);
-            border: 1px solid rgba(59,130,246,.15);
-            border-radius: 10px;
-        }
-        .desc-tips ul { list-style: none; padding: 0; margin: 0; }
-        .desc-tips li {
-            display: flex;
-            align-items: flex-start;
-            gap: .5rem;
-            font-size: .76rem;
-            color: var(--d-sub);
-            padding: .2rem 0;
-        }
-        .desc-tips li::before {
-            content: '·';
-            color: var(--blue-l);
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        /* ── Error message ── */
+        /* ── Error ── */
         .fc-error {
-            padding: .9rem 1.1rem;
-            background: rgba(239,68,68,.1);
-            border: 1px solid rgba(239,68,68,.25);
+            padding: .9rem 1rem;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
             border-radius: 10px;
-            color: #fca5a5;
-            font-size: .85rem;
+            color: var(--red);
+            font-size: .88rem;
             font-weight: 600;
-            text-align: center;
         }
 
-        /* ── Submit / Cancel buttons ── */
+        /* ── Buttons ── */
         .btn-submit {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: .8rem 2rem;
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            gap: 9px;
+            padding: .95rem 2rem;
+            background: var(--violet);
             color: #fff;
             font-family: 'Sora', sans-serif;
-            font-size: .88rem;
+            font-size: .95rem;
             font-weight: 700;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
-            box-shadow: 0 4px 16px rgba(37,99,235,.3);
+            box-shadow: 0 4px 14px rgba(124,58,237,.28);
+            transition: background .15s, transform .15s;
         }
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(37,99,235,.4);
-        }
+        .btn-submit:hover { background: #6d28d9; transform: translateY(-1px); }
         .btn-cancel {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            padding: .8rem 1.8rem;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border-b);
-            color: var(--d-sub);
+            padding: .95rem 1.6rem;
+            background: var(--white);
+            border: 1px solid var(--cream-d);
+            color: var(--text-2);
             font-family: 'Sora', sans-serif;
-            font-size: .88rem;
+            font-size: .9rem;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 12px;
             text-decoration: none;
-            transition: background .15s ease, border-color .15s ease, color .15s ease;
+            transition: background .15s, color .15s;
         }
-        .btn-cancel:hover {
-            background: var(--d-card-h);
-            border-color: var(--d-border-b);
-            color: var(--d-text);
-        }
+        .btn-cancel:hover { background: var(--cream-d); color: var(--text); }
 
-        /* ── Sidebar cards ── */
-        .aside-card {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 16px;
-            padding: 1.4rem;
+        /* ── Contact footer ── */
+        .contact-footer {
+            text-align: center;
+            margin-top: 1.75rem;
+            font-size: .85rem;
+            color: var(--text-3);
         }
-        .aside-title {
-            font-family: 'Sora', sans-serif;
-            font-size: .88rem;
-            font-weight: 700;
-            color: var(--d-text);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .tip-item {
-            padding: .75rem .9rem;
-            border-radius: 9px;
-            margin-bottom: .5rem;
-        }
-        .tip-item:last-child { margin-bottom: 0; }
-        .tip-label {
-            font-family: 'Sora', sans-serif;
-            font-size: .78rem;
-            font-weight: 700;
-            margin-bottom: .2rem;
-        }
-        .tip-text {
-            font-size: .76rem;
-            color: var(--d-sub);
-            line-height: 1.5;
-        }
-
-        /* Urgent card */
-        .urgent-card {
-            background: linear-gradient(135deg, #0d1e38 0%, #0a1628 100%);
-            border: 1px solid rgba(59,130,246,.2);
-            border-top: 2px solid var(--blue);
-            border-radius: 16px;
-            padding: 1.4rem;
-        }
-        .urgent-title {
-            font-family: 'Sora', sans-serif;
-            font-size: .88rem;
-            font-weight: 700;
-            color: var(--d-text);
-            margin-bottom: .35rem;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-        .urgent-sub {
-            font-size: .76rem;
-            color: var(--d-sub);
-            margin-bottom: .9rem;
-        }
-        .urgent-btn {
-            display: flex;
-            align-items: center;
-            gap: .7rem;
-            padding: .7rem .9rem;
-            background: rgba(255,255,255,.06);
-            border: 1px solid var(--d-border-b);
-            border-radius: 9px;
-            color: var(--d-text);
-            text-decoration: none;
-            font-size: .8rem;
+        .contact-footer a {
+            color: var(--violet);
             font-weight: 600;
-            transition: background .15s ease;
-            margin-bottom: .45rem;
+            text-decoration: none;
         }
-        .urgent-btn:last-child { margin-bottom: 0; }
-        .urgent-btn:hover { background: rgba(255,255,255,.1); }
-        .urgent-btn-icon {
-            width: 28px; height: 28px;
-            border-radius: 7px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
+        .contact-footer a:hover { text-decoration: underline; }
 
         /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(18px); }
-            to   { opacity: 1; transform: translateY(0);    }
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        .fu { opacity: 0; animation: fadeUp .5s ease forwards; }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: var(--d-bg); }
-        ::-webkit-scrollbar-thumb { background: var(--d-border-b); border-radius: 3px; }
+        .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
+        .d1 { animation-delay: .04s; }
+        .d2 { animation-delay: .1s;  }
+        .d3 { animation-delay: .16s; }
+        .d4 { animation-delay: .22s; }
+        .d5 { animation-delay: .28s; }
     </style>
 </head>
 
 <div layout:fragment="content" class="fc-root">
 
-    <!-- ── BACK LINK ── -->
-    <a sec:authorize="hasRole('ADMIN')" th:href="@{/adminDashboard}" class="back-link fu" style="animation-delay:.02s">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Retour -->
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/adminDashboard}" class="back-link fu d1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
         </svg>
-        Retour au tableau de bord
+        Retour
     </a>
-    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="back-link fu" style="animation-delay:.02s">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="back-link fu d1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
         </svg>
-        Retour au tableau de bord
+        Retour
     </a>
 
-    <!-- ── PAGE HEADER ── -->
-    <div class="fc-header fu" style="animation-delay:.06s">
-        <div class="fc-header-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-        </div>
-        <h1 class="fc-title">Créer un <span>nouveau ticket</span></h1>
-        <p class="fc-subtitle">Décrivez votre problème pour obtenir une assistance rapide</p>
+    <!-- Titre -->
+    <div class="fu d1">
+        <h1 class="page-title">Signaler un problème</h1>
+        <p class="page-sub">Remplissez les 3 étapes ci-dessous — notre équipe vous répond sous 24h.</p>
     </div>
 
-    <!-- ── GRID ── -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    <form method="post" th:action="@{/problems/save}" th:object="${problem}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-        <!-- ╔══ FORM ══╗ -->
-        <div class="lg:col-span-2 form-card fu" style="animation-delay:.1s">
-            <form method="post" th:action="@{/problems/save}" th:object="${problem}" class="space-y-8">
-
-                <!-- Section : Informations de contact -->
+        <!-- Étape 1 — Vos coordonnées -->
+        <div class="step-card fu d2">
+            <div class="step-header">
+                <div class="step-num">1</div>
                 <div>
-                    <div class="section-header">
-                        <div class="section-icon" style="background:rgba(59,130,246,.12)">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </div>
-                        <span class="section-title">Vos informations</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                        <div>
-                            <label for="ticketFirstName" class="fc-label">Prénom <span class="req">*</span></label>
-                            <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}" required
-                                   placeholder="Ex : Paul" class="fc-input"/>
-                        </div>
-                        <div>
-                            <label for="ticketLastName" class="fc-label">Nom <span class="req">*</span></label>
-                            <input type="text" id="ticketLastName" th:field="*{ticketUserInfo.lastName}" required
-                                   placeholder="Ex : Martin" class="fc-input"/>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="ticketEmail" class="fc-label">Email <span class="req">*</span></label>
-                            <input type="email" id="ticketEmail" th:field="*{ticketUserInfo.email}" required
-                                   placeholder="exemple@mail.com" class="fc-input"/>
-                        </div>
-                        <div>
-                            <label for="ticketPhone" class="fc-label">Téléphone <span class="req">*</span></label>
-                            <input type="text" id="ticketPhone" th:field="*{ticketUserInfo.phone}" required
-                                   placeholder="0X XX XX XX XX" class="fc-input"/>
-                        </div>
-                    </div>
+                    <div class="step-title">Vos coordonnées</div>
+                    <div class="step-subtitle">Pour que nous puissions vous recontacter</div>
                 </div>
+            </div>
 
-                <!-- Section : Détails du problème -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <div class="section-header">
-                        <div class="section-icon" style="background:rgba(245,158,11,.1)">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                            </svg>
-                        </div>
-                        <span class="section-title">Détails du problème</span>
-                    </div>
+                    <label for="ticketFirstName" class="fc-label">Prénom <span class="req">*</span></label>
+                    <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}"
+                           placeholder="Ex : Marie" class="fc-input" required/>
+                </div>
+                <div>
+                    <label for="ticketLastName" class="fc-label">Nom <span class="req">*</span></label>
+                    <input type="text" id="ticketLastName" th:field="*{ticketUserInfo.lastName}"
+                           placeholder="Ex : Dupont" class="fc-input" required/>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="ticketEmail" class="fc-label">E-mail <span class="req">*</span></label>
+                    <input type="email" id="ticketEmail" th:field="*{ticketUserInfo.email}"
+                           placeholder="vous@votreentreprise.be" class="fc-input" required/>
+                </div>
+                <div>
+                    <label for="ticketPhone" class="fc-label">Téléphone <span class="req">*</span></label>
+                    <input type="text" id="ticketPhone" th:field="*{ticketUserInfo.phone}"
+                           placeholder="Ex : 0495 12 34 56" class="fc-input" required/>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Titre -->
-                    <div class="mb-5">
-                        <label for="title" class="fc-label">Titre du problème <span class="req">*</span></label>
-                        <input type="text" id="title" th:field="*{title}" maxlength="120" required
-                               placeholder="Ex : Ordinateur ne démarre plus" class="fc-input"/>
-                        <p class="fc-hint">Maximum 120 caractères</p>
-                    </div>
+        <!-- Étape 2 — Le problème -->
+        <div class="step-card fu d3">
+            <div class="step-header">
+                <div class="step-num">2</div>
+                <div>
+                    <div class="step-title">Quel est le problème ?</div>
+                    <div class="step-subtitle">Décrivez-le simplement, sans termes techniques</div>
+                </div>
+            </div>
 
-                    <!-- Catégorie -->
-                    <div class="mb-5">
-                        <label class="fc-label">Catégorie <span class="req">*</span></label>
-                        <div class="cat-grid" id="catGrid">
-                            <label class="cat-card" data-cat>
-                                <input type="radio" name="category" value="Matériel informatique" th:field="*{category}" required>
-                                <span class="cat-emoji">💻</span>
-                                <div>
-                                    <div class="cat-name">Matériel informatique</div>
-                                    <div class="cat-desc">Ordinateurs, imprimantes, périphériques</div>
-                                </div>
-                            </label>
-                            <label class="cat-card" data-cat>
-                                <input type="radio" name="category" value="Réseau et connectivité" th:field="*{category}" required>
-                                <span class="cat-emoji">🌐</span>
-                                <div>
-                                    <div class="cat-name">Réseau et connectivité</div>
-                                    <div class="cat-desc">Internet, Wifi, accès aux serveurs</div>
-                                </div>
-                            </label>
-                            <label class="cat-card" data-cat>
-                                <input type="radio" name="category" value="Logiciels et applications" th:field="*{category}" required>
-                                <span class="cat-emoji">⚙️</span>
-                                <div>
-                                    <div class="cat-name">Logiciels et applications</div>
-                                    <div class="cat-desc">Programmes, mises à jour, installations</div>
-                                </div>
-                            </label>
-                            <label class="cat-card" data-cat>
-                                <input type="radio" name="category" value="Sécurité informatique" th:field="*{category}" required>
-                                <span class="cat-emoji">🔒</span>
-                                <div>
-                                    <div class="cat-name">Sécurité informatique</div>
-                                    <div class="cat-desc">Antivirus, sauvegardes, protection</div>
-                                </div>
-                            </label>
-                            <label class="cat-card" data-cat>
-                                <input type="radio" name="category" value="Autre" th:field="*{category}" required>
-                                <span class="cat-emoji">📋</span>
-                                <div>
-                                    <div class="cat-name">Autre</div>
-                                    <div class="cat-desc">Non listé ci-dessus</div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+            <!-- Catégorie -->
+            <div class="mb-4">
+                <label class="fc-label">Ça concerne quoi ? <span class="req">*</span></label>
+                <div class="cat-grid" id="catGrid">
+                    <label class="cat-card" data-cat>
+                        <input type="radio" th:field="*{category}" value="Réseau et connectivité" required>
+                        <span class="cat-emoji">🌐</span>
+                        <div><div class="cat-name">Internet / Réseau</div><div class="cat-desc">Connexion, Wi-Fi…</div></div>
+                    </label>
+                    <label class="cat-card" data-cat>
+                        <input type="radio" th:field="*{category}" value="Matériel informatique" required>
+                        <span class="cat-emoji">🖥️</span>
+                        <div><div class="cat-name">Matériel</div><div class="cat-desc">Ordinateur, imprimante…</div></div>
+                    </label>
+                    <label class="cat-card" data-cat>
+                        <input type="radio" th:field="*{category}" value="Logiciels et applications" required>
+                        <span class="cat-emoji">📱</span>
+                        <div><div class="cat-name">Logiciel / Application</div><div class="cat-desc">Programme, erreur…</div></div>
+                    </label>
+                    <label class="cat-card" data-cat>
+                        <input type="radio" th:field="*{category}" value="Sécurité informatique" required>
+                        <span class="cat-emoji">🔒</span>
+                        <div><div class="cat-name">Sécurité / Accès</div><div class="cat-desc">Mot de passe, virus…</div></div>
+                    </label>
+                    <label class="cat-card" data-cat>
+                        <input type="radio" th:field="*{category}" value="Autre" required>
+                        <span class="cat-emoji">💬</span>
+                        <div><div class="cat-name">Autre</div><div class="cat-desc">Non listé ci-dessus</div></div>
+                    </label>
+                </div>
+            </div>
 
-                    <!-- Priorité -->
-                    <div class="mb-5">
-                        <label class="fc-label">Priorité <span class="req">*</span></label>
-                        <div class="prio-list" id="prioList">
-                            <label class="prio-card" data-prio="low">
-                                <input type="radio" th:field="*{priority}" value="LOW" required>
-                                <span class="prio-badge pb-low">Faible</span>
-                                <span class="prio-desc">Problème mineur, non bloquant</span>
-                            </label>
-                            <label class="prio-card" data-prio="medium">
-                                <input type="radio" th:field="*{priority}" value="MEDIUM" required>
-                                <span class="prio-badge pb-medium">Normale</span>
-                                <span class="prio-desc">Problème standard à traiter rapidement</span>
-                            </label>
-                            <label class="prio-card" data-prio="high">
-                                <input type="radio" th:field="*{priority}" value="HIGH" required>
-                                <span class="prio-badge pb-high">Élevée</span>
-                                <span class="prio-desc">Problème important, impact fort</span>
-                            </label>
-                            <label class="prio-card" data-prio="urgent">
-                                <input type="radio" th:field="*{priority}" value="URGENT" required>
-                                <span class="prio-badge pb-urgent">Critique</span>
-                                <span class="prio-desc">Urgence absolue, blocage total</span>
-                            </label>
-                        </div>
-                    </div>
+            <!-- Titre -->
+            <div class="mb-4">
+                <label for="title" class="fc-label">En une phrase, quel est le problème ? <span class="req">*</span></label>
+                <input type="text" id="title" th:field="*{title}" maxlength="120"
+                       placeholder="Ex : Mon ordinateur ne s'allume plus depuis ce matin"
+                       class="fc-input" required/>
+            </div>
 
-                    <!-- Description -->
+            <!-- Description -->
+            <div>
+                <label for="description" class="fc-label">Décrivez le problème en détail <span class="req">*</span></label>
+                <textarea id="description" th:field="*{description}" rows="5"
+                          placeholder="Que se passe-t-il ? Depuis quand ? Avez-vous un message d'erreur ?"
+                          class="fc-input" required></textarea>
+            </div>
+        </div>
+
+        <!-- Étape 3 — Urgence -->
+        <div class="step-card fu d4">
+            <div class="step-header">
+                <div class="step-num">3</div>
+                <div>
+                    <div class="step-title">C'est urgent ?</div>
+                    <div class="step-subtitle">Choisissez ce qui correspond le mieux à votre situation</div>
+                </div>
+            </div>
+
+            <div class="prio-list" id="prioList">
+                <label class="prio-card" data-prio="low">
+                    <input type="radio" th:field="*{priority}" value="LOW" required>
+                    <span class="prio-emoji">🟢</span>
                     <div>
-                        <label for="description" class="fc-label">Description détaillée <span class="req">*</span></label>
-                        <textarea id="description" th:field="*{description}" rows="6" required
-                                  placeholder="Décrivez votre problème en détail…"
-                                  class="fc-input textarea"></textarea>
-                        <div class="desc-tips">
-                            <ul>
-                                <li>Que s'est-il passé ?</li>
-                                <li>Quand cela a-t-il commencé ?</li>
-                                <li>Avez-vous remarqué autre chose d'inhabituel ?</li>
-                                <li>Avez-vous essayé de résoudre le problème ?</li>
-                            </ul>
-                        </div>
+                        <div class="prio-name">Pas urgent</div>
+                        <div class="prio-desc">Je peux continuer à travailler normalement</div>
                     </div>
-                </div>
-
-                <!-- Error -->
-                <div th:if="${errorMessage}" class="fc-error" th:text="${errorMessage}"></div>
-
-                <!-- Buttons -->
-                <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                    <button type="submit" class="btn-submit">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        Créer le ticket
-                    </button>
-                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/adminDashboard}" class="btn-cancel">Annuler</a>
-                    <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="btn-cancel">Annuler</a>
-                </div>
-
-            </form>
+                </label>
+                <label class="prio-card" data-prio="medium">
+                    <input type="radio" th:field="*{priority}" value="MEDIUM" required>
+                    <span class="prio-emoji">🔵</span>
+                    <div>
+                        <div class="prio-name">Normal</div>
+                        <div class="prio-desc">Cela ralentit mon travail</div>
+                    </div>
+                </label>
+                <label class="prio-card" data-prio="high">
+                    <input type="radio" th:field="*{priority}" value="HIGH" required>
+                    <span class="prio-emoji">🟠</span>
+                    <div>
+                        <div class="prio-name">Urgent</div>
+                        <div class="prio-desc">Impact important sur mon activité aujourd'hui</div>
+                    </div>
+                </label>
+                <label class="prio-card" data-prio="urgent">
+                    <input type="radio" th:field="*{priority}" value="URGENT" required>
+                    <span class="prio-emoji">🔴</span>
+                    <div>
+                        <div class="prio-name">Critique — Tout est bloqué !</div>
+                        <div class="prio-desc">Je ne peux plus travailler du tout</div>
+                    </div>
+                </label>
+            </div>
         </div>
 
-        <!-- ╔══ SIDEBAR ══╗ -->
-        <aside class="space-y-4 fu" style="animation-delay:.18s">
+        <!-- Erreur -->
+        <div th:if="${errorMessage}" class="fc-error fu d4" th:text="${errorMessage}"></div>
 
-            <!-- Tips card -->
-            <div class="aside-card">
-                <div class="aside-title">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-                    </svg>
-                    Conseils utiles
-                </div>
-                <div class="tip-item" style="background:rgba(59,130,246,.07); border:1px solid rgba(59,130,246,.12)">
-                    <div class="tip-label" style="color:#60a5fa">💡 Titre efficace</div>
-                    <div class="tip-text">Soyez précis et concis. Ex : "Imprimante HP ne répond plus"</div>
-                </div>
-                <div class="tip-item" style="background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.12)">
-                    <div class="tip-label" style="color:#fbbf24">📝 Description complète</div>
-                    <div class="tip-text">Détaillez les étapes, messages d'erreur et ce que vous avez essayé</div>
-                </div>
-                <div class="tip-item" style="background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.12)">
-                    <div class="tip-label" style="color:#f87171">⚡ Priorité appropriée</div>
-                    <div class="tip-text">Les tickets critiques sont traités en urgence</div>
-                </div>
-            </div>
+        <!-- Boutons -->
+        <div class="flex flex-col sm:flex-row gap-3 fu d5">
+            <button type="submit" class="btn-submit">
+                Envoyer ma demande
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/adminDashboard}" class="btn-cancel">Annuler</a>
+            <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="btn-cancel">Annuler</a>
+        </div>
 
-            <!-- Urgent contact card -->
-            <div class="urgent-card">
-                <div class="urgent-title">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                    Besoin d'aide urgente ?
-                </div>
-                <p class="urgent-sub">Pour les urgences critiques :</p>
-                <a href="tel:+32495576535" class="urgent-btn">
-                    <div class="urgent-btn-icon" style="background:rgba(59,130,246,.14)">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 14a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 3.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 10.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 17z"/>
-                        </svg>
-                    </div>
-                    +32 (0) 495 57 65 35
-                </a>
-                <a href="mailto:info@tic-harmony.be" class="urgent-btn">
-                    <div class="urgent-btn-icon" style="background:rgba(59,130,246,.14)">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                    </div>
-                    info@tic-harmony.be
-                </a>
-            </div>
+        <!-- Contact d'urgence -->
+        <p class="contact-footer fu d5">
+            Problème critique ? Appelez-nous directement :
+            <a href="tel:+32495576535">+32 (0) 495 57 65 35</a>
+        </p>
 
-        </aside>
-    </div>
+    </form>
 </div>
 
 <th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
-        /* ── Category card selection ── */
-        document.querySelectorAll('[data-cat]').forEach(function (card) {
+        document.querySelectorAll('[data-cat]').forEach(function(card) {
             var radio = card.querySelector('input[type=radio]');
-            /* Init state on page load (for form re-submission with values) */
             if (radio && radio.checked) card.classList.add('selected');
-            card.addEventListener('click', function () {
-                document.querySelectorAll('[data-cat]').forEach(function (c) { c.classList.remove('selected'); });
+            card.addEventListener('click', function() {
+                document.querySelectorAll('[data-cat]').forEach(function(c) { c.classList.remove('selected'); });
                 card.classList.add('selected');
             });
         });
-
-        /* ── Priority card selection ── */
-        document.querySelectorAll('[data-prio]').forEach(function (card) {
+        document.querySelectorAll('[data-prio]').forEach(function(card) {
             var radio = card.querySelector('input[type=radio]');
-            var prio  = card.getAttribute('data-prio');
+            var prio = card.getAttribute('data-prio');
             if (radio && radio.checked) card.classList.add('sel-' + prio);
-            card.addEventListener('click', function () {
-                document.querySelectorAll('[data-prio]').forEach(function (c) {
-                    c.classList.remove('sel-low', 'sel-medium', 'sel-high', 'sel-urgent');
+            card.addEventListener('click', function() {
+                document.querySelectorAll('[data-prio]').forEach(function(c) {
+                    c.classList.remove('sel-low','sel-medium','sel-high','sel-urgent');
                 });
                 card.classList.add('sel-' + prio);
             });

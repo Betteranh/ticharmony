@@ -3,613 +3,300 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Tableau de bord Client</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+    <title>Mon espace – TicHarmony</title>
     <style>
+        body { background: #faf9f7 !important; }
+
         :root {
-            --d-bg:      #070d1a;
-            --d-surface: #0c1628;
-            --d-card:    #0f1e33;
-            --d-card-h:  #132038;
-            --d-border:  #1b2d47;
-            --d-border-b:#253d5f;
-            --d-text:    #dde8f5;
-            --d-sub:     #6e90b5;
-            --d-muted:   #3d5470;
-            --violet:    #8b5cf6;
-            --violet-l:  #a78bfa;
-            --violet-d:  #7c3aed;
-            --sky:       #38bdf8;
-            --emerald:   #10b981;
-            --amber:     #f59e0b;
+            --white:    #ffffff;
+            --cream:    #faf9f7;
+            --cream-d:  #ede9e3;
+            --text:     #1c1917;
+            --text-2:   #78716c;
+            --text-3:   #a8a29e;
+            --violet:   #7c3aed;
+            --violet-bg:#f5f3ff;
+            --violet-br:#ddd6fe;
+            --green:    #16a34a;
+            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --sh-lg:    0 8px 32px rgba(0,0,0,.09), 0 3px 10px rgba(0,0,0,.05);
         }
 
-        .cdb {
+        .cd-root {
             font-family: 'DM Sans', sans-serif;
-            background: var(--d-bg);
-            color: var(--d-text);
-            min-height: calc(100vh - 64px);
-            padding: 2.5rem 0 5rem;
+            color: var(--text);
+            padding: 3rem 0 6rem;
         }
 
-        /* ── Hero ── */
-        .hero {
-            background: linear-gradient(135deg, #130d2a 0%, #0e1630 55%, var(--d-bg) 100%);
-            border: 1px solid var(--d-border);
-            border-top: 2px solid var(--violet);
-            border-radius: 20px;
-            padding: 2.5rem 2.5rem 2.25rem;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse 65% 90% at 95% 10%, rgba(139,92,246,.14) 0%, transparent 65%);
-            pointer-events: none;
-        }
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -50px; left: 8%;
-            width: 200px; height: 200px;
-            background: radial-gradient(circle, rgba(56,189,248,.07) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        /* Dot grid */
-        .hero-dots {
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
-            background-size: 22px 22px;
-            pointer-events: none;
-        }
-        /* Decorative rings */
-        .hero-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 1px solid rgba(139,92,246,.12);
-            pointer-events: none;
-            animation: ringFloat 5s ease-in-out infinite;
-        }
-        @keyframes ringFloat {
-            0%,100% { opacity:.5; transform:scale(1); }
-            50%      { opacity:.2; transform:scale(1.07); }
-        }
-
-        /* Eyebrow */
-        .hero-eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: 'Sora', sans-serif;
-            font-size: .7rem;
-            font-weight: 600;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--violet-l);
-            margin-bottom: .5rem;
-        }
-        .hero-eyebrow-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--emerald);
-            flex-shrink: 0;
-            animation: dotPulse 2s ease-in-out infinite;
-        }
-        @keyframes dotPulse {
-            0%,100% { box-shadow: 0 0 0 3px rgba(16,185,129,.2); }
-            50%      { box-shadow: 0 0 0 6px rgba(16,185,129,.05); }
-        }
-
-        /* Company badge */
-        .hero-company {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(139,92,246,.1);
-            border: 1px solid rgba(139,92,246,.22);
-            border-radius: 999px;
-            padding: .28rem .85rem .28rem .5rem;
-            margin-bottom: .9rem;
-        }
-        .hero-company-icon {
-            width: 20px; height: 20px;
-            border-radius: 5px;
-            background: rgba(139,92,246,.18);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .hero-company span {
-            font-family: 'Sora', sans-serif;
-            font-size: .73rem;
-            font-weight: 600;
-            color: var(--violet-l);
-        }
-
-        .hero-title {
+        /* ── Greeting ── */
+        .greet-name {
             font-family: 'Sora', sans-serif;
             font-size: 2rem;
             font-weight: 800;
-            letter-spacing: -.03em;
-            line-height: 1.1;
-            color: var(--d-text);
-            margin-bottom: .65rem;
+            color: var(--text);
+            letter-spacing: -.035em;
+            line-height: 1.15;
+            margin-bottom: .35rem;
         }
-        .hero-title span { color: var(--violet-l); }
-        .hero-sub {
-            font-size: .9rem;
-            color: var(--d-sub);
-            line-height: 1.65;
-            max-width: 460px;
-            margin-bottom: 1.75rem;
+        .greet-sub {
+            font-size: 1rem;
+            color: var(--text-2);
+            margin-bottom: 2.5rem;
         }
 
-        /* CTA buttons in hero */
-        .hero-cta-row { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
-        .hero-btn-primary {
+        /* ── Cards ── */
+        .card {
+            background: var(--white);
+            border-radius: 18px;
+            box-shadow: var(--sh);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--sh-lg);
+        }
+
+        /* Primary CTA */
+        .card-primary {
+            border-left: 5px solid var(--violet);
+            padding: 2.25rem 2.25rem 2.25rem 2rem;
+            margin-bottom: 1rem;
+        }
+        .card-primary-label {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--violet);
+            margin-bottom: .5rem;
+        }
+        .card-primary-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -.025em;
+            line-height: 1.2;
+            margin-bottom: .5rem;
+        }
+        .card-primary-desc {
+            font-size: .95rem;
+            color: var(--text-2);
+            line-height: 1.65;
+            margin-bottom: 1.4rem;
+        }
+        .cta-btn {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            padding: .65rem 1.35rem;
+            gap: 8px;
             background: var(--violet);
             color: #fff;
             font-family: 'Sora', sans-serif;
-            font-size: .82rem;
+            font-size: .92rem;
             font-weight: 700;
-            border-radius: 10px;
-            text-decoration: none;
-            transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, background .2s ease;
-            box-shadow: 0 4px 16px rgba(139,92,246,.35);
+            padding: .85rem 1.75rem;
+            border-radius: 11px;
+            box-shadow: 0 4px 14px rgba(124,58,237,.28);
+            transition: background .15s, transform .15s;
         }
-        .hero-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(139,92,246,.45);
-            background: var(--violet-d);
-        }
-        .hero-btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: .65rem 1.35rem;
-            background: rgba(255,255,255,.06);
-            color: var(--d-sub);
-            font-family: 'Sora', sans-serif;
-            font-size: .82rem;
-            font-weight: 600;
-            border-radius: 10px;
-            text-decoration: none;
-            border: 1px solid var(--d-border-b);
-            transition: background .2s ease, color .2s ease, transform .2s ease;
-        }
-        .hero-btn-secondary:hover {
-            background: rgba(255,255,255,.1);
-            color: var(--d-text);
-            transform: translateY(-2px);
-        }
+        .cta-btn:hover { background: #6d28d9; transform: translateY(-1px); }
+        .cta-btn svg { transition: transform .15s; }
+        .cta-btn:hover svg { transform: translateX(3px); }
 
-        /* Logo box */
-        .hero-logo {
-            width: 90px; height: 90px;
-            background: rgba(139,92,246,.08);
-            border: 1px solid rgba(139,92,246,.2);
-            border-radius: 22px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-            animation: logoFloat 3.5s ease-in-out infinite;
-        }
-        @keyframes logoFloat {
-            0%,100% { transform: translateY(0) rotate(0deg); }
-            50%      { transform: translateY(-7px) rotate(1deg); }
-        }
-
-        /* ── Action cards ── */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-        }
-        @media (max-width: 580px) { .cards-grid { grid-template-columns: 1fr; } }
-
-        .action-card {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 16px;
-            padding: 1.75rem;
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-            overflow: hidden;
-            transition: transform .25s cubic-bezier(.34,1.56,.64,1),
-                        box-shadow .25s ease,
-                        border-color .25s ease;
-        }
-        .action-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--ac-line);
-            opacity: .65;
-            transition: opacity .2s ease;
-        }
-        .action-card::after {
-            content: '';
-            position: absolute;
-            bottom: -20px; right: -20px;
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            background: var(--ac-glow);
-            filter: blur(28px);
-            opacity: .12;
-            transition: opacity .2s ease;
-        }
-        .action-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 16px 40px rgba(0,0,0,.4);
-            border-color: var(--d-border-b);
-        }
-        .action-card:hover::before { opacity: 1; }
-        .action-card:hover::after  { opacity: .22; }
-
-        .ac-icon {
-            width: 48px; height: 48px;
-            border-radius: 13px;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 1.1rem;
-            transition: transform .25s cubic-bezier(.34,1.56,.64,1);
-        }
-        .action-card:hover .ac-icon { transform: scale(1.1) rotate(-5deg); }
-
-        .ac-title {
-            font-family: 'Sora', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 700;
-            letter-spacing: -.015em;
-            color: var(--d-text);
-            margin-bottom: .4rem;
-        }
-        .ac-desc {
-            font-size: .82rem;
-            color: var(--d-sub);
-            line-height: 1.6;
-            margin-bottom: 1.2rem;
-        }
-        .ac-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-family: 'Sora', sans-serif;
-            font-size: .79rem;
-            font-weight: 700;
-            color: var(--ac-color);
-        }
-        .ac-arrow { transition: transform .2s ease; }
-        .action-card:hover .ac-arrow { transform: translateX(4px); }
-
-        /* ── Info strip ── */
-        .info-strip {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: .75rem;
-            margin-bottom: 1.25rem;
-        }
-        @media (max-width: 560px) { .info-strip { grid-template-columns: 1fr; } }
-
-        .info-tile {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 14px;
-            padding: 1rem 1.1rem;
+        /* Secondary card */
+        .card-secondary {
             display: flex;
             align-items: center;
-            gap: .75rem;
+            gap: 1.1rem;
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 2.5rem;
         }
-        .info-tile-icon {
-            width: 34px; height: 34px;
-            border-radius: 9px;
+        .sec-icon {
+            width: 46px; height: 46px;
+            border-radius: 12px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .info-tile-label {
+        .sec-title {
             font-family: 'Sora', sans-serif;
-            font-size: .65rem;
-            font-weight: 600;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            color: var(--d-muted);
+            font-size: .98rem;
+            font-weight: 700;
+            color: var(--text);
             margin-bottom: .15rem;
         }
-        .info-tile-value {
-            font-family: 'Sora', sans-serif;
-            font-size: .8rem;
-            font-weight: 700;
-            color: var(--d-text);
+        .sec-desc { font-size: .85rem; color: var(--text-2); }
+        .sec-arrow {
+            margin-left: auto;
+            flex-shrink: 0;
+            color: var(--text-3);
+            transition: transform .15s, color .15s;
         }
+        .card-secondary:hover .sec-arrow { transform: translateX(4px); color: var(--violet); }
 
-        /* ── Contact card ── */
+        /* Contact */
         .contact-card {
-            background: var(--d-card);
-            border: 1px solid var(--d-border);
-            border-radius: 16px;
+            background: var(--white);
+            border-radius: 18px;
+            box-shadow: var(--sh);
             overflow: hidden;
         }
         .contact-header {
-            background: linear-gradient(135deg, #111d32 0%, #0f1a2e 100%);
-            border-bottom: 1px solid var(--d-border);
-            padding: 1.3rem 1.6rem 1.1rem;
-            display: flex;
-            align-items: flex-start;
-            gap: .85rem;
-        }
-        .contact-header-icon {
-            width: 38px; height: 38px;
-            border-radius: 10px;
-            background: rgba(139,92,246,.13);
-            border: 1px solid rgba(139,92,246,.22);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
+            padding: 1.3rem 1.75rem;
+            border-bottom: 1px solid var(--cream-d);
         }
         .contact-header-title {
             font-family: 'Sora', sans-serif;
-            font-size: .92rem;
+            font-size: .95rem;
             font-weight: 700;
-            color: var(--d-text);
-            margin-bottom: .2rem;
+            color: var(--text);
         }
-        .contact-header-sub {
-            font-size: .79rem;
-            color: var(--d-sub);
-            line-height: 1.5;
-        }
-        .contact-header-sub strong { color: var(--d-text); font-weight: 600; }
+        .contact-channels { display: grid; grid-template-columns: 1fr 1fr; }
+        @media (max-width: 540px) { .contact-channels { grid-template-columns: 1fr; } }
 
-        .contact-body {
-            padding: 1.1rem 1.6rem;
-            display: flex;
-            gap: .65rem;
-            flex-wrap: wrap;
-        }
-        .contact-btn {
+        .contact-channel {
             display: flex;
             align-items: center;
-            gap: .75rem;
-            padding: .85rem 1.1rem;
-            border-radius: 12px;
-            background: var(--d-surface);
-            border: 1px solid var(--d-border);
+            gap: .9rem;
+            padding: 1.4rem 1.75rem;
             text-decoration: none;
             color: inherit;
-            flex: 1;
-            min-width: 170px;
-            transition: background .15s ease, border-color .15s ease, transform .15s ease;
+            transition: background .15s;
+            border-right: 1px solid var(--cream-d);
         }
-        .contact-btn:hover {
-            background: var(--d-card-h);
-            border-color: var(--d-border-b);
-            transform: translateY(-2px);
+        .contact-channel:last-child { border-right: none; }
+        @media (max-width: 540px) {
+            .contact-channel { border-right: none; border-bottom: 1px solid var(--cream-d); }
+            .contact-channel:last-child { border-bottom: none; }
         }
-        .contact-btn-icon {
-            width: 32px; height: 32px;
-            border-radius: 8px;
+        .contact-channel:hover { background: var(--cream); }
+
+        .ch-icon {
+            width: 42px; height: 42px;
+            border-radius: 11px;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .contact-btn-label {
-            font-size: .67rem;
-            color: var(--d-muted);
-            font-weight: 600;
-            letter-spacing: .05em;
-            text-transform: uppercase;
-            margin-bottom: .1rem;
-        }
-        .contact-btn-value {
-            font-family: 'Sora', sans-serif;
-            font-size: .82rem;
-            font-weight: 700;
-        }
+        .ch-label { font-size: .67rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-3); margin-bottom: .25rem; }
+        .ch-value { font-family: 'Sora', sans-serif; font-size: .98rem; font-weight: 700; }
 
         /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(18px); }
+            from { opacity: 0; transform: translateY(12px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-        .fu  { opacity: 0; animation: fadeUp .5s ease forwards; }
-        .fu1 { animation-delay: .04s; }
-        .fu2 { animation-delay: .12s; }
-        .fu3 { animation-delay: .20s; }
-        .fu4 { animation-delay: .28s; }
-        .fu5 { animation-delay: .36s; }
+        .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
+        .d1 { animation-delay: .04s; }
+        .d2 { animation-delay: .1s;  }
+        .d3 { animation-delay: .16s; }
+        .d4 { animation-delay: .22s; }
 
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: var(--d-bg); }
-        ::-webkit-scrollbar-thumb { background: var(--d-border-b); border-radius: 3px; }
+        /* pulsing dot */
+        .dot-green {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pg 2s ease-in-out infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        @keyframes pg {
+            0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,.45); }
+            50%      { box-shadow: 0 0 0 5px rgba(22,163,74,0); }
+        }
     </style>
 </head>
 
-<div layout:fragment="content" class="cdb">
+<div layout:fragment="content" class="cd-root">
 
-    <!-- ╔══ HERO ══╗ -->
-    <div class="hero fu fu1">
-        <div class="hero-dots"></div>
-        <div class="hero-ring" style="width:180px;height:180px;top:-55px;right:100px;animation-delay:0s"></div>
-        <div class="hero-ring" style="width:100px;height:100px;bottom:15px;right:155px;animation-delay:2s"></div>
-
-        <div class="relative z-10 flex items-start justify-between gap-8">
-            <div style="flex:1">
-                <div class="hero-eyebrow">
-                    <span class="hero-eyebrow-dot"></span>
-                    Espace client · TicHarmony
-                </div>
-
-                <div th:if="${currentUser != null and currentUser.nomEntreprise != null}" class="hero-company">
-                    <div class="hero-company-icon">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4"/>
-                        </svg>
-                    </div>
-                    <span th:text="${currentUser.nomEntreprise}">Entreprise</span>
-                </div>
-
-                <h1 class="hero-title">
-                    Bonjour,
-                    <span th:if="${currentUser != null}" th:text="${currentUser.nomEntreprise ?: currentUser.firstname}">Client</span>
-                </h1>
-                <p class="hero-sub">
-                    Votre espace TicHarmony — signalez un problème ou suivez l'avancement de vos demandes en cours.
-                </p>
-
-                <div class="hero-cta-row">
-                    <a th:href="@{/problems/create}" class="hero-btn-primary">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Nouveau ticket
-                    </a>
-                    <a th:href="@{/problems}" class="hero-btn-secondary">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                            <rect x="9" y="3" width="6" height="4" rx="2"/>
-                        </svg>
-                        Mes tickets
-                    </a>
-                </div>
-            </div>
-
-            <div class="hero-logo hidden md:flex">
-                <img src="/images/tic.png" alt="TicHarmony" style="width:52px;height:52px;object-fit:contain"/>
-            </div>
-        </div>
+    <!-- Bonjour -->
+    <div class="fu d1">
+        <h1 class="greet-name">
+            Bonjour,
+            <span th:if="${currentUser != null}"
+                  th:text="${currentUser.nomEntreprise ?: currentUser.firstname}">votre entreprise</span> 👋
+        </h1>
+        <p class="greet-sub">
+            <span class="dot-green"></span>Support actif &nbsp;·&nbsp; Lun–Ven, 9h30–17h30
+        </p>
     </div>
 
-    <!-- ╔══ ACTION CARDS ══╗ -->
-    <div class="cards-grid">
+    <!-- Signaler un problème -->
+    <a th:href="@{/problems/create}" class="card card-primary fu d2">
+        <div class="card-primary-label">Action principale</div>
+        <div class="card-primary-title">J'ai un problème à signaler</div>
+        <p class="card-primary-desc">
+            Décrivez-nous votre problème en quelques mots. Notre technicien vous répond dans les 24h.
+        </p>
+        <span class="cta-btn">
+            Signaler mon problème
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+        </span>
+    </a>
 
-        <a th:href="@{/problems/create}" class="action-card fu fu2"
-           style="--ac-line:linear-gradient(90deg,#8b5cf6,#7c3aed); --ac-glow:#8b5cf6; --ac-color:#a78bfa">
-            <div class="ac-icon" style="background:rgba(139,92,246,.13)">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-            </div>
-            <div class="ac-title">Nouveau ticket</div>
-            <p class="ac-desc">Signalez un incident, une panne ou une demande. Notre équipe vous répond rapidement.</p>
-            <div class="ac-cta">
-                Créer une demande
-                <svg class="ac-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                </svg>
-            </div>
-        </a>
-
-        <a th:href="@{/problems}" class="action-card fu fu3"
-           style="--ac-line:linear-gradient(90deg,#38bdf8,#0ea5e9); --ac-glow:#38bdf8; --ac-color:#38bdf8">
-            <div class="ac-icon" style="background:rgba(56,189,248,.11)">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                    <rect x="9" y="3" width="6" height="4" rx="2"/>
-                    <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
-                </svg>
-            </div>
-            <div class="ac-title">Mes tickets</div>
-            <p class="ac-desc">Consultez l'état de vos demandes, les commentaires de l'équipe et l'historique complet.</p>
-            <div class="ac-cta">
-                Voir mes demandes
-                <svg class="ac-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                </svg>
-            </div>
-        </a>
-
-    </div>
-
-    <!-- ╔══ INFO STRIP ══╗ -->
-    <div class="info-strip fu fu4">
-
-        <div class="info-tile">
-            <div class="info-tile-icon" style="background:rgba(16,185,129,.12)">
-                <span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:block;animation:dotPulse 2s ease-in-out infinite"></span>
-            </div>
-            <div>
-                <div class="info-tile-label">Statut</div>
-                <div class="info-tile-value">Support actif</div>
-            </div>
+    <!-- Voir mes demandes -->
+    <a th:href="@{/problems}" class="card card-secondary fu d3">
+        <div class="sec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="2"/>
+                <path d="M9 12h6M9 16h4"/>
+            </svg>
         </div>
-
-        <div class="info-tile">
-            <div class="info-tile-icon" style="background:rgba(139,92,246,.12)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                </svg>
-            </div>
-            <div>
-                <div class="info-tile-label">Horaires</div>
-                <div class="info-tile-value">Lun–Ven · 9h30–17h30</div>
-            </div>
+        <div>
+            <div class="sec-title">Cliquez ici pour voir vos demandes en cours</div>
+            <p class="sec-desc">Suivez l'avancement de vos signalements.</p>
         </div>
-
-        <div class="info-tile">
-            <div class="info-tile-icon" style="background:rgba(56,189,248,.1)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="info-tile-label">Réponse</div>
-                <div class="info-tile-value">Sous 24h</div>
-            </div>
+        <div class="sec-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+            </svg>
         </div>
+    </a>
 
-    </div>
-
-    <!-- ╔══ CONTACT CARD ══╗ -->
-    <div class="contact-card fu fu5">
+    <!-- Nous contacter -->
+    <div class="contact-card fu d4">
         <div class="contact-header">
-            <div class="contact-header-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                </svg>
-            </div>
-            <div>
-                <div class="contact-header-title">Besoin d'aide ?</div>
-                <p class="contact-header-sub">
-                    Notre équipe vous répond du <strong>lundi au vendredi</strong>, de <strong>9h30 à 17h30</strong>.
-                </p>
-            </div>
+            <div class="contact-header-title">Besoin de nous parler directement ?</div>
         </div>
-        <div class="contact-body">
-            <a href="mailto:info@tic-harmony.be" class="contact-btn">
-                <div class="contact-btn-icon" style="background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.22)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="contact-channels">
+            <a href="tel:+32495576535" class="contact-channel">
+                <div class="ch-icon" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
+                         stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 14a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 3.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 10.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 17z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ch-label">Téléphone</div>
+                    <div class="ch-value" style="color:#16a34a;">+32 (0) 495 57 65 35</div>
+                </div>
+            </a>
+            <a href="mailto:info@tic-harmony.be" class="contact-channel">
+                <div class="ch-icon" style="background:var(--violet-bg); border:1px solid var(--violet-br);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed"
+                         stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                         <polyline points="22,6 12,13 2,6"/>
                     </svg>
                 </div>
                 <div>
-                    <div class="contact-btn-label">E-mail</div>
-                    <div class="contact-btn-value" style="color:var(--violet-l)">info@tic-harmony.be</div>
-                </div>
-            </a>
-            <a href="tel:+32495576535" class="contact-btn">
-                <div class="contact-btn-icon" style="background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 14a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 3.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 10.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 17z"/>
-                    </svg>
-                </div>
-                <div>
-                    <div class="contact-btn-label">Téléphone</div>
-                    <div class="contact-btn-value" style="color:var(--sky)">+32 (0) 495 57 65 35</div>
+                    <div class="ch-label">E-mail</div>
+                    <div class="ch-value" style="color:var(--violet);">info@tic-harmony.be</div>
                 </div>
             </a>
         </div>
     </div>
 
 </div>
-
 </html>
