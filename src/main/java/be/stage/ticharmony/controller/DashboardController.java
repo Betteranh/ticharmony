@@ -26,7 +26,9 @@ public class DashboardController {
 
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/clientDashboard")
-    public String clientDashboard(Model model) {
+    public String clientDashboard(Model model, Authentication auth) {
+        User currentUser = userService.findByLogin(auth.getName());
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("module", "dashboard");
         return "dashboard/clientDashboard";
     }
