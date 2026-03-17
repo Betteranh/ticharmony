@@ -647,9 +647,9 @@
                 <span class="stat-count" th:text="${countInProgress}">0</span>
             </a>
 
-            <a th:href="@{/problems(status='OPEN',priority='URGENT')}"
+            <a th:href="@{/problems(priority='URGENT')}"
                class="stat-chip"
-               th:classappend="${selectedStatus != null and selectedStatus.name() == 'OPEN' and selectedPriority != null and selectedPriority.name() == 'URGENT'} ? ' stat-chip--active-red' : ''"
+               th:classappend="${selectedStatus == null and selectedPriority != null and selectedPriority.name() == 'URGENT'} ? ' stat-chip--active-red' : ''"
                th:style="${countUrgent > 0} ? 'border-color:#fecaca;' : ''">
                 <span class="stat-dot" th:style="${countUrgent > 0} ? 'background:#dc2626' : 'background:#a8a29e'"></span>
                 <span class="stat-label">Urgents</span>
