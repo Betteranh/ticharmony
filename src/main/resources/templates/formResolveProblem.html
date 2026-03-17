@@ -4,67 +4,385 @@
       layout:decorate="~{layouts/main}">
 <head>
     <title>Résoudre le Ticket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --d-bg:      #070d1a;
+            --d-surface: #0c1628;
+            --d-card:    #0f1e33;
+            --d-card-h:  #132038;
+            --d-border:  #1b2d47;
+            --d-border-b:#253d5f;
+            --d-text:    #dde8f5;
+            --d-sub:     #6e90b5;
+            --d-muted:   #3d5470;
+            --blue:      #3b82f6;
+            --blue-l:    #60a5fa;
+            --teal:      #14b8a6;
+            --teal-l:    #2dd4bf;
+            --amber:     #f59e0b;
+            --emerald:   #10b981;
+            --red:       #ef4444;
+        }
+
+        .fr-root {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--d-bg);
+            color: var(--d-text);
+            min-height: calc(100vh - 64px);
+            padding: 2.5rem 0 5rem;
+        }
+
+        /* ── Back link ── */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: .83rem; font-weight: 600;
+            color: var(--d-sub); text-decoration: none;
+            transition: color .15s; margin-bottom: 1.75rem;
+        }
+        .back-link:hover { color: var(--teal-l); }
+        .back-link svg { transition: transform .15s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        /* ── Header ── */
+        .fr-header {
+            display: flex; align-items: flex-start; gap: 16px;
+            margin-bottom: 2rem;
+        }
+        .fr-header-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            background: rgba(20,184,166,.13);
+            border: 1px solid rgba(20,184,166,.28);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+        @keyframes iconPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(20,184,166,.0); }
+            50%      { box-shadow: 0 0 0 8px rgba(20,184,166,.08); }
+        }
+        .fr-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.5rem; font-weight: 800;
+            letter-spacing: -.02em; color: var(--d-text);
+            line-height: 1.25;
+        }
+        .fr-title-ticket { color: var(--teal-l); }
+        .fr-subtitle { font-size: .85rem; color: var(--d-sub); margin-top: 4px; }
+
+        /* ── Cards ── */
+        .fr-card {
+            background: var(--d-card);
+            border: 1px solid var(--d-border);
+            border-radius: 18px;
+            padding: 1.75rem;
+        }
+        .fr-card + .fr-card { margin-top: 0; }
+
+        /* ── Section header ── */
+        .section-hdr {
+            display: flex; align-items: center; gap: 10px;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid var(--d-border);
+            margin-bottom: 1.25rem;
+        }
+        .section-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-title {
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700; color: var(--d-text);
+        }
+
+        /* ── Problem description box ── */
+        .desc-box {
+            background: var(--d-surface);
+            border: 1px solid var(--d-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            color: var(--d-text);
+            font-size: .9rem; line-height: 1.75;
+        }
+
+        /* ── Meta info grid ── */
+        .meta-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: .75rem;
+            margin-top: 1.25rem;
+        }
+        @media (max-width: 500px) { .meta-grid { grid-template-columns: 1fr; } }
+        .meta-item {
+            background: var(--d-surface);
+            border: 1px solid var(--d-border);
+            border-radius: 10px;
+            padding: .75rem 1rem;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .meta-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .meta-label { font-size: .7rem; color: var(--d-sub); font-family: 'Sora', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+        .meta-value { font-size: .88rem; font-weight: 600; color: var(--d-text); margin-top: 1px; }
+
+        /* ── Priority badge ── */
+        .prio-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: .72rem; font-weight: 700; letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+        .prio-urgent { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+        .prio-high   { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+        .prio-medium { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+        .prio-low    { background: rgba(34,197,94,.15);  color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+
+        /* ── Textarea ── */
+        .fc-label {
+            display: block;
+            font-family: 'Sora', sans-serif;
+            font-size: .73rem; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: var(--d-sub); margin-bottom: .55rem;
+        }
+        .fc-textarea {
+            width: 100%;
+            padding: .85rem 1rem;
+            background: var(--d-surface);
+            border: 1px solid var(--d-border-b);
+            border-radius: 12px;
+            color: var(--d-text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .92rem; line-height: 1.7;
+            outline: none; resize: vertical;
+            min-height: 160px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .fc-textarea::placeholder { color: var(--d-muted); }
+        .fc-textarea:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(20,184,166,.12);
+        }
+        .char-hint { font-size: .73rem; color: var(--d-muted); margin-top: .4rem; text-align: right; }
+
+        /* ── Buttons ── */
+        .btn-row { display: flex; gap: .75rem; padding-top: .5rem; }
+        .btn-submit {
+            flex: 1;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(135deg, #0d9488, #14b8a6);
+            color: #fff; border: none;
+            padding: .9rem 1.5rem; border-radius: 12px;
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700;
+            cursor: pointer; transition: opacity .2s, transform .15s;
+        }
+        .btn-submit:hover { opacity: .88; transform: translateY(-1px); }
+        .btn-later {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: transparent;
+            color: var(--d-sub); border: 1px solid var(--d-border-b);
+            padding: .9rem 1.5rem; border-radius: 12px;
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700;
+            text-decoration: none; transition: border-color .2s, color .2s, background .2s;
+        }
+        .btn-later:hover { border-color: var(--d-sub); color: var(--d-text); background: rgba(255,255,255,.02); }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up  { animation: fadeUp .45s ease both; }
+        .delay-1  { animation-delay: .05s; }
+        .delay-2  { animation-delay: .12s; }
+        .delay-3  { animation-delay: .19s; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--d-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--d-border-b); border-radius: 3px; }
+    </style>
 </head>
-<div layout:fragment="content" class="container mx-auto px-4 pt-20 max-w-xl">
+<body>
+<div layout:fragment="content" class="fr-root">
 
-    <div class="bg-white rounded-lg shadow p-6 space-y-6">
-        <!-- Titre du ticket -->
-        <h2 class="text-2xl font-bold">
-            Procédures pour : <span th:text="${problem.title}"></span>
-        </h2>
+    <!-- Back link -->
+    <div class="fade-up">
+        <a th:href="@{'/problems/' + ${problem.id}}" class="back-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Retour aux détails du ticket
+        </a>
+    </div>
 
-        <!-- Description du ticket -->
+    <!-- Header -->
+    <div class="fr-header fade-up delay-1">
+        <div class="fr-header-icon">
+            <svg class="w-6 h-6" style="color:#2dd4bf;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
         <div>
-            <h3 class="font-semibold text-gray-800 mb-2">🔍 Description du problème</h3>
-            <div class="bg-gray-50 border border-gray-200 p-4 rounded">
-                <p th:text="${problem.description}"
-                   class="text-gray-700 leading-relaxed">
-                    Description détaillée du ticket…
-                </p>
+            <div class="fr-title">
+                Résoudre <span class="fr-title-ticket" th:text="'#' + ${problem.id}"></span>
             </div>
+            <div class="fr-subtitle" th:text="${problem.title}">Titre du ticket</div>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- ── Main column ── -->
+        <div class="lg:col-span-2 space-y-5">
+
+            <!-- Problem recap -->
+            <div class="fr-card fade-up delay-2">
+                <div class="section-hdr">
+                    <div class="section-icon" style="background:rgba(59,130,246,.12);">
+                        <svg class="w-4 h-4" style="color:#60a5fa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="section-title">Description du problème</span>
+                </div>
+
+                <div class="desc-box" th:text="${problem.description}">Description du ticket…</div>
+
+                <div class="meta-grid">
+                    <!-- Catégorie -->
+                    <div class="meta-item">
+                        <div class="meta-dot" style="background:#3b82f6;"></div>
+                        <div>
+                            <div class="meta-label">Catégorie</div>
+                            <div class="meta-value" th:text="${problem.category}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Priorité -->
+                    <div class="meta-item">
+                        <div class="meta-dot"
+                             th:style="${problem.priority.name() == 'URGENT'} ? 'background:#ef4444' :
+                                       (${problem.priority.name() == 'HIGH'}   ? 'background:#f59e0b' :
+                                       (${problem.priority.name() == 'MEDIUM'} ? 'background:#3b82f6' :
+                                       'background:#22c55e'))"></div>
+                        <div>
+                            <div class="meta-label">Priorité</div>
+                            <div>
+                                <span th:if="${problem.priority.name() == 'URGENT'}" class="prio-badge prio-urgent">Critique</span>
+                                <span th:if="${problem.priority.name() == 'HIGH'}"   class="prio-badge prio-high">Élevée</span>
+                                <span th:if="${problem.priority.name() == 'MEDIUM'}" class="prio-badge prio-medium">Normale</span>
+                                <span th:if="${problem.priority.name() == 'LOW'}"    class="prio-badge prio-low">Faible</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Demandeur -->
+                    <div class="meta-item">
+                        <div class="meta-dot" style="background:#14b8a6;"></div>
+                        <div>
+                            <div class="meta-label">Demandeur</div>
+                            <div class="meta-value" th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Entreprise -->
+                    <div class="meta-item">
+                        <div class="meta-dot" style="background:#8b5cf6;"></div>
+                        <div>
+                            <div class="meta-label">Entreprise</div>
+                            <div class="meta-value" th:text="${problem.user.nomEntreprise}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resolution form -->
+            <div class="fr-card fade-up delay-3">
+                <form th:action="@{'/problems/' + ${problem.id} + '/resolve'}" method="post">
+
+                    <div class="section-hdr">
+                        <div class="section-icon" style="background:rgba(20,184,166,.12);">
+                            <svg class="w-4 h-4" style="color:#2dd4bf;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                        </div>
+                        <span class="section-title">Démarches effectuées</span>
+                    </div>
+
+                    <label for="resolution" class="fc-label">Décrire les étapes de résolution <span style="color:var(--red);">*</span></label>
+                    <textarea id="resolution" name="resolution" rows="7" required
+                              class="fc-textarea"
+                              placeholder="Ex : Redémarrage du service, mise à jour du pilote, remplacement du composant, configuration modifiée…&#10;&#10;Soyez précis pour que le client et l'admin puissent comprendre la solution appliquée."></textarea>
+                    <div class="char-hint" id="charHint">0 caractère(s)</div>
+
+                    <div class="btn-row">
+                        <a th:href="@{'/problems/' + ${problem.id}}" class="btn-later">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Plus tard
+                        </a>
+                        <button type="submit" class="btn-submit">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Soumettre la résolution
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
         </div>
 
-        <!-- Formulaire de résolution -->
-        <form th:action="@{'/problems/' + ${problem.id} + '/resolve'}"
-              method="post" class="space-y-4">
-            <!-- Rappel des infos clés -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <p><strong>Catégorie :</strong> <span th:text="${problem.category}"></span></p>
-                <p><strong>Créé par :</strong>
-                    <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
-                </p>
-                <p><strong>Entreprise :</strong>
-                    <span th:text="${problem.user.nomEntreprise}"></span>
-                </p>
-                <p><strong>Priorité :</strong>
-                    <span th:text="${problem.priority}"></span>
-                </p>
+        <!-- ── Sidebar ── -->
+        <aside class="space-y-4 fade-up delay-2">
+
+            <!-- Info panel -->
+            <div style="background:rgba(20,184,166,.05); border:1px solid rgba(20,184,166,.2); border-radius:12px; padding:1rem 1.2rem;">
+                <div style="display:flex; gap:10px; align-items:flex-start;">
+                    <svg class="w-5 h-5" style="color:#2dd4bf; flex-shrink:0; margin-top:1px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div style="font-size:.8rem; color:#2dd4bf; line-height:1.6;">
+                        <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:.82rem; margin-bottom:3px;">Étape suivante</div>
+                        Une fois soumise, la résolution sera <strong>validée par un admin</strong> avant que le ticket ne soit clôturé.
+                    </div>
+                </div>
             </div>
 
-            <!-- Zone de texte pour la résolution -->
-            <div>
-                <label for="resolution" class="block font-semibold mb-1">Démarches entreprises</label>
-                <textarea id="resolution"
-                          name="resolution"
-                          rows="6"
-                          required
-                          class="w-full border border-gray-300 rounded p-2"
-                          placeholder="Décrivez les étapes pour résoudre le problème…"></textarea>
+            <!-- Ticket creation date -->
+            <div class="fr-card" style="padding:1.2rem 1.5rem;">
+                <div style="font-size:.7rem; color:var(--d-sub); font-family:'Sora',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5rem;">Ticket ouvert le</div>
+                <div style="font-size:1rem; font-weight:700; color:var(--d-text);"
+                     th:text="${#temporals.format(problem.createdAt, 'dd MMM yyyy')}"></div>
+                <div style="font-size:.8rem; color:var(--d-sub);"
+                     th:text="${#temporals.format(problem.createdAt, 'HH:mm')}"></div>
             </div>
 
-            <!-- Bouton de soumission -->
-            <div class="text-right space-x-2">
-                <a th:href="@{'/problems/' + ${problem.id}}"
-                   class="bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-2 px-4 rounded inline-block ml-2 transition">
-                    Soumettre plus tard
-                </a>
-                <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Soumettre la résolution
-                </button>
-            </div>
-        </form>
+        </aside>
+
     </div>
 
 </div>
+</body>
 </html>
+
+<th:block layout:fragment="scripts">
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ta = document.getElementById('resolution');
+        var hint = document.getElementById('charHint');
+        if (ta && hint) {
+            function updateHint() {
+                var n = ta.value.length;
+                hint.textContent = n + ' caractère' + (n > 1 ? 's' : '');
+                hint.style.color = n < 30 ? '#ef4444' : n < 80 ? '#f59e0b' : '#2dd4bf';
+            }
+            ta.addEventListener('input', updateHint);
+            updateHint();
+        }
+    });
+</script>
+</th:block>

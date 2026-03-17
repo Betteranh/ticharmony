@@ -1,103 +1,501 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layouts/main}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Modifier un ticket</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --d-bg:      #070d1a;
+            --d-surface: #0c1628;
+            --d-card:    #0f1e33;
+            --d-card-h:  #132038;
+            --d-border:  #1b2d47;
+            --d-border-b:#253d5f;
+            --d-text:    #dde8f5;
+            --d-sub:     #6e90b5;
+            --d-muted:   #3d5470;
+            --blue:      #3b82f6;
+            --blue-l:    #60a5fa;
+            --amber:     #f59e0b;
+            --emerald:   #10b981;
+            --red:       #ef4444;
+            --teal:      #14b8a6;
+            --violet:    #8b5cf6;
+        }
+
+        /* ── Root ── */
+        .fu-root {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--d-bg);
+            color: var(--d-text);
+            min-height: calc(100vh - 64px);
+            padding: 2.5rem 0 5rem;
+        }
+
+        /* ── Back link ── */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: .83rem; font-weight: 600;
+            color: var(--d-sub); text-decoration: none;
+            transition: color .15s; margin-bottom: 1.75rem;
+        }
+        .back-link:hover { color: var(--blue-l); }
+        .back-link svg { transition: transform .15s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        /* ── Page header ── */
+        .fu-header {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 2rem;
+        }
+        .fu-header-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            background: rgba(59,130,246,.13);
+            border: 1px solid rgba(59,130,246,.25);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .fu-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.6rem; font-weight: 800;
+            letter-spacing: -.02em; color: var(--d-text);
+        }
+        .fu-subtitle { font-size: .85rem; color: var(--d-sub); margin-top: 2px; }
+
+        /* ── Cards ── */
+        .form-card {
+            background: var(--d-card);
+            border: 1px solid var(--d-border);
+            border-radius: 18px;
+            padding: 2rem;
+        }
+        .sidebar-card {
+            background: var(--d-card);
+            border: 1px solid var(--d-border);
+            border-radius: 18px;
+            padding: 1.5rem;
+        }
+
+        /* ── Section headers ── */
+        .section-hdr {
+            display: flex; align-items: center; gap: 10px;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid var(--d-border);
+            margin-bottom: 1.5rem;
+        }
+        .section-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-title {
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700; color: var(--d-text);
+        }
+
+        /* ── Labels ── */
+        .fc-label {
+            display: block;
+            font-family: 'Sora', sans-serif;
+            font-size: .73rem; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: var(--d-sub); margin-bottom: .5rem;
+        }
+
+        /* ── Inputs ── */
+        .fc-input {
+            width: 100%; padding: .7rem 1rem;
+            background: var(--d-surface);
+            border: 1px solid var(--d-border-b);
+            border-radius: 10px;
+            color: var(--d-text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem; outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .fc-input::placeholder { color: var(--d-muted); }
+        .fc-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+        }
+        textarea.fc-input { resize: vertical; min-height: 120px; }
+
+        /* ── Select ── */
+        .fc-select {
+            width: 100%; padding: .7rem 2.2rem .7rem 1rem;
+            background: var(--d-surface);
+            border: 1px solid var(--d-border-b);
+            border-radius: 10px;
+            color: var(--d-text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem; outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e90b5' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right .7rem center;
+            transition: border-color .2s, box-shadow .2s;
+            cursor: pointer;
+        }
+        .fc-select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+        }
+        .fc-select option { background: #0c1628; }
+
+        /* ── Status/Priority colored selects ── */
+        .select-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+        }
+        @media (max-width: 560px) { .select-row { grid-template-columns: 1fr; } }
+
+        /* ── Technician select wrapper ── */
+        .tech-select-wrap {
+            background: rgba(20,184,166,.05);
+            border: 1px solid rgba(20,184,166,.2);
+            border-radius: 12px;
+            padding: 1.2rem;
+        }
+
+        /* ── Buttons ── */
+        .btn-submit {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            color: #fff; border: none;
+            padding: .85rem 2rem; border-radius: 12px;
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700;
+            cursor: pointer; transition: opacity .2s, transform .15s;
+            flex: 1;
+        }
+        .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
+
+        .btn-cancel {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--d-sub);
+            border: 1px solid var(--d-border-b);
+            padding: .85rem 1.75rem; border-radius: 12px;
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700;
+            text-decoration: none; transition: border-color .2s, color .2s, background .2s;
+        }
+        .btn-cancel:hover { border-color: var(--d-sub); color: var(--d-text); background: rgba(255,255,255,.03); }
+
+        /* ── Sidebar info rows ── */
+        .si-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 0; border-bottom: 1px solid var(--d-border);
+        }
+        .si-row:last-child { border-bottom: none; }
+        .si-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .si-label { font-size: .72rem; color: var(--d-sub); margin-bottom: 1px; }
+        .si-value { font-size: .88rem; font-weight: 600; color: var(--d-text); }
+
+        /* ── Warning / info panel ── */
+        .warn-panel {
+            background: rgba(245,158,11,.06);
+            border: 1px solid rgba(245,158,11,.2);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            display: flex; gap: 10px;
+        }
+        .warn-panel svg { flex-shrink: 0; margin-top: 1px; }
+        .warn-text { font-size: .8rem; color: #fbbf24; line-height: 1.55; }
+        .warn-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: .82rem; margin-bottom: 3px; }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up   { animation: fadeUp .45s ease both; }
+        .delay-1   { animation-delay: .05s; }
+        .delay-2   { animation-delay: .12s; }
+        .delay-3   { animation-delay: .18s; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--d-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--d-border-b); border-radius: 3px; }
+    </style>
 </head>
-<div layout:fragment="content" class="min-h-screen flex items-center justify-center py-10 px-2 pt-20">
-    <div class="w-full max-w-3xl bg-white shadow-2xl rounded-3xl border border-gray-100 p-6 sm:p-10 md:p-14 transition-all">
-        <h2 class="text-4xl font-extrabold text-indigo-700 mb-2 text-center drop-shadow-sm">Modifier le ticket</h2>
-        <p class="text-gray-500 text-center mb-10 text-lg">Mettez à jour les informations relatives à votre demande.</p>
-        <form th:action="@{/problems/save}" th:object="${problem}" method="post" class="space-y-8">
-            <input type="hidden" th:field="*{id}"/>
+<body>
+<div layout:fragment="content" class="fu-root">
 
-            <div>
-                <label for="title" class="block text-base font-medium text-gray-700 mb-1">Titre du problème</label>
-                <input type="text" id="title" th:field="*{title}" required
-                       placeholder="Titre court et précis"
-                       class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"/>
-            </div>
+    <!-- Back link -->
+    <div class="fade-up">
+        <a th:href="@{'/problems/' + ${problem.id}}" class="back-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Retour aux détails du ticket
+        </a>
+    </div>
 
-            <div>
-                <label for="description" class="block text-base font-medium text-gray-700 mb-1">Description
-                    détaillée</label>
-                <textarea id="description" th:field="*{description}" rows="5" required
-                          placeholder="Détaillez le problème, les étapes, etc."
-                          class="border border-gray-300 rounded-xl w-full p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg"></textarea>
-            </div>
-
-            <div>
-                <label for="category" class="block text-base font-medium text-gray-700 mb-1">Catégorie</label>
-                <select id="category" th:field="*{category}" required
-                        class="border border-gray-300 rounded-xl w-full py-3 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
-                    <option value="" disabled>Choisir une catégorie</option>
-                    <option value="Réseau">Réseau</option>
-                    <option value="Matériel">Matériel</option>
-                    <option value="Logiciel">Logiciel</option>
-                    <option value="Sécurité">Sécurité</option>
-                    <option value="Autre">Autre</option>
-                </select>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <label for="status" class="block text-base font-medium text-gray-700 mb-1">Statut</label>
-                    <select id="status" th:field="*{status}"
-                            class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
-                        <option th:each="s : ${T(be.stage.ticharmony.model.Status).values()}"
-                                th:value="${s}"
-                                th:text="${s.name() == 'OPEN' ? 'Ouvert' :
-                     (s.name() == 'IN_PROGRESS' ? 'En cours' :
-                     (s.name() == 'RESOLVED' ? 'Résolu' :
-                     (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"/>
-                    </select>
-                </div>
-                <div>
-                    <label for="priority" class="block text-base font-medium text-gray-700 mb-1">Priorité</label>
-                    <select id="priority" th:field="*{priority}"
-                            class="border border-gray-300 rounded-xl w-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
-                        <option th:each="p : ${T(be.stage.ticharmony.model.Priority).values()}"
-                                th:value="${p}"
-                                th:text="${p.name() == 'LOW' ? 'Faible' :
-                     (p.name() == 'MEDIUM' ? 'Normale' :
-                     (p.name() == 'HIGH' ? 'Élevée' :
-                     (p.name() == 'URGENT' ? 'Critique' : p.name())))}"/>
-                    </select>
-                </div>
-            </div>
-
-            <div th:if="${technicians != null}" class="mt-2">
-                <label for="technician" class="block text-base font-medium text-gray-700 mb-1">Technicien
-                    assigné</label>
-                <select id="technician" name="technicianId"
-                        class="border border-gray-300 rounded-xl w-full py-3 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
-                    <!-- Option "Aucun" avec value="0" (PAS VIDE) -->
-                    <option th:value="0" th:text="'Aucun (non assigné)'"
-                            th:selected="${problem.technician == null}"></option>
-                    <option th:each="tech : ${technicians}"
-                            th:value="${tech.id}"
-                            th:text="${tech.firstname + ' ' + tech.lastname}"
-                            th:selected="${problem.technician != null and problem.technician.id == tech.id}">
-                    </option>
-                </select>
-            </div>
-
-            <div class="flex items-center justify-center pt-4">
-                <button type="submit"
-                        class="w-full md:w-auto px-14 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg transition text-lg duration-150">
-                    Enregistrer les modifications
-                </button>
-            </div>
-        </form>
-
-        <div class="mt-10 text-center text-gray-400 text-sm">
-            Les modifications seront prises en compte immédiatement après validation.
+    <!-- Header -->
+    <div class="fu-header fade-up delay-1">
+        <div class="fu-header-icon">
+            <svg class="w-6 h-6" style="color:#60a5fa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+        </div>
+        <div>
+            <div class="fu-title">Modifier le ticket <span style="color:var(--blue-l);" th:text="'#' + ${problem.id}"></span></div>
+            <div class="fu-subtitle">Mettez à jour les informations de la demande</div>
         </div>
     </div>
+
+    <!-- Grid: form + sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- ── Main form ── -->
+        <div class="lg:col-span-2 fade-up delay-2">
+            <form th:action="@{/problems/save}" th:object="${problem}" method="post">
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="form-card space-y-6">
+
+                    <!-- Section: Informations générales -->
+                    <div>
+                        <div class="section-hdr">
+                            <div class="section-icon" style="background:rgba(59,130,246,.12);">
+                                <svg class="w-4 h-4" style="color:#60a5fa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <span class="section-title">Informations générales</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Titre -->
+                            <div>
+                                <label for="title" class="fc-label">Titre du problème</label>
+                                <input type="text" id="title" th:field="*{title}" required
+                                       placeholder="Titre court et précis" class="fc-input"/>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label for="description" class="fc-label">Description détaillée</label>
+                                <textarea id="description" th:field="*{description}" rows="5" required
+                                          placeholder="Détaillez le problème, les étapes pour le reproduire…"
+                                          class="fc-input"></textarea>
+                            </div>
+
+                            <!-- Catégorie -->
+                            <div>
+                                <label for="category" class="fc-label">Catégorie</label>
+                                <select id="category" th:field="*{category}" required class="fc-select">
+                                    <option value="" disabled>Choisir une catégorie</option>
+                                    <option value="Réseau">🌐 Réseau</option>
+                                    <option value="Matériel">🖥️ Matériel</option>
+                                    <option value="Logiciel">💿 Logiciel</option>
+                                    <option value="Sécurité">🔒 Sécurité</option>
+                                    <option value="Autre">📋 Autre</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Statut & Priorité -->
+                    <div>
+                        <div class="section-hdr">
+                            <div class="section-icon" style="background:rgba(245,158,11,.12);">
+                                <svg class="w-4 h-4" style="color:#fbbf24;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <span class="section-title">Statut &amp; Priorité</span>
+                        </div>
+
+                        <div class="select-row">
+                            <div>
+                                <label for="status" class="fc-label">Statut</label>
+                                <select id="status" th:field="*{status}" class="fc-select">
+                                    <option th:each="s : ${T(be.stage.ticharmony.model.Status).values()}"
+                                            th:value="${s}"
+                                            th:text="${s.name() == 'OPEN'        ? 'Ouvert' :
+                                                      (s.name() == 'IN_PROGRESS' ? 'En cours' :
+                                                      (s.name() == 'RESOLVED'    ? 'Résolu' :
+                                                      (s.name() == 'CLOSED'      ? 'Fermé' : s.name())))}"/>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="priority" class="fc-label">Priorité</label>
+                                <select id="priority" th:field="*{priority}" class="fc-select">
+                                    <option th:each="p : ${T(be.stage.ticharmony.model.Priority).values()}"
+                                            th:value="${p}"
+                                            th:text="${p.name() == 'LOW'    ? 'Faible' :
+                                                      (p.name() == 'MEDIUM' ? 'Normale' :
+                                                      (p.name() == 'HIGH'   ? 'Élevée' :
+                                                      (p.name() == 'URGENT' ? 'Critique' : p.name())))}"/>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Technicien (admin only) -->
+                    <div th:if="${technicians != null}">
+                        <div class="section-hdr">
+                            <div class="section-icon" style="background:rgba(20,184,166,.12);">
+                                <svg class="w-4 h-4" style="color:#2dd4bf;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </div>
+                            <span class="section-title">Technicien assigné</span>
+                        </div>
+
+                        <div class="tech-select-wrap">
+                            <label for="technician" class="fc-label" style="color:#2dd4bf;">Technicien</label>
+                            <select id="technician" name="technicianId" class="fc-select">
+                                <option th:value="0"
+                                        th:selected="${problem.technician == null}">Non assigné</option>
+                                <option th:each="tech : ${technicians}"
+                                        th:value="${tech.id}"
+                                        th:text="${tech.firstname + ' ' + tech.lastname}"
+                                        th:selected="${problem.technician != null and problem.technician.id == tech.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-3 pt-2">
+                        <a th:href="@{'/problems/' + ${problem.id}}" class="btn-cancel">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn-submit">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- ── Sidebar ── -->
+        <aside class="space-y-4 fade-up delay-3">
+
+            <!-- Current ticket state -->
+            <div class="sidebar-card">
+                <div class="section-hdr">
+                    <div class="section-icon" style="background:rgba(139,92,246,.12);">
+                        <svg class="w-4 h-4" style="color:#a78bfa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="section-title">État actuel</span>
+                </div>
+
+                <!-- Statut actuel -->
+                <div class="si-row">
+                    <div class="si-dot"
+                         th:style="${problem.status.name() == 'OPEN'}        ? 'background:#3b82f6' :
+                                   (${problem.status.name() == 'IN_PROGRESS'} ? 'background:#f59e0b' :
+                                   (${problem.status.name() == 'RESOLVED'}    ? 'background:#22c55e' :
+                                   'background:#64748b'))"></div>
+                    <div>
+                        <div class="si-label">Statut</div>
+                        <div class="si-value">
+                            <span th:if="${problem.status.name() == 'OPEN'}">Ouvert</span>
+                            <span th:if="${problem.status.name() == 'IN_PROGRESS'}">En cours</span>
+                            <span th:if="${problem.status.name() == 'RESOLVED'}">Résolu</span>
+                            <span th:if="${problem.status.name() == 'CLOSED'}">Fermé</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priorité actuelle -->
+                <div class="si-row">
+                    <div class="si-dot"
+                         th:style="${problem.priority != null and problem.priority.name() == 'URGENT'} ? 'background:#ef4444' :
+                                   (${problem.priority != null and problem.priority.name() == 'HIGH'}   ? 'background:#f59e0b' :
+                                   (${problem.priority != null and problem.priority.name() == 'MEDIUM'} ? 'background:#3b82f6' :
+                                   'background:#22c55e'))"></div>
+                    <div>
+                        <div class="si-label">Priorité</div>
+                        <div class="si-value">
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Faible</span>
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Normale</span>
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Élevée</span>
+                            <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technicien actuel -->
+                <div class="si-row">
+                    <div class="si-dot" style="background:#14b8a6;"></div>
+                    <div>
+                        <div class="si-label">Technicien</div>
+                        <div class="si-value" th:if="${problem.technician != null}"
+                             th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></div>
+                        <div class="si-value" style="color:var(--d-sub);" th:if="${problem.technician == null}">Non assigné</div>
+                    </div>
+                </div>
+
+                <!-- Créé le -->
+                <div class="si-row">
+                    <div class="si-dot" style="background:var(--d-border-b);"></div>
+                    <div>
+                        <div class="si-label">Créé le</div>
+                        <div class="si-value" th:text="${#temporals.format(problem.createdAt, 'dd MMM yyyy')}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div class="warn-panel">
+                <svg class="w-5 h-5" style="color:#fbbf24;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div class="warn-text">
+                    <div class="warn-title">Attention</div>
+                    Les modifications seront appliquées immédiatement et visibles par tous les utilisateurs concernés.
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="sidebar-card">
+                <div class="section-hdr">
+                    <div class="section-icon" style="background:rgba(59,130,246,.12);">
+                        <svg class="w-4 h-4" style="color:#60a5fa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <span class="section-title">Conseils</span>
+                </div>
+                <ul style="list-style:none; padding:0; margin:0; space-y:.5rem;">
+                    <li style="display:flex; gap:8px; margin-bottom:.6rem; font-size:.8rem; color:var(--d-sub);">
+                        <span style="color:#60a5fa; flex-shrink:0;">→</span>
+                        Passez un ticket en <strong style="color:var(--d-text);">En cours</strong> dès qu'un technicien commence à le traiter.
+                    </li>
+                    <li style="display:flex; gap:8px; margin-bottom:.6rem; font-size:.8rem; color:var(--d-sub);">
+                        <span style="color:#fbbf24; flex-shrink:0;">→</span>
+                        Marquez <strong style="color:var(--d-text);">Critique</strong> uniquement pour les pannes bloquant la production.
+                    </li>
+                    <li style="display:flex; gap:8px; font-size:.8rem; color:var(--d-sub);">
+                        <span style="color:#4ade80; flex-shrink:0;">→</span>
+                        Un ticket <strong style="color:var(--d-text);">Résolu</strong> doit être validé par l'admin avant d'être fermé.
+                    </li>
+                </ul>
+            </div>
+
+        </aside>
+    </div>
+
 </div>
+</body>
 </html>

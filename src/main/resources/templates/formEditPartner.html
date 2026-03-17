@@ -1,131 +1,518 @@
-<div xmlns:th="http://www.thymeleaf.org"
-     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-     layout:decorate="~{layouts/main}">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Modifier un partenaire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --d-bg:      #070d1a;
+            --d-surface: #0c1628;
+            --d-card:    #0f1e33;
+            --d-card-h:  #132038;
+            --d-border:  #1b2d47;
+            --d-border-b:#253d5f;
+            --d-text:    #dde8f5;
+            --d-sub:     #6e90b5;
+            --d-muted:   #3d5470;
+            --violet:    #8b5cf6;
+            --violet-l:  #a78bfa;
+            --blue:      #3b82f6;
+            --blue-l:    #60a5fa;
+            --amber:     #f59e0b;
+        }
 
-    <div layout:fragment="content"
-         class="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 px-2 py-16">
+        .fep-root {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--d-bg);
+            color: var(--d-text);
+            min-height: calc(100vh - 64px);
+            padding: 2.5rem 0 5rem;
+        }
 
-        <div class="w-full max-w-xl bg-white/80 rounded-3xl shadow-2xl p-10 flex flex-col items-center border border-blue-100 backdrop-blur-lg transition-all">
+        /* ── Back link ── */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: .83rem; font-weight: 600;
+            color: var(--d-sub); text-decoration: none;
+            transition: color .15s; margin-bottom: 1.75rem;
+        }
+        .back-link:hover { color: var(--violet-l); }
+        .back-link svg { transition: transform .15s; }
+        .back-link:hover svg { transform: translateX(-3px); }
 
-            <!-- Barre d’action -->
-            <div class="w-full flex items-center justify-center mb-4">
-                <div class="flex items-center gap-3">
-                    <span class="h-3 w-3 rounded-full bg-blue-500"></span>
-                    <span class="uppercase text-xs font-semibold text-blue-700 tracking-wider">
-                        Édition partenaire
-                    </span>
-                </div>
-            </div>
-            <!-- Logo/avatar -->
-            <div class="flex flex-col items-center mb-2">
-                <div class="w-16 h-16 rounded-full overflow-hidden shadow bg-white border mb-2 flex items-center justify-center">
-                    <img th:src="@{/images/tic.png}" alt="TIC Harmony" class="w-12 h-12 object-contain"/>
-                </div>
-                <h1 class="text-2xl font-extrabold text-blue-800 text-center mb-1">
-                    Modifier le partenaire
-                </h1>
-                <p class="text-gray-500 text-sm text-center mb-4">
-                    Mets à jour les infos du client ou partenaire 🤝
-                </p>
-            </div>
+        /* ── Header ── */
+        .fep-header {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 2rem;
+        }
+        .fep-avatar {
+            width: 56px; height: 56px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 800;
+            text-transform: uppercase; flex-shrink: 0;
+            background: rgba(139,92,246,.15);
+            border: 1px solid rgba(139,92,246,.3);
+            color: var(--violet-l);
+        }
+        .fep-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.5rem; font-weight: 800;
+            letter-spacing: -.02em; color: var(--d-text);
+        }
+        .fep-subtitle { font-size: .85rem; color: var(--d-sub); margin-top: 3px; }
 
-            <form th:action="@{'/partners/edit/' + ${user.id}}" method="post" th:object="${user}" class="w-full">
+        /* ── Layout ── */
+        .fep-grid {
+            display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 860px) { .fep-grid { grid-template-columns: 1fr; } }
 
-                <div class="mb-3">
-                    <label for="login" class="block text-gray-700 text-sm font-semibold mb-1">
-                        Login
-                    </label>
-                    <input type="text" id="login" th:field="*{login}" readonly
-                           class="border border-gray-200 rounded-lg w-full py-2 px-3 bg-gray-100 text-gray-700 shadow-sm"/>
-                </div>
+        /* ── Cards ── */
+        .fee-card {
+            background: var(--d-card);
+            border: 1px solid var(--d-border);
+            border-radius: 18px; padding: 2rem;
+        }
+        .sidebar-card {
+            background: var(--d-card);
+            border: 1px solid var(--d-border);
+            border-radius: 18px; padding: 1.5rem;
+        }
 
-                <div class="mb-3">
-                    <label for="password" class="block text-gray-700 text-sm font-semibold mb-1">
-                        Nouveau mot de passe
-                        <span class="text-xs text-gray-400 ml-1">(laisser vide pour ne pas changer)</span>
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="password" name="newPassword"
-                               placeholder="********"
-                               class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 pr-10 text-gray-900 bg-gray-50 shadow-sm transition"
-                               autocomplete="new-password"/>
-                    </div>
-                </div>
+        /* ── Section header ── */
+        .section-hdr {
+            display: flex; align-items: center; gap: 10px;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid var(--d-border);
+            margin-bottom: 1.5rem;
+        }
+        .section-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .section-title {
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700; color: var(--d-text);
+        }
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                    <div>
-                        <label for="firstname" class="block text-gray-700 text-sm font-semibold mb-1">
-                            Prénom
-                        </label>
-                        <input type="text" id="firstname" th:field="*{firstname}" required
-                               class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 text-gray-900 bg-gray-50 shadow-sm transition"/>
-                    </div>
-                    <div>
-                        <label for="lastname" class="block text-gray-700 text-sm font-semibold mb-1">
-                            Nom
-                        </label>
-                        <input type="text" id="lastname" th:field="*{lastname}" required
-                               class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 text-gray-900 bg-gray-50 shadow-sm transition"/>
-                    </div>
-                </div>
+        /* ── Labels & inputs ── */
+        .fc-label {
+            display: block;
+            font-family: 'Sora', sans-serif;
+            font-size: .73rem; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: var(--d-sub); margin-bottom: .5rem;
+        }
+        .fc-input {
+            width: 100%; padding: .7rem 1rem;
+            background: var(--d-surface);
+            border: 1px solid var(--d-border-b);
+            border-radius: 10px;
+            color: var(--d-text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem; outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .fc-input::placeholder { color: var(--d-muted); }
+        .fc-input:focus {
+            border-color: var(--violet);
+            box-shadow: 0 0 0 3px rgba(139,92,246,.12);
+        }
 
-                <div class="mb-3">
-                    <label for="email" class="block text-gray-700 text-sm font-semibold mb-1">
-                        Email
-                    </label>
-                    <input type="email" id="email" th:field="*{email}" required
-                           class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 text-gray-900 bg-gray-50 shadow-sm transition"/>
-                </div>
+        /* ── Select ── */
+        .fc-select {
+            width: 100%; padding: .7rem 2.2rem .7rem 1rem;
+            background: var(--d-surface);
+            border: 1px solid var(--d-border-b);
+            border-radius: 10px;
+            color: var(--d-text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem; outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e90b5' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right .7rem center;
+            transition: border-color .2s, box-shadow .2s;
+            cursor: pointer;
+        }
+        .fc-select:focus {
+            border-color: var(--violet);
+            box-shadow: 0 0 0 3px rgba(139,92,246,.12);
+        }
+        .fc-select option { background: #0c1628; }
 
-                <div class="mb-3">
-                    <label for="nomEntreprise" class="block text-gray-700 text-sm font-semibold mb-1">
-                        Nom d'entreprise
-                    </label>
-                    <input type="text" id="nomEntreprise" th:field="*{nomEntreprise}" required
-                           class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 text-gray-900 bg-gray-50 shadow-sm transition"/>
-                </div>
+        /* ── Login display ── */
+        .login-display {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--d-bg); border: 1px solid var(--d-border);
+            border-radius: 10px; padding: .7rem 1rem;
+        }
+        .login-display svg { color: var(--d-muted); flex-shrink: 0; }
+        .login-display span { font-size: .9rem; font-weight: 600; color: var(--violet-l); font-family: 'Sora', sans-serif; }
+        .login-hint { font-size: .72rem; color: var(--d-muted); margin-top: .35rem; }
 
-                <div class="mb-3">
-                    <label for="tva" class="block text-gray-700 text-sm font-semibold mb-1">
-                        TVA
-                    </label>
-                    <input type="text" id="tva" th:field="*{tva}" required
-                           class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 text-gray-900 bg-gray-50 shadow-sm transition"/>
-                </div>
+        /* ── Password toggle ── */
+        .pw-wrap { position: relative; }
+        .pw-toggle {
+            position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--d-muted); padding: 0; transition: color .15s;
+        }
+        .pw-toggle:hover { color: var(--d-sub); }
+        .pw-wrap .fc-input { padding-right: 2.5rem; }
 
-                <div class="mb-3">
-                    <label for="telephone" class="block text-gray-700 text-sm font-semibold mb-1">
-                        Téléphone
-                    </label>
-                    <input type="text" id="telephone" th:field="*{telephone}"
-                           class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 text-gray-900 bg-gray-50 shadow-sm transition"/>
-                </div>
+        /* ── Buttons ── */
+        .btn-row { display: flex; gap: .75rem; padding-top: .5rem; }
+        .btn-submit {
+            flex: 1;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(135deg, #5b21b6, #8b5cf6);
+            color: #fff; border: none;
+            padding: .9rem 1.5rem; border-radius: 12px;
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700;
+            cursor: pointer; transition: opacity .2s, transform .15s;
+        }
+        .btn-submit:hover { opacity: .88; transform: translateY(-1px); }
+        .btn-cancel {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: transparent; color: var(--d-sub);
+            border: 1px solid var(--d-border-b);
+            padding: .9rem 1.5rem; border-radius: 12px;
+            font-family: 'Sora', sans-serif;
+            font-size: .9rem; font-weight: 700;
+            text-decoration: none; transition: border-color .2s, color .2s, background .2s;
+        }
+        .btn-cancel:hover { border-color: var(--d-sub); color: var(--d-text); background: rgba(255,255,255,.02); }
 
-                <div class="mb-3">
-                    <label for="adresse" class="block text-gray-700 text-sm font-semibold mb-1">
-                        Adresse
-                    </label>
-                    <input type="text" id="adresse" th:field="*{adresse}"
-                           class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 text-gray-900 bg-gray-50 shadow-sm transition"/>
-                </div>
+        /* ── Sidebar rows ── */
+        .si-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 0; border-bottom: 1px solid var(--d-border);
+        }
+        .si-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .si-row:first-child { padding-top: 0; }
+        .si-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: var(--d-surface); border: 1px solid var(--d-border);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .si-label { font-size: .7rem; color: var(--d-sub); }
+        .si-value { font-size: .88rem; font-weight: 600; color: var(--d-text); margin-top: 1px; }
 
-                <div class="mb-5">
-                    <label for="langue" class="block text-gray-700 text-sm font-semibold mb-1">
-                        Langue
-                    </label>
-                    <select id="langue" th:field="*{langue}" required
-                            class="border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 rounded-lg w-full py-2 px-3 bg-gray-50 text-gray-900 shadow-sm transition">
-                        <option value="fr">Français</option>
-                        <option value="en">English</option>
-                        <option value="nl">Nederlands</option>
-                    </select>
-                </div>
+        /* ── Lang badge ── */
+        .lang-fr { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.25); }
+        .lang-en { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
+        .lang-nl { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.25); }
+        .lang-badge {
+            display: inline-block; padding: 2px 10px; border-radius: 20px;
+            font-size: .72rem; font-weight: 800; letter-spacing: .05em;
+            text-transform: uppercase; font-family: 'Sora', sans-serif;
+        }
 
-                <button type="submit"
-                        class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-extrabold py-3 rounded-xl shadow-lg transition text-lg tracking-wide">
-                    Sauvegarder
-                </button>
-            </form>
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up  { animation: fadeUp .4s ease both; }
+        .delay-1  { animation-delay: .06s; }
+        .delay-2  { animation-delay: .12s; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--d-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--d-border-b); border-radius: 3px; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="fep-root">
+
+    <!-- Back link -->
+    <div class="fade-up">
+        <a th:href="@{/partners}" class="back-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Retour à la liste des partenaires
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="fep-header fade-up delay-1">
+        <div class="fep-avatar"
+             th:text="${#strings.substring(user.nomEntreprise, 0, T(java.lang.Math).min(2, #strings.length(user.nomEntreprise)))}">AB</div>
+        <div>
+            <div class="fep-title" th:text="${'Modifier ' + user.nomEntreprise}">Modifier Entreprise</div>
+            <div class="fep-subtitle" th:text="${user.firstname + ' ' + user.lastname}">Prénom Nom</div>
         </div>
     </div>
+
+    <!-- Grid -->
+    <div class="fep-grid fade-up delay-2">
+
+        <!-- ── Form ── -->
+        <div class="fee-card">
+            <form th:action="@{'/partners/edit/' + ${user.id}}" method="post" th:object="${user}">
+
+                <!-- Entreprise -->
+                <div class="section-hdr">
+                    <div class="section-icon" style="background:rgba(139,92,246,.12);">
+                        <svg class="w-4 h-4" style="color:#a78bfa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <span class="section-title">Entreprise</span>
+                </div>
+
+                <div class="space-y-4 mb-5">
+                    <div>
+                        <label for="nomEntreprise" class="fc-label">Nom d'entreprise</label>
+                        <input type="text" id="nomEntreprise" th:field="*{nomEntreprise}" required
+                               placeholder="Nom de l'entreprise" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="tva" class="fc-label">Numéro TVA</label>
+                        <input type="text" id="tva" th:field="*{tva}"
+                               placeholder="BE 0123 456 789" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="adresse" class="fc-label">Adresse</label>
+                        <input type="text" id="adresse" th:field="*{adresse}"
+                               placeholder="Rue, ville, code postal" class="fc-input"/>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="section-hdr">
+                    <div class="section-icon" style="background:rgba(59,130,246,.12);">
+                        <svg class="w-4 h-4" style="color:#60a5fa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <span class="section-title">Contact</span>
+                </div>
+
+                <div class="space-y-4 mb-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="firstname" class="fc-label">Prénom</label>
+                            <input type="text" id="firstname" th:field="*{firstname}" required
+                                   placeholder="Prénom" class="fc-input"/>
+                        </div>
+                        <div>
+                            <label for="lastname" class="fc-label">Nom</label>
+                            <input type="text" id="lastname" th:field="*{lastname}" required
+                                   placeholder="Nom" class="fc-input"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="email" class="fc-label">Email</label>
+                        <input type="email" id="email" th:field="*{email}" required
+                               placeholder="adresse@email.com" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="telephone" class="fc-label">Téléphone</label>
+                        <input type="text" id="telephone" th:field="*{telephone}"
+                               placeholder="0X XX XX XX XX" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="langue" class="fc-label">Langue</label>
+                        <select id="langue" th:field="*{langue}" required class="fc-select">
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="nl">🇧🇪 Nederlands</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Accès -->
+                <div class="section-hdr">
+                    <div class="section-icon" style="background:rgba(245,158,11,.12);">
+                        <svg class="w-4 h-4" style="color:#fbbf24;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <span class="section-title">Accès</span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <!-- Login (read-only) -->
+                    <div>
+                        <label class="fc-label">Login</label>
+                        <div class="login-display">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <span th:text="${user.login}">login</span>
+                        </div>
+                        <div class="login-hint">Le login ne peut pas être modifié</div>
+                        <input type="hidden" th:field="*{login}"/>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label for="password" class="fc-label">
+                            Nouveau mot de passe
+                            <span style="color:var(--d-muted); font-weight:400; text-transform:none; letter-spacing:0;"> — laisser vide pour ne pas changer</span>
+                        </label>
+                        <div class="pw-wrap">
+                            <input type="password" id="password" name="newPassword"
+                                   autocomplete="new-password"
+                                   placeholder="••••••••" class="fc-input"/>
+                            <button type="button" class="pw-toggle" onclick="togglePw()">
+                                <svg id="eyeIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="btn-row">
+                    <a th:href="@{/partners}" class="btn-cancel">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn-submit">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Sauvegarder
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- ── Sidebar ── -->
+        <aside class="space-y-4">
+
+            <!-- Current info -->
+            <div class="sidebar-card">
+                <div class="section-hdr" style="margin-bottom:1rem;">
+                    <div class="section-icon" style="background:rgba(139,92,246,.12);">
+                        <svg class="w-4 h-4" style="color:#a78bfa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="section-title">Profil actuel</span>
+                </div>
+
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg class="w-4 h-4" style="color:#a78bfa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Entreprise</div>
+                        <div class="si-value" th:text="${user.nomEntreprise}"></div>
+                    </div>
+                </div>
+
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg class="w-4 h-4" style="color:var(--d-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Contact</div>
+                        <div class="si-value" th:text="${user.firstname + ' ' + user.lastname}"></div>
+                    </div>
+                </div>
+
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg class="w-4 h-4" style="color:var(--blue-l);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Login</div>
+                        <div class="si-value" style="color:var(--violet-l);" th:text="${user.login}"></div>
+                    </div>
+                </div>
+
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg class="w-4 h-4" style="color:var(--d-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Email</div>
+                        <div class="si-value" th:text="${user.email}"></div>
+                    </div>
+                </div>
+
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg class="w-4 h-4" style="color:var(--d-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Langue</div>
+                        <div style="margin-top:3px;">
+                            <span th:classappend="${user.langue == 'fr'} ? 'lang-fr' : (${user.langue == 'en'} ? 'lang-en' : 'lang-nl')"
+                                  class="lang-badge"
+                                  th:text="${#strings.toUpperCase(user.langue)}">FR</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="si-row" th:if="${user.tva != null and !user.tva.isEmpty()}">
+                    <div class="si-icon">
+                        <svg class="w-4 h-4" style="color:#a78bfa;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">TVA</div>
+                        <div class="si-value" th:text="${user.tva}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div style="background:rgba(245,158,11,.05); border:1px solid rgba(245,158,11,.2); border-radius:12px; padding:1rem 1.2rem; display:flex; gap:10px; align-items:flex-start;">
+                <svg class="w-5 h-5 flex-shrink-0" style="color:#fbbf24; margin-top:1px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div style="font-size:.8rem; color:#fbbf24; line-height:1.6;">
+                    <div style="font-family:'Sora',sans-serif; font-weight:700; margin-bottom:3px;">Mot de passe</div>
+                    Laissez le champ vide pour conserver le mot de passe actuel.
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
 </div>
+</body>
+</html>
+
+<th:block layout:fragment="scripts">
+<script>
+    function togglePw() {
+        var input = document.getElementById('password');
+        var icon = document.getElementById('eyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+        } else {
+            input.type = 'password';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+        }
+    }
+</script>
+</th:block>

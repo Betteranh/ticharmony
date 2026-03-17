@@ -3,293 +3,637 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Tableau de bord member</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Tableau de bord technicien</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --d-bg:       #070d1a;
+            --d-surface:  #0c1628;
+            --d-card:     #0f1e33;
+            --d-card-h:   #132038;
+            --d-border:   #1b2d47;
+            --d-border-b: #253d5f;
+            --d-text:     #dde8f5;
+            --d-sub:      #6e90b5;
+            --d-muted:    #3d5470;
+            --teal:       #14b8a6;
+            --teal-l:     #2dd4bf;
+            --blue:       #3b82f6;
+            --sky:        #38bdf8;
+            --amber:      #f59e0b;
+            --emerald:    #10b981;
+            --slate:      #6b7280;
+            --red:        #ef4444;
+            --orange:     #f97316;
+        }
+
+        .mbr-root {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--d-bg);
+            color: var(--d-text);
+            min-height: calc(100vh - 64px);
+            padding: 2.5rem 0 5rem;
+        }
+
+        /* ── Header banner ── */
+        .mbr-header {
+            background: linear-gradient(135deg, #0b1e30 0%, var(--d-bg) 100%);
+            border: 1px solid var(--d-border);
+            border-radius: 18px;
+            padding: 2rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .mbr-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 55% 80% at 95% 20%, rgba(20,184,166,.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .mbr-header-eyebrow {
+            font-family: 'Sora', sans-serif;
+            font-size: .7rem;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: .4rem;
+        }
+        .mbr-header-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            line-height: 1.1;
+            color: var(--d-text);
+        }
+        .mbr-header-title span { color: var(--teal-l); }
+        .mbr-header-sub {
+            font-size: .88rem;
+            color: var(--d-sub);
+            margin-top: .4rem;
+        }
+        .mbr-clock { text-align: right; }
+        #mbr-date {
+            font-family: 'Sora', sans-serif;
+            font-size: .7rem;
+            color: var(--d-muted);
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+        #mbr-time {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--d-sub);
+            letter-spacing: .04em;
+            font-variant-numeric: tabular-nums;
+            margin-top: .15rem;
+        }
+
+        /* ── Stat cards ── */
+        .stat-card {
+            background: var(--d-card);
+            border: 1px solid var(--d-border);
+            border-top: 2px solid var(--card-accent, var(--teal));
+            border-radius: 16px;
+            padding: 1.6rem 1.5rem 1.4rem;
+            position: relative;
+            overflow: hidden;
+            display: block;
+            text-decoration: none;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: -24px;
+            right: -24px;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--card-accent, var(--teal));
+            filter: blur(28px);
+            opacity: .13;
+            transition: opacity .2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(0,0,0,.35);
+        }
+        .stat-card:hover::after { opacity: .22; }
+        .stat-icon {
+            position: absolute;
+            top: 1.4rem;
+            right: 1.4rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-number {
+            font-family: 'Sora', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -.04em;
+            margin-bottom: .45rem;
+        }
+        .stat-label {
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--d-sub);
+        }
+
+        /* ── Chart card ── */
+        .chart-card {
+            background: var(--d-card);
+            border: 1px solid var(--d-border);
+            border-radius: 16px;
+            padding: 1.6rem;
+        }
+        .chart-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1.25rem;
+        }
+        .chart-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .chart-title {
+            font-family: 'Sora', sans-serif;
+            font-size: .92rem;
+            font-weight: 700;
+            letter-spacing: -.01em;
+            color: var(--d-text);
+        }
+
+        /* ── Section ── */
+        .section-heading {
+            font-family: 'Sora', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -.015em;
+            color: var(--d-text);
+        }
+        .section-rule {
+            height: 1px;
+            background: linear-gradient(90deg, var(--d-border-b), transparent);
+            margin-top: .6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Filter select ── */
+        .filter-select {
+            background: var(--d-surface);
+            border: 1px solid var(--d-border-b);
+            color: var(--d-text);
+            border-radius: 8px;
+            padding: .45rem .9rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .82rem;
+            cursor: pointer;
+            outline: none;
+            transition: border-color .15s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e90b5' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right .65rem center;
+            padding-right: 2rem;
+        }
+        .filter-select:focus { border-color: var(--teal); }
+        .filter-select option { background: #0c1628; }
+
+        /* ── Ticket row ── */
+        .ticket-row {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+            padding: .9rem 1.1rem .9rem 1.3rem;
+            border: 1px solid var(--d-border);
+            border-left: 3px solid var(--row-accent, var(--d-border));
+            border-radius: 12px;
+            background: var(--d-surface);
+            text-decoration: none;
+            color: inherit;
+            transition: background .15s ease, border-color .15s ease, transform .15s ease;
+            margin-bottom: .45rem;
+        }
+        .ticket-row:last-child { margin-bottom: 0; }
+        .ticket-row:hover {
+            background: var(--d-card-h);
+            border-color: var(--row-accent, var(--d-border-b));
+            border-left-color: var(--row-accent, var(--teal));
+            transform: translateX(4px);
+        }
+        .ticket-id {
+            font-family: 'Sora', sans-serif;
+            font-size: .68rem;
+            font-weight: 600;
+            color: var(--d-muted);
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--d-border);
+            border-radius: 5px;
+            padding: .12rem .4rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ticket-title {
+            font-family: 'Sora', sans-serif;
+            font-size: .88rem;
+            font-weight: 600;
+            color: var(--d-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ticket-meta {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            flex-wrap: wrap;
+            font-size: .75rem;
+            color: var(--d-sub);
+            margin-top: .2rem;
+        }
+        .ticket-meta-sep { color: var(--d-muted); }
+        .unassigned { color: var(--amber); font-weight: 600; }
+
+        /* ── Badges ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            padding: .2rem .6rem;
+            border-radius: 6px;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .b-open     { background: rgba(56,189,248,.1);  color: var(--sky);     border: 1px solid rgba(56,189,248,.22);  }
+        .b-progress { background: rgba(245,158,11,.1);  color: var(--amber);   border: 1px solid rgba(245,158,11,.22);  }
+        .b-resolved { background: rgba(16,185,129,.1);  color: var(--emerald); border: 1px solid rgba(16,185,129,.22);  }
+        .b-closed   { background: rgba(107,114,128,.1); color: #9ca3af;        border: 1px solid rgba(107,114,128,.22); }
+        .b-urgent   { background: rgba(239,68,68,.1);   color: var(--red);     border: 1px solid rgba(239,68,68,.22);   }
+        .b-high     { background: rgba(249,115,22,.1);  color: var(--orange);  border: 1px solid rgba(249,115,22,.22);  }
+        .b-medium   { background: rgba(59,130,246,.1);  color: #93c5fd;        border: 1px solid rgba(59,130,246,.22);  }
+        .b-low      { background: rgba(100,116,139,.09);color: #94a3b8;        border: 1px solid rgba(100,116,139,.2);  }
+        .b-admin    { background: linear-gradient(135deg,#ec4899,#f43f5e); color:#fff; padding: .15rem .45rem; }
+
+        /* ── Arrow ── */
+        .ticket-arrow {
+            color: var(--d-muted);
+            flex-shrink: 0;
+            transition: transform .15s ease, color .15s ease;
+        }
+        .ticket-row:hover .ticket-arrow { transform: translateX(4px); color: var(--teal); }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 3.5rem 1rem;
+            color: var(--d-muted);
+        }
+
+        /* ── Fade-up entrance ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0);    }
+        }
+        .fu { opacity: 0; animation: fadeUp .5s ease forwards; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--d-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--d-border-b); border-radius: 3px; }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
-<div layout:fragment="content" class="max-w-7xl mx-auto w-full px-4 pt-24 pb-12">
 
-    <!-- Header dashboard -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4">
-        <div>
-            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Tableau de bord
-            </h1>
-            <p class="text-gray-600 mt-2">Vue d'ensemble de vos tickets</p>
+<div layout:fragment="content" class="mbr-root">
+
+    <!-- ╔══ HEADER ══╗ -->
+    <div class="mbr-header fu" style="animation-delay:.04s">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <div class="mbr-header-eyebrow">Technicien · TicHarmony</div>
+                <h1 class="mbr-header-title">
+                    Bonjour, <span th:text="${currentUser.firstname}">Technicien</span>
+                </h1>
+                <p class="mbr-header-sub">Vos tickets assignés en temps réel</p>
+            </div>
+            <div class="mbr-clock hidden md:block">
+                <div id="mbr-date"></div>
+                <div id="mbr-time">--:--:--</div>
+            </div>
         </div>
     </div>
 
-    <!-- Stats Top -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <a th:href="@{/problems}" class="group block">
-            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full -mr-8 -mt-8"></div>
-                <div class="relative">
-                    <div class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2"
-                         th:text="${totalTickets}">10</div>
-                    <div class="text-sm font-medium text-gray-600">Tickets total</div>
-                </div>
+    <!-- ╔══ STATS ══╗ -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+        <a th:href="@{/problems}" class="stat-card fu" style="--card-accent:#14b8a6; animation-delay:.08s">
+            <div class="stat-icon" style="background:rgba(20,184,166,.13)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                </svg>
             </div>
+            <div class="stat-number" style="color:#2dd4bf" data-counter th:attr="data-target=${totalTickets}">0</div>
+            <div class="stat-label">Total actifs</div>
         </a>
-        <a th:href="@{/problems(status='OPEN')}" class="group block">
-            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-sky-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-sky-500/10 to-blue-500/10 rounded-full -mr-8 -mt-8"></div>
-                <div class="relative">
-                    <div class="text-4xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent mb-2"
-                         th:text="${newTickets}">3</div>
-                    <div class="text-sm font-medium text-gray-600">Nouveaux tickets</div>
-                </div>
+
+        <a th:href="@{/problems(status='OPEN')}" class="stat-card fu" style="--card-accent:#38bdf8; animation-delay:.12s">
+            <div class="stat-icon" style="background:rgba(56,189,248,.13)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
             </div>
+            <div class="stat-number" style="color:#38bdf8" data-counter th:attr="data-target=${newTickets}">0</div>
+            <div class="stat-label">Nouveaux</div>
         </a>
-        <a th:href="@{/problems(status='IN_PROGRESS')}" class="group block">
-            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-yellow-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full -mr-8 -mt-8"></div>
-                <div class="relative">
-                    <div class="text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-2"
-                         th:text="${inProgressTickets}">4</div>
-                    <div class="text-sm font-medium text-gray-600">En cours</div>
-                </div>
+
+        <a th:href="@{/problems(status='IN_PROGRESS')}" class="stat-card fu" style="--card-accent:#f59e0b; animation-delay:.16s">
+            <div class="stat-icon" style="background:rgba(245,158,11,.13)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
             </div>
+            <div class="stat-number" style="color:#f59e0b" data-counter th:attr="data-target=${inProgressTickets}">0</div>
+            <div class="stat-label">En cours</div>
         </a>
-        <a th:href="@{/problems(status='RESOLVED')}" class="group block">
-            <div class="relative overflow-hidden rounded-2xl bg-white p-6 border border-green-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full -mr-8 -mt-8"></div>
-                <div class="relative">
-                    <div class="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2"
-                         th:text="${resolvedTickets}">3</div>
-                    <div class="text-sm font-medium text-gray-600">Résolus</div>
-                </div>
+
+        <a th:href="@{/problems(status='RESOLVED')}" class="stat-card fu" style="--card-accent:#10b981; animation-delay:.20s">
+            <div class="stat-icon" style="background:rgba(16,185,129,.13)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
             </div>
+            <div class="stat-number" style="color:#10b981" data-counter th:attr="data-target=${resolvedTickets}">0</div>
+            <div class="stat-label">Résolus</div>
         </a>
+
     </div>
 
-    <!-- Charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        <!-- Par statut -->
-        <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl w-10 h-10 flex items-center justify-center shadow-md">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <h3 class="font-bold text-lg text-gray-900">Répartition par statut</h3>
+    <!-- ╔══ CHARTS ══╗ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+        <div class="chart-card fu" style="animation-delay:.24s">
+            <div class="chart-header">
+                <div class="chart-dot" style="background:#14b8a6"></div>
+                <span class="chart-title">Répartition par statut</span>
             </div>
-            <div class="h-[280px]">
-                <canvas id="statusChart"></canvas>
-            </div>
+            <div style="height:260px"><canvas id="statusChart"></canvas></div>
         </div>
-        <!-- Par priorité -->
-        <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl w-10 h-10 flex items-center justify-center shadow-md">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
-                    </svg>
-                </div>
-                <h3 class="font-bold text-lg text-gray-900">Répartition par priorité</h3>
+
+        <div class="chart-card fu" style="animation-delay:.28s">
+            <div class="chart-header">
+                <div class="chart-dot" style="background:#f59e0b"></div>
+                <span class="chart-title">Répartition par priorité</span>
             </div>
-            <div class="h-[280px]">
-                <canvas id="priorityChart"></canvas>
-            </div>
+            <div style="height:260px"><canvas id="priorityChart"></canvas></div>
         </div>
+
     </div>
-    <!-- Tickets récents nécessitant une attention -->
-    <div>
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl w-10 h-10 flex items-center justify-center shadow-md">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>
-                        </svg>
+
+    <!-- ╔══ TICKETS ══╗ -->
+    <div class="chart-card fu" style="animation-delay:.32s">
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="section-heading">Mes tickets en cours</div>
+            <form method="get" class="flex items-center gap-2">
+                <label for="statusFilter" style="font-size:.78rem; color:var(--d-sub); white-space:nowrap">Filtrer :</label>
+                <select id="statusFilter" name="status" onchange="this.form.submit()" class="filter-select">
+                    <option value=""
+                            th:selected="${selectedStatus == null or selectedStatus.isEmpty()}">
+                        Tous (sauf Fermé)
+                    </option>
+                    <option th:each="s : ${allStatuses}"
+                            th:value="${s.name()}"
+                            th:text="${s.name() == 'OPEN' ? 'Ouvert' :
+                              (s.name() == 'IN_PROGRESS' ? 'En cours' :
+                              (s.name() == 'RESOLVED' ? 'Résolu' :
+                              (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"
+                            th:selected="${s.name()} == ${selectedStatus}">
+                    </option>
+                </select>
+            </form>
+        </div>
+
+        <div class="section-rule"></div>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(problems)}" class="empty-state">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                 style="margin:0 auto 1rem;display:block;opacity:.35">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="2"/>
+                <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
+            </svg>
+            <p style="font-size:.88rem">Aucun ticket à afficher.</p>
+        </div>
+
+        <!-- Ticket rows -->
+        <div th:if="${!#lists.isEmpty(problems)}">
+            <th:block th:each="problem : ${problems}">
+                <a th:href="@{'/problems/' + ${problem.id}}"
+                   class="ticket-row"
+                   th:style="${problem.status != null and problem.status.name() == 'OPEN'} ? '--row-accent:#38bdf8' :
+                             (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? '--row-accent:#f59e0b' :
+                             (${problem.status != null and problem.status.name() == 'RESOLVED'} ? '--row-accent:#10b981' : '--row-accent:#6b7280'))">
+
+                    <!-- Left: meta -->
+                    <div style="flex:1;min-width:0">
+                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                            <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
+                            <span class="ticket-title" th:text="${problem.title}">Titre</span>
+                            <span th:if="${problem.user != null and problem.user.role != null and problem.user.role.name() == 'ADMIN'}"
+                                  class="badge b-admin" style="font-size:.62rem">Admin</span>
+                        </div>
+                        <div class="ticket-meta">
+                            <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
+                            <span class="ticket-meta-sep">·</span>
+                            <span th:if="${problem.technician != null}"
+                                  th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
+                            <span th:if="${problem.technician == null}" class="unassigned">Non assigné</span>
+                        </div>
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-900">Tickets récents</h2>
-                </div>
-                <!-- Formulaire de filtre -->
-                <form method="get" class="flex items-center gap-3">
-                    <label for="statusFilter" class="font-medium text-gray-700 text-sm">Filtrer :</label>
-                    <select id="statusFilter"
-                            name="status"
-                            onchange="this.form.submit()"
-                            class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                        <option value=""
-                                th:selected="${selectedStatus == null or selectedStatus.isEmpty()}">
-                            Tous (sauf Fermé)
-                        </option>
-                        <option th:each="s : ${allStatuses}"
-                                th:value="${s.name()}"
-                                th:text="${s.name() == 'OPEN' ? 'Ouvert' :
-                                  (s.name() == 'IN_PROGRESS' ? 'En cours' :
-                                  (s.name() == 'RESOLVED' ? 'Résolu' :
-                                  (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"
-                                th:selected="${s.name()} == ${selectedStatus}">
-                        </option>
-                    </select>
-                </form>
-            </div>
-            <div th:if="${#lists.isEmpty(problems)}" class="text-center text-gray-500 italic mb-6">
-                Aucun ticket à afficher.
-            </div>
-            <div th:if="${!#lists.isEmpty(problems)}">
-                <ul class="flex flex-col gap-3">
-                    <li th:each="problem : ${problems}">
-                        <a th:href="@{'/problems/' + ${problem.id}}"
-                           class="block rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 px-6 py-5 transition-all duration-200 hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 group"
-                           style="text-decoration: none;">
-                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="font-bold text-gray-900 text-base md:text-lg group-hover:text-blue-600 transition" th:text="${problem.title}">Titre</span>
-                                        <span th:if="${problem.user != null and problem.user.role != null and problem.user.role.name() == 'ADMIN'}"
-                                              class="px-2 py-0.5 text-xs font-bold rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-sm">Admin</span>
-                                    </div>
-                                    <span class="text-gray-500 text-xs md:text-sm flex items-center gap-2 flex-wrap">
-                                        <span class="font-medium text-gray-700">#<span th:text="${problem.id}"></span></span>
-                                        <span>•</span>
-                                        <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
-                                        <span>•</span>
-                                        <span th:if="${problem.technician != null}" th:text="${problem.technician.firstname + ' ' + problem.technician.lastname}"></span>
-                                        <span th:if="${problem.technician == null}" class="text-orange-600 font-medium">Non assigné</span>
-                                    </span>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <!-- Badge Statut -->
-                                    <span class="px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm"
-                                          th:classappend="
-                                ${problem.status != null and problem.status.name() == 'OPEN'} ? ' bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
-                                (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? ' bg-gradient-to-r from-yellow-500 to-orange-500 text-white' :
-                                (${problem.status != null and problem.status.name() == 'RESOLVED'} ? ' bg-gradient-to-r from-green-500 to-emerald-600 text-white' :
-                                (${problem.status != null and problem.status.name() == 'CLOSED'} ? ' bg-gray-200 text-gray-700' : ' bg-gray-200 text-gray-700')))
-                              ">
-                                        <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}">Ouvert</span>
-                                        <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}">En cours</span>
-                                        <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}">Résolu</span>
-                                        <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}">Fermé</span>
-                                    </span>
-                                    <!-- Badge Priorité -->
-                                    <span class="px-3 py-1.5 rounded-lg text-xs font-bold border-2"
-                                          th:classappend="
-                                ${problem.priority != null and problem.priority.name() == 'LOW'} ? ' bg-gray-50 text-gray-700 border-gray-300' :
-                                (${problem.priority != null and problem.priority.name() == 'MEDIUM'} ? ' bg-blue-50 text-blue-700 border-blue-300' :
-                                (${problem.priority != null and problem.priority.name() == 'HIGH'} ? ' bg-yellow-50 text-yellow-700 border-yellow-400' :
-                                (${problem.priority != null and problem.priority.name() == 'URGENT'} ? ' bg-red-50 text-red-700 border-red-400' : ' bg-gray-100 text-gray-700 border-gray-300')))
-                              ">
-                                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Faible</span>
-                                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Normale</span>
-                                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Élevée</span>
-                                        <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+
+                    <!-- Right: badges -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <span th:if="${problem.status != null and problem.status.name() == 'OPEN'}"         class="badge b-open">
+                            <span class="bdot" style="background:#38bdf8"></span>Ouvert
+                        </span>
+                        <span th:if="${problem.status != null and problem.status.name() == 'IN_PROGRESS'}"  class="badge b-progress">
+                            <span class="bdot" style="background:#f59e0b"></span>En cours
+                        </span>
+                        <span th:if="${problem.status != null and problem.status.name() == 'RESOLVED'}"     class="badge b-resolved">
+                            <span class="bdot" style="background:#10b981"></span>Résolu
+                        </span>
+                        <span th:if="${problem.status != null and problem.status.name() == 'CLOSED'}"       class="badge b-closed">
+                            <span class="bdot" style="background:#6b7280"></span>Fermé
+                        </span>
+
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">Critique</span>
+                    </div>
+
+                    <!-- Arrow -->
+                    <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+
+                </a>
+            </th:block>
         </div>
+
     </div>
 </div>
 
 <th:block layout:fragment="scripts">
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // Chart.js configuration
-        const ticketsByStatus = JSON.parse(/*[[${ticketsByStatusJs}]]*/ "[]");
-        const ticketsByPriority = JSON.parse(/*[[${ticketsByPriorityJs}]]*/ "[]");
 
-        // Configuration commune pour tous les graphiques
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-        Chart.defaults.color = '#6b7280';
+        /* ── Live clock ── */
+        (function () {
+            var dateEl = document.getElementById('mbr-date');
+            var timeEl = document.getElementById('mbr-time');
+            if (!dateEl || !timeEl) return;
+            var days   = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+            var months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+            function tick() {
+                var n = new Date();
+                dateEl.textContent = days[n.getDay()] + ' ' + n.getDate() + ' ' + months[n.getMonth()] + ' ' + n.getFullYear();
+                timeEl.textContent = String(n.getHours()).padStart(2,'0') + ':'
+                                   + String(n.getMinutes()).padStart(2,'0') + ':'
+                                   + String(n.getSeconds()).padStart(2,'0');
+            }
+            tick();
+            setInterval(tick, 1000);
+        })();
 
-        // Graphique Doughnut - Statut des tickets
+        /* ── Animated counters ── */
+        function animateCounter(el) {
+            var target = parseInt(el.getAttribute('data-target') || '0', 10);
+            var start = null;
+            var dur = 850;
+            function step(ts) {
+                if (!start) start = ts;
+                var p = Math.min((ts - start) / dur, 1);
+                var ease = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(ease * target);
+                if (p < 1) requestAnimationFrame(step);
+                else el.textContent = target;
+            }
+            requestAnimationFrame(step);
+        }
+        var counterIO = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) { animateCounter(e.target); counterIO.unobserve(e.target); }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('[data-counter]').forEach(function (el) { counterIO.observe(el); });
+
+        /* ── Chart.js defaults (dark theme) ── */
+        Chart.defaults.color = '#6e90b5';
+        Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+        var byStatus   = JSON.parse(/*[[${ticketsByStatusJs}]]*/ "[]");
+        var byPriority = JSON.parse(/*[[${ticketsByPriorityJs}]]*/ "[]");
+
+        /* Doughnut — statut (accent teal pour la version member) */
         new Chart(document.getElementById('statusChart'), {
             type: 'doughnut',
             data: {
                 labels: ['Ouvert', 'En cours', 'Résolu', 'Fermé'],
                 datasets: [{
-                    data: ticketsByStatus,
+                    data: byStatus,
                     backgroundColor: [
-                        'rgba(14, 165, 233, 0.8)',   // Bleu pour Ouvert
-                        'rgba(251, 191, 36, 0.8)',   // Jaune pour En cours
-                        'rgba(34, 197, 94, 0.8)',    // Vert pour Résolu
-                        'rgba(163, 163, 163, 0.8)'   // Gris pour Fermé
+                        'rgba(56,189,248,.82)',
+                        'rgba(245,158,11,.82)',
+                        'rgba(16,185,129,.82)',
+                        'rgba(107,114,128,.55)'
                     ],
-                    borderColor: '#ffffff',
+                    borderColor: '#0f1e33',
                     borderWidth: 3,
-                    hoverOffset: 15,
-                    hoverBorderWidth: 4
+                    hoverOffset: 14,
+                    hoverBorderWidth: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '68%',
                 plugins: {
                     legend: {
-                        display: true,
                         position: 'bottom',
                         labels: {
-                            padding: 15,
-                            font: { size: 12, weight: '500' },
+                            padding: 16,
                             usePointStyle: true,
-                            pointStyle: 'circle'
+                            pointStyle: 'circle',
+                            font: { size: 11, weight: '500' }
                         }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        backgroundColor: '#0c1628',
+                        borderColor: '#1b2d47',
+                        borderWidth: 1,
                         padding: 12,
                         cornerRadius: 8,
-                        titleFont: { size: 14, weight: 'bold' },
-                        bodyFont: { size: 13 },
                         callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.parsed || 0;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                return `${label}: ${value} ticket${value > 1 ? 's' : ''} (${percentage}%)`;
+                            label: function (ctx) {
+                                var v = ctx.parsed || 0;
+                                var total = ctx.dataset.data.reduce(function (a, b) { return a + b; }, 0);
+                                var pct = total > 0 ? ((v / total) * 100).toFixed(1) : '0.0';
+                                return '  ' + ctx.label + ' : ' + v + ' (' + pct + '%)';
                             }
                         }
                     }
                 },
-                cutout: '65%',
-                animation: {
-                    animateRotate: true,
-                    animateScale: true,
-                    duration: 1000,
-                    easing: 'easeInOutQuart'
-                }
+                animation: { animateRotate: true, animateScale: true, duration: 1000, easing: 'easeInOutQuart' }
             }
         });
 
-        // Graphique Bar - Priorités des tickets
+        /* Bar — priorité */
         new Chart(document.getElementById('priorityChart'), {
             type: 'bar',
             data: {
                 labels: ['Faible', 'Normale', 'Élevée', 'Critique'],
                 datasets: [{
-                    label: 'Nombre de tickets',
-                    data: ticketsByPriority,
+                    label: 'Tickets',
+                    data: byPriority,
                     backgroundColor: [
-                        'rgba(156, 163, 175, 0.8)',  // Gris pour Faible
-                        'rgba(59, 130, 246, 0.8)',   // Bleu pour Normale
-                        'rgba(251, 191, 36, 0.8)',   // Jaune pour Élevée
-                        'rgba(239, 68, 68, 0.8)'     // Rouge pour Critique
+                        'rgba(100,116,139,.65)',
+                        'rgba(20,184,166,.72)',
+                        'rgba(249,115,22,.72)',
+                        'rgba(239,68,68,.72)'
                     ],
-                    borderColor: [
-                        'rgb(107, 114, 128)',
-                        'rgb(37, 99, 235)',
-                        'rgb(245, 158, 11)',
-                        'rgb(220, 38, 38)'
-                    ],
-                    borderWidth: 2,
-                    borderRadius: 8,
+                    borderColor: ['#64748b','#14b8a6','#f97316','#ef4444'],
+                    borderWidth: 1.5,
+                    borderRadius: 7,
                     borderSkipped: false,
                     hoverBackgroundColor: [
-                        'rgba(156, 163, 175, 1)',
-                        'rgba(59, 130, 246, 1)',
-                        'rgba(251, 191, 36, 1)',
-                        'rgba(239, 68, 68, 1)'
+                        'rgba(100,116,139,.9)',
+                        'rgba(20,184,166,.9)',
+                        'rgba(249,115,22,.9)',
+                        'rgba(239,68,68,.9)'
                     ]
                 }]
             },
@@ -299,14 +643,15 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        backgroundColor: '#0c1628',
+                        borderColor: '#1b2d47',
+                        borderWidth: 1,
                         padding: 12,
                         cornerRadius: 8,
-                        titleFont: { size: 14, weight: 'bold' },
-                        bodyFont: { size: 13 },
                         callbacks: {
-                            label: function(context) {
-                                return `${context.parsed.y} ticket${context.parsed.y > 1 ? 's' : ''}`;
+                            label: function (ctx) {
+                                var v = ctx.parsed.y;
+                                return '  ' + v + ' ticket' + (v > 1 ? 's' : '');
                             }
                         }
                     }
@@ -314,36 +659,22 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            font: { size: 11 },
-                            color: '#6b7280'
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)',
-                            drawBorder: false
-                        }
+                        ticks: { stepSize: 1, font: { size: 11 } },
+                        grid: { color: 'rgba(255,255,255,.04)', drawBorder: false },
+                        border: { display: false }
                     },
                     x: {
-                        ticks: {
-                            font: { size: 12, weight: '500' },
-                            color: '#374151'
-                        },
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        }
+                        ticks: { font: { size: 12, weight: '500' }, color: '#6e90b5' },
+                        grid: { display: false, drawBorder: false },
+                        border: { display: false }
                     }
                 },
-                animation: {
-                    duration: 1000,
-                    easing: 'easeInOutQuart'
-                }
+                animation: { duration: 1000, easing: 'easeInOutQuart' }
             }
         });
+
         /*]]>*/
     </script>
 </th:block>
 
-</body>
 </html>
