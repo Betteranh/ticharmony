@@ -531,7 +531,8 @@ public class ProblemController {
         model.addAttribute("module", "problems");
 
         if (current.getRole() == UserRole.ADMIN) {
-            List<User> technicians = userService.getUsersByRole(UserRole.MEMBER);
+            List<User> technicians = new java.util.ArrayList<>(userService.getUsersByRole(UserRole.MEMBER));
+            technicians.add(current); // l'admin peut s'assigner lui-même
 
             // Map<Long, Long> techId → nombre de tickets (hors CLOSED)
             java.util.Map<Long, Long> techTicketCounts = technicians.stream().collect(Collectors.toMap(
@@ -543,6 +544,7 @@ public class ProblemController {
 
             model.addAttribute("technicians", technicians);
             model.addAttribute("techTicketCounts", techTicketCounts);
+            model.addAttribute("adminId", current.getId());
         }
 
         return "problemDetails";
@@ -574,14 +576,21 @@ public class ProblemController {
             // 2,5) applique la priorité choisie
             problem.setPriority(priority);
 
+            // 3) si l'admin s'assigne lui-même, on passe directement en IN_PROGRESS
+            if (newTech.getId().equals(admin.getId())) {
+                problem.setStatus(Status.IN_PROGRESS);
+            }
+
             service.updateProblem(problem);
 
-            // 3) on notifie le technicien
-            notificationService.notify(
-                    newTech,
-                    problem,
-                    NotificationType.ASSIGNED_TO_PROBLEM
-            );
+            // 4) on notifie le technicien (sauf si c'est l'admin lui-même)
+            if (!newTech.getId().equals(admin.getId())) {
+                notificationService.notify(
+                        newTech,
+                        problem,
+                        NotificationType.ASSIGNED_TO_PROBLEM
+                );
+            }
         }
         return "redirect:/problems/" + id;
     }

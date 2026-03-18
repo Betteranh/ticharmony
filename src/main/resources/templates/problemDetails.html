@@ -31,7 +31,7 @@
         /* ── Back link ── */
         .back-link {
             display: inline-flex; align-items: center; gap: 6px;
-            font-size: .85rem; font-weight: 600; color: var(--text-3);
+            font-size: .84rem; font-weight: 600; color: var(--text-2);
             text-decoration: none; margin-bottom: 1.5rem; transition: color .15s;
         }
         .back-link:hover { color: var(--violet); }
@@ -41,22 +41,22 @@
         /* ── Hero ── */
         .hero {
             background: var(--white);
-            border-radius: 18px;
-            box-shadow: var(--sh);
-            padding: 1.5rem 1.75rem;
-            border-left: 5px solid var(--hero-accent, var(--cream-d));
+            border-radius: 20px;
+            box-shadow: var(--sh-lg);
+            padding: 1.85rem 2rem;
+            border-left: 6px solid var(--hero-accent, var(--cream-d));
             margin-bottom: 1.5rem;
             display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
         }
         .hero-ref {
-            font-family: 'Sora', sans-serif; font-size: .7rem; font-weight: 700;
-            letter-spacing: .1em; text-transform: uppercase; color: var(--text-3);
-            margin-bottom: .3rem;
+            font-family: 'Sora', sans-serif; font-size: .68rem; font-weight: 700;
+            letter-spacing: .13em; text-transform: uppercase; color: var(--text-3);
+            margin-bottom: .4rem;
         }
         .hero-title {
-            font-family: 'Sora', sans-serif; font-size: 1.45rem; font-weight: 800;
-            color: var(--text); letter-spacing: -.025em; line-height: 1.25;
-            margin-bottom: .75rem;
+            font-family: 'Sora', sans-serif; font-size: 1.6rem; font-weight: 800;
+            color: var(--text); letter-spacing: -.03em; line-height: 1.2;
+            margin-bottom: .8rem;
         }
         .hero-date {
             text-align: right; flex-shrink: 0;
@@ -64,8 +64,8 @@
             color: var(--text-2);
         }
         .hero-date-label {
-            font-size: .68rem; color: var(--text-3); font-weight: 500;
-            text-transform: uppercase; letter-spacing: .06em; margin-bottom: .2rem;
+            font-size: .65rem; color: var(--text-3); font-weight: 600;
+            text-transform: uppercase; letter-spacing: .09em; margin-bottom: .25rem;
         }
 
         /* ── Badges ── */
@@ -90,63 +90,67 @@
             background: var(--white);
             border-radius: 18px;
             box-shadow: var(--sh);
+            border: 1px solid rgba(0,0,0,.04);
             padding: 1.5rem 1.75rem;
         }
         .section-label {
-            font-family: 'Sora', sans-serif; font-size: .72rem; font-weight: 700;
-            letter-spacing: .08em; text-transform: uppercase; color: var(--text-3);
-            margin-bottom: .75rem;
+            font-family: 'Sora', sans-serif; font-size: .7rem; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; color: var(--text-3);
+            margin-bottom: .8rem;
         }
 
         /* ── Description ── */
         .desc-box {
             background: var(--cream); border: 1px solid var(--cream-d);
-            border-radius: 12px; padding: 1.1rem 1.25rem;
-            color: var(--text); line-height: 1.75; font-size: .93rem;
+            border-radius: 12px; padding: 1.2rem 1.4rem;
+            color: var(--text); line-height: 1.8; font-size: .93rem;
             white-space: pre-wrap;
         }
 
         /* ── Resolution ── */
         .resolution-box {
             background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px;
-            padding: 1.25rem 1.5rem;
+            padding: 1.35rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(22,163,74,.07);
         }
         .resolution-title {
             font-family: 'Sora', sans-serif; font-size: .88rem; font-weight: 700;
-            color: #15803d; margin-bottom: .6rem;
+            color: #15803d; margin-bottom: .65rem;
             display: flex; align-items: center; gap: .4rem;
         }
-        .resolution-text { color: #166534; line-height: 1.7; font-size: .9rem; }
+        .resolution-text { color: #166534; line-height: 1.75; font-size: .9rem; }
 
         /* ── RIGHT SIDEBAR PANEL ── */
         .sidebar-panel {
             background: var(--white);
             border-radius: 18px;
             box-shadow: var(--sh);
+            border: 1px solid rgba(0,0,0,.04);
             overflow: hidden;
         }
         .sp-section {
-            padding: 1.1rem 1.4rem;
+            padding: 1.15rem 1.4rem;
             border-bottom: 1px solid var(--cream-d);
         }
         .sp-section:last-child { border-bottom: none; }
         .sp-label {
-            font-family: 'Sora', sans-serif; font-size: .68rem; font-weight: 700;
-            letter-spacing: .08em; text-transform: uppercase;
-            color: var(--text-3); margin-bottom: .6rem;
+            font-family: 'Sora', sans-serif; font-size: .65rem; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-3); margin-bottom: .65rem;
         }
 
         /* Status pill */
         .status-pill {
             display: inline-flex; align-items: center; gap: .5rem;
-            padding: .55rem 1rem; border-radius: 10px;
+            padding: .6rem 1rem; border-radius: 10px;
             font-family: 'Sora', sans-serif; font-size: .88rem; font-weight: 700;
             width: 100%; justify-content: center;
+            border: 1.5px solid transparent;
         }
-        .sp-open     { background:#eff6ff; color:#2563eb; }
-        .sp-progress { background:#fffbeb; color:#d97706; }
-        .sp-resolved { background:#f0fdf4; color:#16a34a; }
-        .sp-closed   { background:#f5f5f4; color:#78716c; }
+        .sp-open     { background:#eff6ff; color:#2563eb; border-color:#bfdbfe; }
+        .sp-progress { background:#fffbeb; color:#d97706; border-color:#fde68a; }
+        .sp-resolved { background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; }
+        .sp-closed   { background:#f5f5f4; color:#78716c; border-color:#e7e5e4; }
 
         /* Info rows */
         .sp-info-row {
@@ -213,26 +217,31 @@
         .act-close:hover { background:#dcfce7; }
 
         /* Timeline */
-        .tl { position: relative; padding-left: 1.3rem; }
+        .tl { position: relative; padding-left: 1.35rem; }
         .tl::before {
-            content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px;
+            content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px;
             width: 2px; background: var(--cream-d); border-radius: 2px;
         }
         .tl-item { position: relative; padding-bottom: 1rem; }
         .tl-item:last-child { padding-bottom: 0; }
         .tl-dot {
-            position: absolute; left: -1.05rem; top: 3px;
+            position: absolute; left: -1.1rem; top: 4px;
             width: 11px; height: 11px; border-radius: 50%;
-            border: 2px solid var(--white); box-shadow: 0 0 0 2px var(--cream-d);
+            border: 2px solid var(--white);
         }
-        .tl-label { font-family: 'Sora', sans-serif; font-size: .8rem; font-weight: 700; color: var(--text); }
-        .tl-sub   { font-size: .72rem; color: var(--text-3); margin-top: .1rem; }
+        .tl-label { font-family: 'Sora', sans-serif; font-size: .81rem; font-weight: 700; color: var(--text); }
+        .tl-sub   { font-size: .73rem; color: var(--text-3); margin-top: .15rem; }
 
         /* ── CLIENT status banner ── */
         .status-banner {
-            border-radius: 14px; padding: 1.1rem 1.4rem;
+            border-radius: 14px; padding: 1.2rem 1.5rem;
             display: flex; align-items: center; gap: .9rem; margin-bottom: 1.25rem;
+            border: 1.5px solid transparent;
         }
+        .sb-open     { border-color: #bfdbfe; }
+        .sb-progress { border-color: #fde68a; }
+        .sb-resolved { border-color: #bbf7d0; }
+        .sb-closed   { border-color: #e7e5e4; }
         .sb-icon {
             width: 40px; height: 40px; border-radius: 11px;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -259,56 +268,63 @@
         /* ── Chat ── */
         .chat-messages {
             display: flex; flex-direction: column; gap: .85rem;
-            max-height: 380px; overflow-y: auto;
-            padding: 1.25rem 1.75rem;
+            max-height: 400px; overflow-y: auto;
+            padding: 1.35rem 1.75rem;
+            scroll-behavior: smooth;
         }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--cream-d); border-radius: 99px; }
+        .chat-messages::-webkit-scrollbar-thumb:hover { background: #d4cfc9; }
         .chat-empty {
-            text-align: center; padding: 2rem 1rem;
+            text-align: center; padding: 2.5rem 1rem;
             color: var(--text-3); font-size: .85rem;
         }
         .msg { display: flex; gap: .65rem; align-items: flex-start; }
         .msg.msg-me { flex-direction: row-reverse; }
         .msg-avatar {
-            width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+            width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
             font-family: 'Sora', sans-serif; font-size: .7rem; font-weight: 800;
             text-transform: uppercase;
         }
-        .av-me     { background: var(--violet); color: #fff; }
-        .av-client { background: #eff6ff; color: #2563eb; }
-        .av-tech   { background: var(--violet-bg); color: var(--violet); }
-        .av-admin  { background: #fef2f2; color: #dc2626; }
+        .av-me     { background: var(--violet); color: #fff; box-shadow: 0 2px 8px rgba(124,58,237,.25); }
+        .av-client { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .av-tech   { background: var(--violet-bg); color: var(--violet); border: 1px solid var(--violet-br); }
+        .av-admin  { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
         .msg-body { max-width: 78%; }
         .msg.msg-me .msg-body { text-align: right; }
         .msg-meta {
-            display: flex; align-items: center; gap: .4rem; margin-bottom: .25rem;
+            display: flex; align-items: center; gap: .4rem; margin-bottom: .28rem;
         }
         .msg.msg-me .msg-meta { flex-direction: row-reverse; }
         .msg-author { font-family: 'Sora', sans-serif; font-size: .73rem; font-weight: 700; color: var(--text-2); }
         .msg-role {
-            font-size: .63rem; font-weight: 700; padding: .08rem .38rem;
+            font-size: .62rem; font-weight: 700; padding: .08rem .4rem;
             border-radius: 4px; text-transform: uppercase; letter-spacing: .04em;
         }
         .role-client { background:#eff6ff; color:#2563eb; }
         .role-tech   { background:var(--violet-bg); color:var(--violet); }
         .role-admin  { background:#fef2f2; color:#dc2626; }
-        .msg-time  { font-size: .68rem; color: var(--text-3); white-space: nowrap; }
+        .msg-time  { font-size: .67rem; color: var(--text-3); white-space: nowrap; }
         .msg-bubble {
-            display: inline-block; padding: .6rem .9rem; border-radius: 11px;
-            font-size: .88rem; line-height: 1.6; color: var(--text);
+            display: inline-block; padding: .65rem 1rem; border-radius: 12px;
+            font-size: .88rem; line-height: 1.65; color: var(--text);
             background: var(--cream); border: 1px solid var(--cream-d);
         }
         .msg.msg-me .msg-bubble {
             background: var(--violet-bg); border-color: var(--violet-br);
+            box-shadow: 0 2px 8px rgba(124,58,237,.1);
         }
         .chat-form {
             border-top: 1px solid var(--cream-d);
-            padding: .9rem 1.4rem;
+            padding: 1rem 1.4rem;
             display: flex; gap: .6rem; align-items: flex-end;
+            background: var(--white);
         }
         .chat-input {
             flex: 1; background: var(--cream); border: 1px solid var(--cream-d);
-            border-radius: 10px; padding: .6rem .9rem;
+            border-radius: 10px; padding: .65rem .95rem;
             font-family: 'DM Sans', sans-serif; font-size: .88rem; color: var(--text);
             resize: none; min-height: 40px; max-height: 110px; outline: none;
             transition: border-color .15s, box-shadow .15s, background .15s;
@@ -319,15 +335,45 @@
             width: 40px; height: 40px; border-radius: 10px; background: var(--violet);
             border: none; color: #fff; cursor: pointer; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(124,58,237,.22);
-            transition: background .15s, transform .15s;
+            box-shadow: 0 4px 14px rgba(124,58,237,.28);
+            transition: background .15s, transform .15s, box-shadow .15s;
         }
-        .chat-send:hover { background: #6d28d9; transform: translateY(-1px); }
+        .chat-send:hover { background: #6d28d9; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(124,58,237,.35); }
         .chat-locked {
             border-top: 1px solid var(--cream-d);
-            padding: .85rem 1.4rem;
+            padding: .9rem 1.4rem;
             text-align: center; font-size: .82rem; color: var(--text-3);
         }
+
+        /* ── Tabs (colonne principale admin/member) ── */
+        .tab-bar {
+            background: var(--white); border-radius: 14px; box-shadow: var(--sh);
+            border: 1px solid rgba(0,0,0,.04);
+            display: flex; padding: .3rem; gap: .25rem; margin-bottom: 1rem;
+        }
+        .tab-btn {
+            flex: 1; padding: .7rem 1rem;
+            font-family: 'Sora', sans-serif; font-size: .82rem; font-weight: 700;
+            color: var(--text-3); background: none; border: none; border-radius: 9px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .4rem;
+            transition: color .15s, background .15s;
+        }
+        .tab-btn:hover { background: var(--cream); color: var(--text); }
+        .tab-btn.active {
+            background: var(--violet-bg); color: var(--violet);
+            box-shadow: 0 1px 6px rgba(124,58,237,.12);
+        }
+        .tab-count {
+            font-size: .67rem; font-weight: 700;
+            background: var(--cream); border: 1px solid var(--cream-d);
+            border-radius: 99px; padding: .1rem .48rem; color: var(--text-3);
+        }
+        .tab-btn.active .tab-count { background: var(--white); border-color: var(--violet-br); color: var(--violet); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Sticky sidebar ── */
+        .sticky-aside { position: sticky; top: 1.5rem; align-self: start; }
 
         /* ── Animations ── */
         @keyframes fadeUp {
@@ -529,16 +575,43 @@
             <div style="flex:1;min-width:0">
                 <div class="hero-ref" th:text="'Demande #' + ${problem.id}"></div>
                 <div class="hero-title" th:text="${problem.title}"></div>
-                <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+                <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem">
                     <span th:if="${problem.status.name() == 'OPEN'}"       class="badge b-open"><span class="bdot" style="background:#2563eb"></span>Ouvert</span>
                     <span th:if="${problem.status.name() == 'IN_PROGRESS'}" class="badge b-progress"><span class="bdot" style="background:#d97706"></span>En cours</span>
                     <span th:if="${problem.status.name() == 'RESOLVED'}"   class="badge b-resolved"><span class="bdot" style="background:#16a34a"></span>Résolu</span>
                     <span th:if="${problem.status.name() == 'CLOSED'}"     class="badge b-closed"><span class="bdot" style="background:#a8a29e"></span>Fermé</span>
                     <span th:if="${problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                    <span th:if="${problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
                     <span th:if="${problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
                     <span th:if="${problem.priority.name() == 'URGENT'}" class="badge b-urgent">Critique</span>
                 </div>
+                <!-- Bouton d'action contextuel -->
+                <a sec:authorize="hasRole('MEMBER')"
+                   th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'OPEN'}"
+                   th:href="@{'/problems/' + ${problem.id} + '/take'}"
+                   style="display:inline-flex;align-items:center;gap:8px;padding:.75rem 1.5rem;background:#d97706;color:#fff;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:800;border-radius:11px;text-decoration:none;box-shadow:0 4px 14px rgba(217,119,6,.3);transition:background .15s,transform .15s;"
+                   onmouseover="this.style.background='#b45309';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#d97706';this.style.transform='translateY(0)'">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    Prendre en charge
+                </a>
+                <a sec:authorize="hasRole('MEMBER')"
+                   th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'IN_PROGRESS'}"
+                   th:href="@{'/problems/' + ${problem.id} + '/resolve'}"
+                   style="display:inline-flex;align-items:center;gap:8px;padding:.75rem 1.5rem;background:var(--violet);color:#fff;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:800;border-radius:11px;text-decoration:none;box-shadow:0 4px 14px rgba(124,58,237,.3);transition:background .15s,transform .15s;"
+                   onmouseover="this.style.background='#6d28d9';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--violet)';this.style.transform='translateY(0)'">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    Marquer comme résolu
+                </a>
+                <form sec:authorize="hasRole('ADMIN')" th:if="${problem.status.name() == 'RESOLVED'}"
+                      th:action="@{'/problems/' + ${problem.id} + '/close'}" method="post" style="display:inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit"
+                            onclick="return confirm('Confirmer la clôture de ce ticket ? Cette action est irréversible.')"
+                            style="display:inline-flex;align-items:center;gap:8px;padding:.75rem 1.5rem;background:#16a34a;color:#fff;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:800;border-radius:11px;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.3);border:none;transition:background .15s,transform .15s;"
+                            onmouseover="this.style.background='#15803d';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#16a34a';this.style.transform='translateY(0)'">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Valider et fermer
+                    </button>
+                </form>
             </div>
             <div class="hero-date">
                 <div class="hero-date-label">Créé le</div>
@@ -549,105 +622,123 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-            <!-- Colonne principale -->
-            <div class="lg:col-span-2 space-y-4">
+            <!-- Colonne principale avec onglets -->
+            <div class="lg:col-span-2" id="ticket-tabs"
+                 th:attr="data-default=${problem.status.name() == 'IN_PROGRESS' ? 'chat' : 'desc'}">
 
-                <!-- Description -->
-                <div class="pd-card fu d2">
-                    <div class="section-label">Description du problème</div>
-                    <div class="desc-box" th:text="${problem.description}"></div>
-                    <div style="margin-top:.75rem;font-size:.8rem;color:var(--text-3);display:flex;align-items:center;gap:.4rem">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                        <span th:text="${problem.category}"></span>
-                    </div>
+                <!-- Tab bar -->
+                <div class="tab-bar fu d2">
+                    <button class="tab-btn" id="tab-desc" onclick="switchTab('desc')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        Description
+                    </button>
+                    <button class="tab-btn" id="tab-chat" onclick="switchTab('chat')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Discussion
+                        <span class="tab-count" th:if="${#lists.size(comments) > 0}" th:text="${#lists.size(comments)}"></span>
+                    </button>
                 </div>
 
-                <!-- Résolution -->
-                <div th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}"
-                     class="resolution-box fu d3">
-                    <div class="resolution-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        Procédures effectuées
-                    </div>
-                    <div class="resolution-text" th:text="${problem.resolution}"></div>
-                </div>
-
-                <!-- Discussion -->
-                <div class="pd-card fu d3" style="padding:0;overflow:hidden;">
-                    <div style="padding:1.1rem 1.75rem;border-bottom:1px solid var(--cream-d);display:flex;align-items:center;justify-content:space-between;">
-                        <span style="font-family:'Sora',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);">Discussion avec le client</span>
-                        <span style="font-family:'Sora',sans-serif;font-size:.72rem;font-weight:700;background:var(--cream);color:var(--text-3);border:1px solid var(--cream-d);border-radius:99px;padding:.1rem .55rem;"
-                              th:text="${#lists.size(comments)} + ' message' + (${#lists.size(comments)} > 1 ? 's' : '')"></span>
-                    </div>
-                    <div class="chat-messages" id="chatAdmin">
-                        <div th:if="${#lists.isEmpty(comments)}" class="chat-empty">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="margin:0 auto .5rem;display:block;opacity:.25"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            Aucun message pour l'instant.
+                <!-- Panel : Description -->
+                <div id="panel-desc" class="tab-panel">
+                    <div class="pd-card" style="margin-bottom:.85rem;">
+                        <div class="section-label">Description du problème</div>
+                        <div class="desc-box" th:text="${problem.description}"></div>
+                        <div style="margin-top:.75rem;font-size:.8rem;color:var(--text-3);display:flex;align-items:center;gap:.4rem">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            <span th:text="${problem.category}"></span>
                         </div>
-                        <div th:each="comment : ${comments}"
-                             th:class="${comment.author.id == currentUser.id} ? 'msg msg-me' : 'msg'">
-                            <div class="msg-avatar"
-                                 th:class="${comment.author.id == currentUser.id} ? 'msg-avatar av-me' :
-                                           (${comment.author.role.name() == 'CLIENT'} ? 'msg-avatar av-client' :
-                                           (${comment.author.role.name() == 'ADMIN'} ? 'msg-avatar av-admin' : 'msg-avatar av-tech'))"
-                                 th:text="${#strings.substring(comment.author.firstname, 0, 1)}"></div>
-                            <div class="msg-body">
-                                <div class="msg-meta">
-                                    <span class="msg-author"
-                                          th:text="${comment.author.role.name() == 'CLIENT' and problem.ticketUserInfo != null}
-                                                   ? ${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}
-                                                   : ${comment.author.firstname + ' ' + comment.author.lastname}"></span>
-                                    <span class="msg-role"
-                                          th:class="${comment.author.role.name() == 'CLIENT'} ? 'msg-role role-client' :
-                                                    (${comment.author.role.name() == 'ADMIN'} ? 'msg-role role-admin' : 'msg-role role-tech')"
-                                          th:text="${comment.author.role.name() == 'CLIENT'} ? 'Client' :
-                                                   (${comment.author.role.name() == 'ADMIN'} ? 'Tic Harmony' : 'Technicien')"></span>
-                                    <span class="msg-time" th:text="${#temporals.format(comment.createdAt, 'dd/MM HH:mm')}"></span>
+                    </div>
+                    <div th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}"
+                         class="resolution-box">
+                        <div class="resolution-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            Procédures effectuées
+                        </div>
+                        <div class="resolution-text" th:text="${problem.resolution}"></div>
+                    </div>
+                </div>
+
+                <!-- Panel : Discussion -->
+                <div id="panel-chat" class="tab-panel">
+                    <div class="pd-card" style="padding:0;overflow:hidden;">
+                        <div class="chat-messages" id="chatAdmin">
+                            <div th:if="${#lists.isEmpty(comments)}" class="chat-empty">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="margin:0 auto .5rem;display:block;opacity:.25"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                Aucun message pour l'instant.
+                            </div>
+                            <div th:each="comment : ${comments}"
+                                 th:class="${comment.author.id == currentUser.id} ? 'msg msg-me' : 'msg'">
+                                <div class="msg-avatar"
+                                     th:class="${comment.author.id == currentUser.id} ? 'msg-avatar av-me' :
+                                               (${comment.author.role.name() == 'CLIENT'} ? 'msg-avatar av-client' :
+                                               (${comment.author.role.name() == 'ADMIN'} ? 'msg-avatar av-admin' : 'msg-avatar av-tech'))"
+                                     th:text="${#strings.substring(comment.author.firstname, 0, 1)}"></div>
+                                <div class="msg-body">
+                                    <div class="msg-meta">
+                                        <span class="msg-author"
+                                              th:text="${comment.author.role.name() == 'CLIENT' and problem.ticketUserInfo != null}
+                                                       ? ${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}
+                                                       : ${comment.author.firstname + ' ' + comment.author.lastname}"></span>
+                                        <span class="msg-role"
+                                              th:class="${comment.author.role.name() == 'CLIENT'} ? 'msg-role role-client' :
+                                                        (${comment.author.role.name() == 'ADMIN'} ? 'msg-role role-admin' : 'msg-role role-tech')"
+                                              th:text="${comment.author.role.name() == 'CLIENT'} ? 'Client' :
+                                                       (${comment.author.role.name() == 'ADMIN'} ? 'Tic Harmony' : 'Technicien')"></span>
+                                        <span class="msg-time" th:text="${#temporals.format(comment.createdAt, 'dd/MM HH:mm')}"></span>
+                                    </div>
+                                    <div class="msg-bubble" th:text="${comment.content}"></div>
                                 </div>
-                                <div class="msg-bubble" th:text="${comment.content}"></div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Admin -->
-                    <div sec:authorize="hasRole('ADMIN')">
-                        <form th:if="${problem.status.name() == 'IN_PROGRESS'}"
-                              th:action="@{'/problems/' + ${problem.id} + '/comments'}" method="post" class="chat-form">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <textarea name="content" class="chat-input" rows="1" placeholder="Message au client…" required
-                                      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
-                            <button type="submit" class="chat-send">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                            </button>
-                        </form>
-                        <div th:if="${problem.status.name() != 'IN_PROGRESS'}" class="chat-locked">
-                            <span th:if="${problem.status.name() == 'OPEN'}">Discussion disponible une fois le ticket pris en charge.</span>
-                            <span th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}">Discussion archivée.</span>
+                        <!-- Admin -->
+                        <div sec:authorize="hasRole('ADMIN')">
+                            <form th:if="${problem.status.name() == 'IN_PROGRESS'}"
+                                  th:action="@{'/problems/' + ${problem.id} + '/comments'}" method="post" class="chat-form">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <textarea name="content" class="chat-input" rows="1" placeholder="Message au client…" required
+                                          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                                <button type="submit" class="chat-send">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </button>
+                            </form>
+                            <div th:if="${problem.status.name() != 'IN_PROGRESS'}" class="chat-locked">
+                                <span th:if="${problem.status.name() == 'OPEN'}">Discussion disponible une fois le ticket pris en charge.</span>
+                                <span th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}">Discussion archivée.</span>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Membre -->
-                    <div sec:authorize="hasRole('MEMBER')">
-                        <form th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'IN_PROGRESS'}"
-                              th:action="@{'/problems/' + ${problem.id} + '/comments'}" method="post" class="chat-form">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <textarea name="content" class="chat-input" rows="1" placeholder="Message au client…" required
-                                      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
-                            <button type="submit" class="chat-send">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                            </button>
-                        </form>
-                        <div th:if="${problem.technician == null}" class="chat-locked">Ticket non assigné.</div>
-                        <div th:if="${problem.technician != null and problem.technician.id != currentUser.id}" class="chat-locked">Vous n'êtes pas le technicien assigné.</div>
-                        <div th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'OPEN'}" class="chat-locked">Prenez en charge ce ticket pour démarrer la discussion.</div>
-                        <div th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}" class="chat-locked">Discussion archivée.</div>
+                        <!-- Membre -->
+                        <div sec:authorize="hasRole('MEMBER')">
+                            <form th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'IN_PROGRESS'}"
+                                  th:action="@{'/problems/' + ${problem.id} + '/comments'}" method="post" class="chat-form">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <textarea name="content" class="chat-input" rows="1" placeholder="Message au client…" required
+                                          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                                <button type="submit" class="chat-send">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </button>
+                            </form>
+                            <div th:if="${problem.technician == null}" class="chat-locked">Ticket non assigné.</div>
+                            <div th:if="${problem.technician != null and problem.technician.id != currentUser.id}" class="chat-locked">Vous n'êtes pas le technicien assigné.</div>
+                            <div th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'OPEN'}" class="chat-locked">Prenez en charge ce ticket pour démarrer la discussion.</div>
+                            <div th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}" class="chat-locked">Discussion archivée.</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Sidebar admin — UNE seule carte -->
-            <aside class="fu d2">
+            <aside class="fu d2 sticky-aside">
                 <div class="sidebar-panel">
+
+                    <!-- Actions (admin uniquement) -->
+                    <div class="sp-section" sec:authorize="hasRole('ADMIN')">
+                        <div class="sp-label">Actions</div>
+                        <a th:href="@{'/problems/update/' + ${problem.id}}" class="act-btn act-edit">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            Modifier le ticket
+                        </a>
+                    </div>
 
                     <!-- Statut -->
                     <div class="sp-section">
@@ -667,28 +758,9 @@
                         </div>
                     </div>
 
-                    <!-- Client + Demandeur -->
-                    <div class="sp-section">
-                        <div class="sp-label">Client</div>
-                        <div class="sp-info-row" style="border:none;padding:0">
-                            <div class="sp-info-icon">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            </div>
-                            <div>
-                                <div class="sp-info-value" th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}"></div>
-                                <div class="sp-info-sub" th:text="${problem.user.adresse}"></div>
-                            </div>
-                        </div>
-                        <div th:if="${problem.ticketUserInfo != null}" style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid var(--cream-d)">
-                            <div class="sp-info-label">Demandeur</div>
-                            <div class="sp-info-value" th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></div>
-                            <div class="sp-info-sub" th:text="${problem.ticketUserInfo.email}"></div>
-                            <div class="sp-info-sub" th:text="${problem.ticketUserInfo.phone}"></div>
-                        </div>
-                    </div>
-
                     <!-- Technicien + Assignation (admin) -->
-                    <div class="sp-section">
+                    <div class="sp-section"
+                         th:style="${problem.technician == null} ? 'border-left:3px solid #ea580c;padding-left:calc(1.4rem - 3px);background:#fffaf7;' : ''">
                         <div class="sp-label">Technicien</div>
                         <div th:if="${problem.technician == null}" style="font-size:.82rem;color:var(--text-3);margin-bottom:.6rem">
                             Non assigné
@@ -715,7 +787,7 @@
                                     <option th:each="tech : ${technicians}"
                                             th:value="${tech.id}"
                                             th:selected="${problem.technician != null and problem.technician.id == tech.id}"
-                                            th:text="${tech.firstname + ' ' + tech.lastname + (techTicketCounts[tech.id] == 0 ? ' — Libre' : ' — ' + techTicketCounts[tech.id] + ' ticket(s)')}"></option>
+                                            th:text="${(tech.id == adminId ? '(Moi) ' : '') + tech.firstname + ' ' + tech.lastname + (techTicketCounts[tech.id] == 0 ? ' — Libre' : ' — ' + techTicketCounts[tech.id] + ' ticket(s)')}"></option>
                                 </select>
                                 <label class="sp-label-field">Priorité</label>
                                 <select name="priority" required class="sp-select">
@@ -734,37 +806,27 @@
                         </div>
                     </div>
 
-                    <!-- Actions -->
+                    <!-- Client + Demandeur -->
                     <div class="sp-section">
-                        <div class="sp-label">Actions</div>
-                        <a sec:authorize="hasRole('ADMIN')"
-                           th:href="@{'/problems/update/' + ${problem.id}}" class="act-btn act-edit">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            Modifier le ticket
-                        </a>
-                        <a sec:authorize="hasRole('MEMBER')"
-                           th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'OPEN'}"
-                           th:href="@{'/problems/' + ${problem.id} + '/take'}" class="act-btn act-take">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                            Prendre en charge
-                        </a>
-                        <a sec:authorize="hasRole('MEMBER')"
-                           th:if="${problem.technician != null and problem.technician.id == currentUser.id and problem.status.name() == 'IN_PROGRESS'}"
-                           th:href="@{'/problems/' + ${problem.id} + '/resolve'}" class="act-btn act-resolve">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                            Marquer comme résolu
-                        </a>
-                        <form sec:authorize="hasRole('ADMIN')" th:if="${problem.status.name() == 'RESOLVED'}"
-                              th:action="@{'/problems/' + ${problem.id} + '/close'}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <button type="submit" class="act-btn act-close" style="width:100%;font-family:'Sora',sans-serif;border:1.5px solid #bbf7d0;cursor:pointer">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                Valider et fermer
-                            </button>
-                        </form>
+                        <div class="sp-label">Client</div>
+                        <div class="sp-info-row" style="border:none;padding:0">
+                            <div class="sp-info-icon">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </div>
+                            <div>
+                                <div class="sp-info-value" th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}"></div>
+                                <div class="sp-info-sub" th:text="${problem.user.adresse}"></div>
+                            </div>
+                        </div>
+                        <div th:if="${problem.ticketUserInfo != null}" style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid var(--cream-d)">
+                            <div class="sp-info-label">Demandeur</div>
+                            <div class="sp-info-value" th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></div>
+                            <div class="sp-info-sub" th:text="${problem.ticketUserInfo.email}"></div>
+                            <div class="sp-info-sub" th:text="${problem.ticketUserInfo.phone}"></div>
+                        </div>
                     </div>
 
-                    <!-- Timeline -->
+                    <!-- Historique -->
                     <div class="sp-section">
                         <div class="sp-label">Historique</div>
                         <div class="tl">
@@ -804,11 +866,26 @@
 <th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
-        document.addEventListener('DOMContentLoaded', function () {
-            ['chatClient','chatAdmin'].forEach(function(id) {
-                var el = document.getElementById(id);
+        function switchTab(name) {
+            document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+            document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('tab-' + name).classList.add('active');
+            document.getElementById('panel-' + name).classList.add('active');
+            if (name === 'chat') {
+                var el = document.getElementById('chatAdmin');
                 if (el) el.scrollTop = el.scrollHeight;
-            });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Onglet par défaut (admin/member)
+            var tabsEl = document.getElementById('ticket-tabs');
+            if (tabsEl) {
+                switchTab(tabsEl.getAttribute('data-default') || 'desc');
+            }
+            // Scroll chat client
+            var clientChat = document.getElementById('chatClient');
+            if (clientChat) clientChat.scrollTop = clientChat.scrollHeight;
         });
         /*]]>*/
     </script>
