@@ -198,9 +198,8 @@
                 <div class="section-heading">À prendre en charge</div>
                 <div style="font-size:.78rem;color:var(--text-3);margin-top:.15rem;">Ces tickets vous sont assignés et attendent votre action</div>
             </div>
-            <span th:if="${!#lists.isEmpty(openList)}"
-                  style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:99px;padding:.2rem .65rem;"
-                  th:text="${#lists.size(openList)} + ' ticket' + (${#lists.size(openList)} > 1 ? 's' : '')"></span>
+            <a th:if="${openTotal > 0}" th:href="@{/problems(status='OPEN')}" class="view-all-link"
+               th:text="${openTotal > 5} ? 'Tout voir (' + ${openTotal} + ' →)' : 'Tout voir →'"></a>
         </div>
 
         <div th:if="${#lists.isEmpty(openList)}" class="empty-state">
@@ -230,10 +229,8 @@
                     </div>
                     <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
                         <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
                         <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
                         <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">⚠ Critique</span>
-                        <span class="badge b-open"><span class="bdot" style="background:#2563eb"></span>À prendre en charge</span>
                     </div>
                     <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -251,13 +248,8 @@
                 <div class="section-heading">En cours de traitement</div>
                 <div style="font-size:.78rem;color:var(--text-3);margin-top:.15rem;">Tickets que vous êtes en train de traiter</div>
             </div>
-            <a th:href="@{/problems}" class="view-all-link">
-                Tous mes tickets
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                </svg>
-            </a>
+            <a th:if="${inProgressTotal > 0}" th:href="@{/problems(status='IN_PROGRESS')}" class="view-all-link"
+               th:text="${inProgressTotal > 5} ? 'Tout voir (' + ${inProgressTotal} + ' →)' : 'Tout voir →'"></a>
         </div>
 
         <div th:if="${#lists.isEmpty(inProgressList)}" class="empty-state">
@@ -287,10 +279,8 @@
                     </div>
                     <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
                         <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
                         <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
                         <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">⚠ Critique</span>
-                        <span class="badge b-progress"><span class="bdot" style="background:#d97706"></span>En cours</span>
                     </div>
                     <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

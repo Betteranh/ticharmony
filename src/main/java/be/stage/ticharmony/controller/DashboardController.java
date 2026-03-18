@@ -121,25 +121,28 @@ public class DashboardController {
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
 
-        List<Problem> nonAssigned = all.stream()
+        List<Problem> nonAssignedAll = all.stream()
                 .filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED)
                 .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .collect(Collectors.toList());
 
-        List<Problem> resolvedList = all.stream()
+        List<Problem> resolvedAll = all.stream()
                 .filter(p -> p.getStatus() == Status.RESOLVED)
                 .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .collect(Collectors.toList());
 
         List<Problem> urgentList = all.stream()
                 .filter(p -> p.getPriority() == Priority.URGENT
+                        && p.getTechnician() == null
                         && p.getStatus() != Status.CLOSED
                         && p.getStatus() != Status.RESOLVED)
                 .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .collect(Collectors.toList());
 
-        model.addAttribute("nonAssignedList", nonAssigned);
-        model.addAttribute("resolvedList", resolvedList);
+        model.addAttribute("nonAssignedList",  nonAssignedAll.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("nonAssignedTotal", (long) nonAssignedAll.size());
+        model.addAttribute("resolvedList",     resolvedAll.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("resolvedTotal",    (long) resolvedAll.size());
         model.addAttribute("urgentList", urgentList);
         model.addAttribute("module", "dashboard");
 
@@ -232,8 +235,10 @@ public class DashboardController {
                 .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .collect(Collectors.toList());
 
-        model.addAttribute("openList", openList);
-        model.addAttribute("inProgressList", inProgressList);
+        model.addAttribute("openList",          openList.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("openTotal",         (long) openList.size());
+        model.addAttribute("inProgressList",    inProgressList.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("inProgressTotal",   (long) inProgressList.size());
         model.addAttribute("module", "dashboard");
 
         return "dashboard/memberDashboard";
