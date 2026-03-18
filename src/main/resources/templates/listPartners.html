@@ -159,6 +159,37 @@
         .email-link:hover { color: var(--violet); }
         .cell-text  { font-size: .83rem; color: var(--text-2); }
 
+        /* ── Statut badge ── */
+        .status-active   { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Sora',sans-serif;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0; }
+        .status-inactive { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Sora',sans-serif;background:#fef2f2;color:#dc2626;border:1px solid #fecaca; }
+
+        /* ── Ligne inactive grisée ── */
+        .partner-row.inactive { opacity: .5; }
+
+        /* ── Période ── */
+        .period-text { font-size:.78rem; color:var(--text-2); white-space:nowrap; }
+        .period-none { font-size:.78rem; color:var(--text-3); }
+
+        /* ── Toggle ── */
+        .act-toggle-off {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: .28rem .75rem; border-radius: 7px;
+            background: #fef9c3; border: 1px solid #fde047;
+            color: #854d0e; font-size: .78rem; font-weight: 600;
+            font-family: 'Sora', sans-serif;
+            cursor: pointer; transition: background .15s; white-space: nowrap;
+        }
+        .act-toggle-off:hover { background: #fef08a; }
+        .act-toggle-on {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: .28rem .75rem; border-radius: 7px;
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            color: #15803d; font-size: .78rem; font-weight: 600;
+            font-family: 'Sora', sans-serif;
+            cursor: pointer; transition: background .15s; white-space: nowrap;
+        }
+        .act-toggle-on:hover { background: #dcfce7; }
+
         /* ── Edit button ── */
         .act-edit {
             display: inline-flex; align-items: center; gap: 5px;
@@ -179,6 +210,18 @@
             margin: 0 auto 1rem;
         }
 
+        /* ── Filtre buttons ── */
+        .filter-btn {
+            padding: .3rem .9rem; border-radius: 99px;
+            border: 1px solid var(--cream-d);
+            background: var(--white); color: var(--text-2);
+            font-family: 'Sora', sans-serif; font-size: .75rem; font-weight: 600;
+            cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+        }
+        .filter-btn:hover { background: var(--cream); }
+        .filter-btn--active { background: var(--violet); border-color: var(--violet); color: #fff; }
+        .filter-btn--active:hover { background: #6d28d9; border-color: #6d28d9; }
+
         /* ── Animations ── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(12px); }
@@ -188,6 +231,33 @@
         .d1 { animation-delay: .04s; }
         .d2 { animation-delay: .10s; }
         .d3 { animation-delay: .16s; }
+
+        /* ── Polish v2 ── */
+        .lp-title  { font-size: 2rem; }
+        .lp-header {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--cream-d);
+            margin-bottom: 1.25rem;
+        }
+        .toolbar {
+            display: flex; align-items: center; gap: .75rem;
+            margin-bottom: 1rem; flex-wrap: wrap;
+        }
+        .toolbar .search-wrap { flex: 1; min-width: 180px; margin-bottom: 0; }
+        .table-card {
+            border-top: 3px solid var(--violet);
+            box-shadow: 0 4px 28px rgba(0,0,0,.09), 0 1px 6px rgba(0,0,0,.04);
+        }
+        .lp-table thead tr {
+            background: var(--cream);
+            border-bottom: 1.5px solid var(--cream-d);
+        }
+        .lp-table tbody tr:hover {
+            background: #f5f3ff;
+            box-shadow: inset 3px 0 0 var(--violet);
+        }
+        .lp-table tbody tr.partner-row.inactive:hover { background: var(--cream); }
+        .filter-btn--active { box-shadow: 0 2px 8px rgba(124,58,237,.3); }
     </style>
 </head>
 
@@ -207,7 +277,7 @@
         <div>
             <div class="lp-title">
                 Partenaires
-                <span class="lp-count" th:text="${partners.size()} + ' client(s)'">0 client(s)</span>
+                <span class="lp-count" th:text="${activeCount} + ' client(s) actif(s)'">0 client(s)</span>
             </div>
             <div class="lp-sub">Gestion et visualisation de tous les partenaires clients</div>
         </div>
@@ -220,15 +290,21 @@
         </a>
     </div>
 
-    <!-- Search -->
-    <div class="search-wrap fu d2">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" id="partnerSearch" class="search-input"
-               placeholder="Rechercher par entreprise, nom, email, login…"
-               onkeyup="filterPartners(this.value)"/>
+    <!-- Toolbar: filtres + recherche -->
+    <div class="toolbar fu d2">
+        <div style="display:flex;gap:.5rem;flex-shrink:0;">
+            <button onclick="setFilter('active')"   id="f-active"   class="filter-btn filter-btn--active">Actifs</button>
+            <button onclick="setFilter('inactive')" id="f-inactive" class="filter-btn">Inactifs</button>
+        </div>
+        <div class="search-wrap" style="flex:1;min-width:180px;margin-bottom:0;">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="partnerSearch" class="search-input"
+                   placeholder="Rechercher par entreprise, nom, email, login…"
+                   onkeyup="filterPartners(this.value)"/>
+        </div>
     </div>
 
     <!-- Table -->
@@ -242,13 +318,15 @@
                         <th>Langue</th>
                         <th>Email</th>
                         <th>Téléphone</th>
-                        <th>Adresse</th>
                         <th>TVA</th>
-                        <th class="center" sec:authorize="hasRole('ADMIN')">Action</th>
+                        <th>Statut</th>
+
+                        <th class="center" sec:authorize="hasRole('ADMIN')">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="partner : ${partners}" class="partner-row">
+                    <tr th:each="partner : ${partners}" class="partner-row"
+                        th:classappend="${!partner.active} ? ' inactive' : ''">
 
                         <!-- Entreprise + contact -->
                         <td>
@@ -295,11 +373,6 @@
                                   th:text="${partner.telephone != null and !#strings.isEmpty(partner.telephone)} ? ${partner.telephone} : '—'"></span>
                         </td>
 
-                        <!-- Adresse -->
-                        <td>
-                            <span class="cell-text" th:text="${partner.adresse}"></span>
-                        </td>
-
                         <!-- TVA -->
                         <td>
                             <span th:if="${partner.tva != null and !partner.tva.isEmpty()}"
@@ -308,16 +381,46 @@
                                   style="color:var(--text-3);font-size:.8rem;">—</span>
                         </td>
 
-                        <!-- Action (admin) -->
+                        <!-- Statut -->
+                        <td>
+                            <span th:if="${partner.active}" class="status-active">
+                                <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
+                                Actif
+                            </span>
+                            <span th:unless="${partner.active}" class="status-inactive">
+                                <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
+                                Inactif
+                            </span>
+                        </td>
+
+<!-- Actions (admin) -->
                         <td class="center" sec:authorize="hasRole('ADMIN')">
-                            <a th:href="@{'/partners/edit/' + ${partner.id}}" class="act-edit">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
-                                Modifier
-                            </a>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;">
+                                <a th:href="@{'/partners/edit/' + ${partner.id}}" class="act-edit">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                    Modifier
+                                </a>
+                                <form th:action="@{'/partners/' + ${partner.id} + '/toggle'}" method="post" style="display:inline;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit"
+                                            th:class="${partner.active} ? 'act-toggle-off' : 'act-toggle-on'"
+                                            th:attr="data-name=${partner.nomEntreprise},data-active=${partner.active}"
+                                            onclick="return confirmToggle(this)">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path th:if="${partner.active}" d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/>
+                                            <path th:if="${partner.active}" d="M12 2v10"/>
+                                            <path th:unless="${partner.active}"
+                                                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span th:text="${partner.active} ? 'Désactiver' : 'Activer'"></span>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
 
@@ -341,8 +444,8 @@
 
                     <!-- No search results -->
                     <tr id="noResultRow" style="display:none;" class="no-data">
-                        <td colspan="8" style="padding:3rem 1rem;text-align:center;color:var(--text-3);font-size:.88rem;">
-                            Aucun résultat pour cette recherche.
+                        <td colspan="8" style="padding:3rem 1rem;text-align:center;color:var(--text-3);font-size:.88rem;" id="noResultMsg">
+                            Aucun partenaire dans cette catégorie.
                         </td>
                     </tr>
                 </tbody>
@@ -355,18 +458,52 @@
 <th:block layout:fragment="scripts">
 <script>
 /*<![CDATA[*/
-window.filterPartners = function (query) {
-    query = query.toLowerCase();
+function confirmToggle(btn) {
+    var name   = btn.getAttribute('data-name');
+    var active = btn.getAttribute('data-active') === 'true';
+    var msg = active
+        ? 'Désactiver ' + name + ' ? Son accès sera bloqué.'
+        : 'Réactiver ' + name + ' ?';
+    return confirm(msg);
+}
+
+var currentFilter = 'active';
+
+function setFilter(f) {
+    currentFilter = f;
+    ['active','inactive'].forEach(function(k) {
+        var btn = document.getElementById('f-' + k);
+        if (btn) btn.className = 'filter-btn' + (k === f ? ' filter-btn--active' : '');
+    });
+    applyFilters();
+}
+
+window.filterPartners = function (query) { applyFilters(); };
+
+document.addEventListener('DOMContentLoaded', applyFilters);
+
+function applyFilters() {
+    var q = (document.getElementById('partnerSearch').value || '').toLowerCase().trim();
     var rows = document.querySelectorAll('#partnersTable tbody tr.partner-row');
     var visible = 0;
-    rows.forEach(function (row) {
-        var match = !query || row.innerText.toLowerCase().indexOf(query) !== -1;
-        row.style.display = match ? '' : 'none';
-        if (match) visible++;
+    rows.forEach(function(r) {
+        var isInactive = r.classList.contains('inactive');
+        var matchFilter = (currentFilter === 'active'   && !isInactive)
+            || (currentFilter === 'inactive' &&  isInactive);
+        var matchSearch = !q || r.innerText.toLowerCase().indexOf(q) !== -1;
+        var show = matchFilter && matchSearch;
+        r.style.display = show ? '' : 'none';
+        if (show) visible++;
     });
     var noRes = document.getElementById('noResultRow');
-    if (noRes) noRes.style.display = (visible === 0 && rows.length > 0) ? '' : 'none';
-};
+    var noMsg = document.getElementById('noResultMsg');
+    if (noRes) {
+        noRes.style.display = (visible === 0 && rows.length > 0) ? '' : 'none';
+        if (noMsg) noMsg.textContent = q
+            ? 'Aucun résultat pour cette recherche.'
+            : 'Aucun partenaire dans cette catégorie.';
+    }
+}
 /*]]>*/
 </script>
 </th:block>

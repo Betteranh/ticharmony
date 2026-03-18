@@ -266,6 +266,19 @@
                     </select>
                 </div>
 
+                <!-- Contrat de support -->
+                <div class="section-label" style="margin-top:1.5rem;">Contrat de support</div>
+                <div class="field-row">
+                    <div>
+                        <label for="supportFrom" class="fc-label">Début de support</label>
+                        <input type="date" id="supportFrom" th:field="*{supportFrom}" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="supportTo" class="fc-label">Fin de support</label>
+                        <input type="date" id="supportTo" th:field="*{supportTo}" class="fc-input"/>
+                    </div>
+                </div>
+
                 <!-- Accès -->
                 <div class="section-label">Accès</div>
 

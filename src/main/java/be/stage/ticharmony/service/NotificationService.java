@@ -63,6 +63,46 @@ public class NotificationService {
     }
 
     /**
+     * Crée une notification uniquement si aucune non-lue du même type n'existe déjà
+     * (évite le spam de notifications identiques)
+     */
+    public void notifyOnce(User user, Problem problem, NotificationType type) {
+        if (repo.findByUserAndProblemAndTypeAndViewedFalse(user, problem, type).isEmpty()) {
+            notify(user, problem, type);
+        }
+    }
+
+    /**
+     * Marque une notification précise comme lue (si elle appartient à cet utilisateur)
+     */
+    public void markOneRead(User user, Long notificationId) {
+        repo.findById(notificationId).ifPresent(n -> {
+            if (n.getUser().getId().equals(user.getId())) {
+                n.setViewed(true);
+                repo.save(n);
+            }
+        });
+    }
+
+    /**
+     * Marque toutes les notifications non lues pour un utilisateur + ticket donnés
+     */
+    @Transactional
+    public void markAllReadForProblem(User user, Problem problem) {
+        repo.findByUserAndViewedFalseOrderByCreatedAtDesc(user)
+                .stream()
+                .filter(n -> n.getProblem() != null && n.getProblem().getId().equals(problem.getId()))
+                .forEach(n -> { n.setViewed(true); repo.save(n); });
+    }
+
+    /**
+     * Compte les notifications non lues d'un utilisateur
+     */
+    public long countUnreadForUser(User user) {
+        return repo.findByUserAndViewedFalseOrderByCreatedAtDesc(user).size();
+    }
+
+    /**
      * Supprime toutes les notifications d'un type donné pour un problème
      */
     @Transactional

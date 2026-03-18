@@ -65,6 +65,10 @@ public class ProblemController {
         if (problem.getStatus() == Status.OPEN) {
             problem.setStatus(Status.IN_PROGRESS);
             service.updateProblem(problem);
+            // Notifier le client que son ticket est pris en charge
+            if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
+                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+            }
         }
 
         return "redirect:/problems/" + id;
@@ -127,21 +131,18 @@ public class ProblemController {
     @PreAuthorize("hasRole('ADMIN')")
     public String closeProblem(@PathVariable Long id, Authentication auth) {
         Problem problem = service.getProblem(id);
-        if (problem != null && problem.getStatus() != Status.CLOSED) { // On peut fermer si pas déjà fermé
+        if (problem != null && problem.getStatus() != Status.CLOSED) {
             problem.setStatus(Status.CLOSED);
             service.updateProblem(problem);
 
-            // Supprime toutes les notifications "nouveau ticket" pour ce problème
-            notificationService.deleteNotificationsForProblem(
-                    problem,
-                    NotificationType.NEW_PROBLEM
-            );
+            // Marquer les notifications admin comme lues (plus utiles une fois fermé)
+            notificationService.deleteNotificationsForProblem(problem, NotificationType.NEW_PROBLEM);
+            notificationService.deleteNotificationsForProblem(problem, NotificationType.PROBLEM_CLOSED);
 
-            // Supprime toutes les notifications "ticket résolu" pour ce problème
-            notificationService.deleteNotificationsForProblem(
-                    problem,
-                    NotificationType.PROBLEM_CLOSED
-            );
+            // Notifier le client que son dossier est clôturé
+            if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
+                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_CLOSED);
+            }
         }
         return "redirect:/problems?status=CLOSED";
     }
@@ -503,6 +504,33 @@ public class ProblemController {
     }
 
     /**
+     * Retourne les commentaires d’un ticket après un ID donné (polling JSON).
+     */
+    @GetMapping("/{id}/comments")
+    @ResponseBody
+    public List<Map<String, Object>> getCommentsJson(@PathVariable Long id,
+                                                     @RequestParam(defaultValue = "0") Long after,
+                                                     Authentication auth) {
+        Problem problem = service.getProblem(id);
+        if (problem == null) return List.of();
+        User current = userService.findByLogin(auth.getName());
+        List<Comment> comments = commentService.getCommentsByProblemAfter(problem, after);
+        return comments.stream().map(c -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", c.getId());
+            m.put("content", c.getContent());
+            String fn = c.getAuthor().getFirstname() != null ? c.getAuthor().getFirstname() : "";
+            String ln = c.getAuthor().getLastname() != null ? c.getAuthor().getLastname() : "";
+            m.put("authorName", fn + " " + ln);
+            m.put("authorRole", c.getAuthor().getRole().name());
+            m.put("initials", fn.isEmpty() ? "?" : String.valueOf(fn.charAt(0)).toUpperCase());
+            m.put("isMe", c.getAuthor().getId().equals(current.getId()));
+            m.put("createdAt", c.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM HH:mm")));
+            return m;
+        }).collect(Collectors.toList());
+    }
+
+    /**
      * Détail d’un ticket + liste des techniciens pour l’admin.
      * avec bouton Prise en charge / Valider.
      */
@@ -519,12 +547,8 @@ public class ProblemController {
         List<Comment> comments = commentService.getCommentsByProblem(problem);
         model.addAttribute("comments", comments);
 
-        // si c’est le tech sur **son** ticket, on marque son assignation lue
-        if (current.getRole() == UserRole.MEMBER
-                && problem.getTechnician() != null
-                && problem.getTechnician().equals(current)) {
-            notificationService.markAssignmentNotificationsRead(current, problem);
-        }
+        // Marquer toutes les notifications de cet utilisateur pour ce ticket comme lues
+        notificationService.markAllReadForProblem(current, problem);
 
         model.addAttribute("problem", problem);
         model.addAttribute("currentUser", current);
@@ -563,33 +587,32 @@ public class ProblemController {
         Problem problem = service.getProblem(id);
         if (problem != null) {
             User admin = userService.findByLogin(auth.getName());
+            User oldTech = problem.getTechnician();
 
-            // 1) on supprime toutes les notifications "nouveau ticket" pour ce problème
-            notificationService.deleteNotificationsForProblem(
-                    problem,
-                    NotificationType.NEW_PROBLEM
-            );
+            // 1) supprimer les notifications "nouveau ticket"
+            notificationService.deleteNotificationsForProblem(problem, NotificationType.NEW_PROBLEM);
 
-            // 2) on assigne le nouveau technicien
+            // 2) notifier l'ancien technicien qu'il est réassigné (s'il existe et change)
             User newTech = userService.getUser(technicianId);
+            if (oldTech != null && !oldTech.getId().equals(newTech.getId())) {
+                notificationService.notify(oldTech, problem, NotificationType.TICKET_REASSIGNED);
+                notificationService.markAssignmentNotificationsRead(oldTech, problem);
+            }
+
+            // 3) assigner le nouveau technicien + priorité
             problem.setTechnician(newTech);
-            // 2,5) applique la priorité choisie
             problem.setPriority(priority);
 
-            // 3) si l'admin s'assigne lui-même, on passe directement en IN_PROGRESS
+            // 4) si l'admin s'assigne lui-même → IN_PROGRESS
             if (newTech.getId().equals(admin.getId())) {
                 problem.setStatus(Status.IN_PROGRESS);
             }
 
             service.updateProblem(problem);
 
-            // 4) on notifie le technicien (sauf si c'est l'admin lui-même)
+            // 5) notifier le nouveau technicien (sauf si c'est l'admin lui-même)
             if (!newTech.getId().equals(admin.getId())) {
-                notificationService.notify(
-                        newTech,
-                        problem,
-                        NotificationType.ASSIGNED_TO_PROBLEM
-                );
+                notificationService.notify(newTech, problem, NotificationType.ASSIGNED_TO_PROBLEM);
             }
         }
         return "redirect:/problems/" + id;

@@ -20,7 +20,9 @@ public class PartnerController {
     public String listPartners(Model model) {
         // récupère tous les utilisateurs de rôle CLIENT
         List<User> partners = userService.getUsersByRole(UserRole.CLIENT);
+        long activeCount = partners.stream().filter(User::isActive).count();
         model.addAttribute("partners", partners);
+        model.addAttribute("activeCount", activeCount);
         model.addAttribute("module", "partners");
         return "listPartners";
     }
@@ -53,8 +55,19 @@ public class PartnerController {
         existing.setTelephone(updatedUser.getTelephone());
         existing.setAdresse(updatedUser.getAdresse());
         existing.setLangue(updatedUser.getLangue());
-        // Ne pas MAJ login/password ici (sauf si tu veux le permettre)
-        userService.updateUser(existing); // À adapter selon ton service/repository
+        existing.setSupportFrom(updatedUser.getSupportFrom());
+        existing.setSupportTo(updatedUser.getSupportTo());
+        userService.updateUser(existing);
+        return "redirect:/partners";
+    }
+
+    @PostMapping("/{id}/toggle")
+    public String toggleActive(@PathVariable Long id) {
+        User user = userService.getUser(id);
+        if (user != null) {
+            user.setActive(!user.isActive());
+            userService.updateUser(user);
+        }
         return "redirect:/partners";
     }
 }

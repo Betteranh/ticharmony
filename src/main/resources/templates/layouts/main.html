@@ -107,58 +107,160 @@
          class="fixed top-0 right-0 h-full w-80 max-w-full bg-white/95 shadow-2xl z-50 transform translate-x-full transition-transform duration-300"
          style="will-change: transform;">
         <button id="closeDrawerNotif"
-                class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700">&times;
-        </button>
-        <div class="mt-8"></div>
+                class="absolute top-3 right-3 z-10 text-xl leading-none text-white text-opacity-60 hover:text-opacity-100 transition-all duration-150"
+                style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgba(255,255,255,.08);"
+                title="Fermer">&times;</button>
         <div th:replace="fragments/notifications :: notifications"></div>
     </div>
-    <!-- Script pour Drawer -->
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        document.addEventListener('DOMContentLoaded', function () {
-            const notifToggle = document.getElementById('notifToggle');
-            const drawer = document.getElementById('drawerNotif');
-            const overlay = document.getElementById('drawerOverlay');
-            const closeBtn = document.getElementById('closeDrawerNotif');
-            // Ouvrir drawer
-            notifToggle?.addEventListener('click', function (e) {
-                drawer.classList.remove('translate-x-full');
-                // Ajoute l’animation
-                drawer.classList.add('drawer-slide-in');
-                overlay.classList.remove('hidden');
-                setTimeout(() => {
-                    overlay.classList.add('opacity-100');
-                }, 10);
-                e.stopPropagation();
-            });
 
-            // Fermer drawer
-            function closeDrawer() {
-                drawer.classList.add('translate-x-full');
-                overlay.classList.add('hidden');
-                overlay.classList.remove('opacity-100');
-                // Retire l’animation pour qu’elle rejoue à l’ouverture suivante
-                drawer.classList.remove('drawer-slide-in');
+    <!-- ═══════════════════════════════════════════
+         Notifications : drawer + badge live + toast
+    ═══════════════════════════════════════════ -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var btn      = document.getElementById('notifToggle');
+        var drawer   = document.getElementById('drawerNotif');
+        var overlay  = document.getElementById('drawerOverlay');
+        var closeBtn = document.getElementById('closeDrawerNotif');
+        var badge    = document.querySelector('.nh-notif-badge');
+        var prevCount  = -1;
+        var drawerOpen = false;
+        var toastWrap  = null;
+
+        /* ── 1. Badge ── */
+        function updateBadge(count) {
+            if (!btn) return;
+            if (count > 0) {
+                btn.classList.add('has-notif');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'nh-notif-badge';
+                    btn.appendChild(badge);
+                }
+                badge.textContent = count;
+                badge.style.display = '';
+            } else {
+                btn.classList.remove('has-notif');
+                if (badge) badge.style.display = 'none';
             }
+        }
 
-            closeBtn?.addEventListener('click', closeDrawer);
-            overlay?.addEventListener('click', closeDrawer);
-            document.addEventListener('keydown', function (e) {
-                if (e.key === "Escape") closeDrawer();
+        /* ── 2. Toast ── */
+        function showToast(delta) {
+            if (!toastWrap) {
+                toastWrap = document.createElement('div');
+                toastWrap.style.cssText = [
+                    'position:fixed', 'bottom:1.5rem', 'right:1.5rem', 'z-index:9999',
+                    'display:flex', 'flex-direction:column', 'gap:.45rem', 'pointer-events:none'
+                ].join(';') + ';';
+                document.body.appendChild(toastWrap);
+            }
+            var t = document.createElement('div');
+            t.style.cssText = [
+                'display:flex', 'align-items:center', 'gap:.6rem',
+                'background:#1e293b', 'color:#f1f5f9',
+                'padding:.7rem 1.1rem', 'border-radius:12px',
+                'box-shadow:0 8px 28px rgba(0,0,0,.22)',
+                'font-size:.84rem', 'font-weight:600',
+                'min-width:220px', 'border-left:3px solid #3b82f6',
+                'opacity:0', 'transform:translateY(8px)',
+                'transition:opacity .22s ease,transform .22s ease'
+            ].join(';') + ';';
+            var label = delta + ' nouvelle' + (delta > 1 ? 's' : '') + ' notification' + (delta > 1 ? 's' : '');
+            t.innerHTML = '<svg width="16" height="16" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg><span>' + label + '</span>';
+            toastWrap.appendChild(t);
+            requestAnimationFrame(function () { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
+            setTimeout(function () {
+                t.style.opacity = '0'; t.style.transform = 'translateY(8px)';
+                setTimeout(function () { t.remove(); }, 300);
+            }, 4000);
+        }
+
+        /* ── 3. Rafraîchissement du panel ── */
+        function refreshPanel(callback) {
+            fetch('/notifications/panel', { credentials: 'same-origin' })
+                .then(function (r) { return r.ok ? r.text() : null; })
+                .then(function (html) {
+                    if (!html) return;
+                    var panel = document.getElementById('notifPanel');
+                    if (!panel) return;
+                    var tmp = document.createElement('div');
+                    tmp.innerHTML = html;
+                    var newPanel = tmp.firstElementChild;
+                    if (newPanel) { panel.replaceWith(newPanel); setupMarkAllRead(); }
+                    if (callback) callback();
+                })
+                .catch(function () {});
+        }
+
+        /* ── 4. Mark-all-read en AJAX ── */
+        function setupMarkAllRead() {
+            var form = document.querySelector('#notifPanel form[action*="mark-all-read"]');
+            if (!form || form._ajaxBound) return;
+            form._ajaxBound = true;
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin' })
+                    .then(function () { prevCount = 0; updateBadge(0); refreshPanel(); })
+                    .catch(function () { form.submit(); });
             });
-        });
-        /*]]>*/
+        }
+
+        /* ── 5. Ouverture / Fermeture drawer ── */
+        function openDrawer() {
+            drawer.classList.remove('translate-x-full');
+            drawer.classList.add('drawer-slide-in');
+            overlay.classList.remove('hidden');
+            setTimeout(function () { overlay.classList.add('opacity-100'); }, 10);
+            drawerOpen = true;
+            refreshPanel();
+        }
+
+        function closeDrawer() {
+            drawer.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('opacity-100');
+            drawer.classList.remove('drawer-slide-in');
+            drawerOpen = false;
+        }
+
+        if (btn)      btn.addEventListener('click', function (e) { openDrawer(); e.stopPropagation(); });
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        if (overlay)  overlay.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
+
+        /* ── 6. Polling ── */
+        function poll() {
+            fetch('/notifications/count', { credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    var count = d.count;
+                    if (prevCount !== -1 && count > prevCount) {
+                        showToast(count - prevCount);
+                        if (drawerOpen) refreshPanel();
+                    }
+                    prevCount = count;
+                    updateBadge(count);
+                })
+                .catch(function () {});
+        }
+
+        setupMarkAllRead();
+        poll();
+        setInterval(poll, 10000);
+    });
     </script>
 </div>
 <!-- /Drawer Notifications -->
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const toast = document.getElementById('already-logged-toast');
+    document.addEventListener(‘DOMContentLoaded’, function () {
+        const toast = document.getElementById(‘already-logged-toast’);
         if (toast) {
             setTimeout(() => {
-                toast.classList.add('animate-fadeout');
-                setTimeout(() => toast.style.display = 'none', 400);
+                toast.classList.add(‘animate-fadeout’);
+                setTimeout(() => toast.style.display = ‘none’, 400);
             }, 3500);
         }
     });
@@ -168,5 +270,6 @@
 <script th:src="@{/js/app.js}"></script>
 
 <th:block layout:fragment="scripts"></th:block>
+
 </body>
 </html>

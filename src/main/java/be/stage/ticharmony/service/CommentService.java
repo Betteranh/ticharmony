@@ -19,6 +19,10 @@ public class CommentService {
         return commentRepository.findByProblemOrderByCreatedAtAsc(problem);
     }
 
+    public List<Comment> getCommentsByProblemAfter(Problem problem, Long lastId) {
+        return commentRepository.findByProblemAndIdGreaterThanOrderByCreatedAtAsc(problem, lastId);
+    }
+
     public Comment addComment(Problem problem, User author, String content) {
         Comment comment = new Comment();
         comment.setProblem(problem);

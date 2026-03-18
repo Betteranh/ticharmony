@@ -185,6 +185,37 @@
         }
         .act-delete:hover { background: #fee2e2; }
 
+        /* ── Toggle actif/inactif ── */
+        .act-toggle-off {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: .28rem .75rem; border-radius: 7px;
+            background: #fef9c3; border: 1px solid #fde047;
+            color: #854d0e; font-size: .78rem; font-weight: 600;
+            font-family: 'Sora', sans-serif;
+            cursor: pointer; transition: background .15s;
+        }
+        .act-toggle-off:hover { background: #fef08a; }
+        .act-toggle-on {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: .28rem .75rem; border-radius: 7px;
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            color: #15803d; font-size: .78rem; font-weight: 600;
+            font-family: 'Sora', sans-serif;
+            cursor: pointer; transition: background .15s;
+        }
+        .act-toggle-on:hover { background: #dcfce7; }
+
+        /* ── Statut badge ── */
+        .status-active   { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Sora',sans-serif;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0; }
+        .status-inactive { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Sora',sans-serif;background:#fef2f2;color:#dc2626;border:1px solid #fecaca; }
+
+        /* ── Ligne inactive grisée ── */
+        .emp-row.inactive { opacity: .5; }
+
+        /* ── Période ── */
+        .period-text { font-size:.78rem; color:var(--text-2); white-space:nowrap; }
+        .period-none { font-size:.78rem; color:var(--text-3); }
+
         /* ── Empty state ── */
         .empty-state { padding: 4rem 1rem; text-align: center; }
         .empty-icon {
@@ -203,6 +234,21 @@
         .role-admin  { background: var(--violet-bg); color: var(--violet); border: 1px solid var(--violet-br); }
         .role-member { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
 
+        /* ── Filtre buttons ── */
+        .filter-btn {
+            padding: .3rem .9rem; border-radius: 99px;
+            border: 1px solid var(--cream-d);
+            background: var(--white); color: var(--text-2);
+            font-family: 'Sora', sans-serif; font-size: .75rem; font-weight: 600;
+            cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+        }
+        .filter-btn:hover { background: var(--cream); border-color: var(--cream-d); }
+        .filter-btn--active {
+            background: var(--violet); border-color: var(--violet);
+            color: #fff;
+        }
+        .filter-btn--active:hover { background: #6d28d9; border-color: #6d28d9; }
+
         /* ── Animations ── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(12px); }
@@ -213,6 +259,34 @@
         .d2 { animation-delay: .10s; }
         .d3 { animation-delay: .16s; }
         .d4 { animation-delay: .22s; }
+
+        /* ── Polish v2 ── */
+        .le-title  { font-size: 2rem; }
+        .le-header {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--cream-d);
+            margin-bottom: 1.25rem;
+        }
+        .toolbar {
+            display: flex; align-items: center; gap: .75rem;
+            margin-bottom: 1rem; flex-wrap: wrap;
+        }
+        .toolbar .search-wrap { flex: 1; min-width: 180px; margin-bottom: 0; }
+        .table-card {
+            border-top: 3px solid var(--violet);
+            box-shadow: 0 4px 28px rgba(0,0,0,.09), 0 1px 6px rgba(0,0,0,.04);
+        }
+        .le-table thead tr {
+            background: var(--cream);
+            border-bottom: 1.5px solid var(--cream-d);
+        }
+        .le-table tbody tr:hover {
+            background: #f5f3ff;
+            box-shadow: inset 3px 0 0 var(--violet);
+        }
+        .le-table tbody tr.emp-row.inactive:hover { background: var(--cream); }
+        .filter-btn--active { box-shadow: 0 2px 8px rgba(124,58,237,.3); }
+        .act-edit, .act-toggle-off, .act-toggle-on { white-space: nowrap; }
     </style>
 </head>
 
@@ -233,15 +307,21 @@
         </a>
     </div>
 
-    <!-- Search -->
-    <div class="search-wrap fu d3">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" id="searchInput" class="search-input"
-               placeholder="Rechercher par nom, email ou login…"
-               oninput="filterEmployees()"/>
+    <!-- Toolbar: filtres + recherche -->
+    <div class="toolbar fu d3">
+        <div style="display:flex;gap:.5rem;flex-shrink:0;">
+            <button onclick="setFilter('active')"   id="f-active"   class="filter-btn filter-btn--active">Actifs</button>
+            <button onclick="setFilter('inactive')" id="f-inactive" class="filter-btn">Inactifs</button>
+        </div>
+        <div class="search-wrap" style="flex:1;min-width:180px;margin-bottom:0;">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchInput" class="search-input"
+                   placeholder="Rechercher par nom, email ou login…"
+                   oninput="filterEmployees()"/>
+        </div>
     </div>
 
     <!-- Table -->
@@ -255,11 +335,14 @@
                         <th>Email</th>
                         <th>Téléphone</th>
                         <th>Rôle</th>
+                        <th>Statut</th>
+
                         <th class="center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="employee : ${employees}" class="emp-row"
+                        th:classappend="${!employee.active} ? ' inactive' : ''"
                         th:attr="data-role=${employee.role != null ? employee.role.name() : ''}">
 
                         <!-- Employé -->
@@ -321,9 +404,21 @@
                             </form>
                         </td>
 
-                        <!-- Actions -->
+                        <!-- Statut -->
+                        <td>
+                            <span th:if="${employee.active}" class="status-active">
+                                <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
+                                Actif
+                            </span>
+                            <span th:unless="${employee.active}" class="status-inactive">
+                                <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
+                                Inactif
+                            </span>
+                        </td>
+
+<!-- Actions -->
                         <td class="center">
-                            <div style="display:flex;align-items:center;justify-content:center;gap:7px;">
+                            <div style="display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;">
                                 <a th:href="@{'/employees/edit/' + ${employee.id}}" class="act-edit">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -332,18 +427,21 @@
                                     </svg>
                                     Modifier
                                 </a>
-                                <form th:action="@{'/employees/delete/' + ${employee.id}}" method="post" style="display:inline;">
+                                <form th:action="@{'/employees/' + ${employee.id} + '/toggle'}" method="post" style="display:inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                    <button type="submit" class="act-delete"
-                                            onclick="return confirm('Supprimer cet employé ?');">
+                                    <button type="submit"
+                                            th:class="${employee.active} ? 'act-toggle-off' : 'act-toggle-on'"
+                                            th:attr="data-name=${employee.firstname + ' ' + employee.lastname},data-active=${employee.active}"
+                                            onclick="return confirmToggle(this)">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="3 6 5 6 21 6"/>
-                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                            <path d="M10 11v6m4-6v6"/>
-                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                            <path th:if="${employee.active}"
+                                                  d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/>
+                                            <path th:if="${employee.active}" d="M12 2v10"/>
+                                            <path th:unless="${employee.active}"
+                                                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        Supprimer
+                                        <span th:text="${employee.active} ? 'Désactiver' : 'Activer'"></span>
                                     </button>
                                 </form>
                             </div>
@@ -352,7 +450,7 @@
 
                     <!-- Empty state -->
                     <tr th:if="${#lists.isEmpty(employees)}" id="emptyRow">
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="empty-state">
                                 <div class="empty-icon">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
@@ -371,8 +469,8 @@
 
                     <!-- No search results -->
                     <tr id="noResultRow" style="display:none;">
-                        <td colspan="6" style="padding:3rem 1rem;text-align:center;color:var(--text-3);font-size:.88rem;">
-                            Aucun résultat pour cette recherche.
+                        <td colspan="7" style="padding:3rem 1rem;text-align:center;color:var(--text-3);font-size:.88rem;" id="noResultMsg">
+                            Aucun employé dans cette catégorie.
                         </td>
                     </tr>
                 </tbody>
@@ -385,17 +483,51 @@
 <th:block layout:fragment="scripts">
 <script>
 /*<![CDATA[*/
-function filterEmployees() {
-    var q = document.getElementById('searchInput').value.toLowerCase().trim();
+var currentFilter = 'active';
+
+function confirmToggle(btn) {
+    var name   = btn.getAttribute('data-name');
+    var active = btn.getAttribute('data-active') === 'true';
+    var msg = active
+        ? 'Désactiver ' + name + ' ? Son accès sera bloqué.'
+        : 'Réactiver ' + name + ' ?';
+    return confirm(msg);
+}
+
+function setFilter(f) {
+    currentFilter = f;
+    ['active','inactive'].forEach(function(k) {
+        var btn = document.getElementById('f-' + k);
+        if (btn) btn.className = 'filter-btn' + (k === f ? ' filter-btn--active' : '');
+    });
+    applyFilters();
+}
+
+function filterEmployees() { applyFilters(); }
+
+document.addEventListener('DOMContentLoaded', applyFilters);
+
+function applyFilters() {
+    var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
     var rows = document.querySelectorAll('.emp-row');
     var visible = 0;
-    rows.forEach(function (r) {
-        var show = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
+    rows.forEach(function(r) {
+        var isInactive = r.classList.contains('inactive');
+        var matchFilter = (currentFilter === 'active'   && !isInactive)
+            || (currentFilter === 'inactive' &&  isInactive);
+        var matchSearch = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
+        var show = matchFilter && matchSearch;
         r.style.display = show ? '' : 'none';
         if (show) visible++;
     });
     var noRes = document.getElementById('noResultRow');
-    if (noRes) noRes.style.display = (visible === 0 && rows.length > 0) ? '' : 'none';
+    var noMsg = document.getElementById('noResultMsg');
+    if (noRes) {
+        noRes.style.display = (visible === 0 && rows.length > 0) ? '' : 'none';
+        if (noMsg) noMsg.textContent = q
+            ? 'Aucun résultat pour cette recherche.'
+            : 'Aucun employé dans cette catégorie.';
+    }
 }
 /*]]>*/
 </script>

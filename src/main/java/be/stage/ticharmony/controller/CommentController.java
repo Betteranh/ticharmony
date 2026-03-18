@@ -1,22 +1,19 @@
 package be.stage.ticharmony.controller;
 
-import be.stage.ticharmony.model.Comment;
-import be.stage.ticharmony.model.Problem;
-import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.repository.ProblemRepository;
 import be.stage.ticharmony.repository.UserRepository;
 import be.stage.ticharmony.service.CommentService;
-import org.springframework.ui.Model;
+import be.stage.ticharmony.service.NotificationService;
+import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 public class CommentController {
@@ -25,7 +22,11 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
     @Autowired
-    private UserRepository userRepository; // si besoin
+    private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/problems/{problemId}/comments")
     public String addComment(@PathVariable Long problemId,
@@ -38,6 +39,18 @@ public class CommentController {
         }
 
         commentService.addComment(problem, author, content);
+
+        // Notifications NEW_COMMENT : uniquement le technicien assigné et le client du ticket
+        User technician = problem.getTechnician();
+        User client = problem.getUser();
+
+        if (technician != null && !technician.getId().equals(author.getId())) {
+            notificationService.notifyOnce(technician, problem, NotificationType.NEW_COMMENT);
+        }
+        if (client != null && client.getRole() == UserRole.CLIENT
+                && !client.getId().equals(author.getId())) {
+            notificationService.notifyOnce(client, problem, NotificationType.NEW_COMMENT);
+        }
 
         return "redirect:/problems/" + problemId;
     }

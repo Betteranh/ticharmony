@@ -1,5 +1,5 @@
 <!-- src/main/resources/templates/fragments/notifications.html -->
-<div th:fragment="notifications" style="display:flex;flex-direction:column;height:calc(100% - 2rem);overflow:hidden;">
+<div th:fragment="notifications" id="notifPanel" style="display:flex;flex-direction:column;height:calc(100% - 2rem);overflow:hidden;">
 
 <style>
   /* ═══════════════════════════════════════
@@ -168,10 +168,14 @@
     flex-shrink: 0;
     align-self: stretch;
   }
-  .np-stripe--new    { background: linear-gradient(180deg, #3b82f6, #93c5fd); }
-  .np-stripe--closed { background: linear-gradient(180deg, #10b981, #6ee7b7); }
-  .np-stripe--assign { background: linear-gradient(180deg, #8b5cf6, #c4b5fd); }
-  .np-stripe--other  { background: #e5e7eb; }
+  .np-stripe--new      { background: linear-gradient(180deg, #3b82f6, #93c5fd); }
+  .np-stripe--closed   { background: linear-gradient(180deg, #10b981, #6ee7b7); }
+  .np-stripe--assign   { background: linear-gradient(180deg, #8b5cf6, #c4b5fd); }
+  .np-stripe--comment  { background: linear-gradient(180deg, #f59e0b, #fcd34d); }
+  .np-stripe--progress { background: linear-gradient(180deg, #d97706, #fde68a); }
+  .np-stripe--done     { background: linear-gradient(180deg, #16a34a, #86efac); }
+  .np-stripe--reassign { background: linear-gradient(180deg, #dc2626, #fca5a5); }
+  .np-stripe--other    { background: #e5e7eb; }
 
   /* Card inner layout */
   .np-card-inner {
@@ -190,10 +194,14 @@
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .np-icon--new    { background: #eff6ff; }
-  .np-icon--closed { background: #ecfdf5; }
-  .np-icon--assign { background: #f5f3ff; }
-  .np-icon--other  { background: #f9fafb; }
+  .np-icon--new      { background: #eff6ff; }
+  .np-icon--closed   { background: #ecfdf5; }
+  .np-icon--assign   { background: #f5f3ff; }
+  .np-icon--comment  { background: #fffbeb; }
+  .np-icon--progress { background: #fffbeb; }
+  .np-icon--done     { background: #f0fdf4; }
+  .np-icon--reassign { background: #fef2f2; }
+  .np-icon--other    { background: #f9fafb; }
 
   .np-body { flex: 1; min-width: 0; }
 
@@ -206,10 +214,14 @@
     line-height: 1;
     margin-bottom: 3px;
   }
-  .np-label--new    { color: #2563eb; }
-  .np-label--closed { color: #059669; }
-  .np-label--assign { color: #7c3aed; }
-  .np-label--other  { color: #6b7280; }
+  .np-label--new      { color: #2563eb; }
+  .np-label--closed   { color: #059669; }
+  .np-label--assign   { color: #7c3aed; }
+  .np-label--comment  { color: #d97706; }
+  .np-label--progress { color: #d97706; }
+  .np-label--done     { color: #16a34a; }
+  .np-label--reassign { color: #dc2626; }
+  .np-label--other    { color: #6b7280; }
 
   .np-ticket {
     font-family: 'DM Sans', sans-serif;
@@ -321,7 +333,7 @@
     <h3 class="np-title">Notifications</h3>
     <span class="np-badge"
           th:if="${!#lists.isEmpty(notifications)}"
-          th:text="${notifications.size()} + ' non lues'">3 non lues</span>
+          th:text="${notifications.size()} + (${notifications.size() == 1} ? ' non lue' : ' non lues')">3 non lues</span>
   </div>
 
   <!-- Row 2 : mark-all button (only when there are notifications) -->
@@ -341,12 +353,11 @@
 <!-- ── SCROLL LIST ── -->
 <div class="np-scroll">
 
-  <!-- Notifications -->
+  <!-- Notifications — click marque comme lu + redirige vers le ticket -->
   <a th:each="n : ${notifications}"
-     th:href="@{/problems/{id}(id=${n.problem.id})}"
+     th:href="@{'/notifications/' + ${n.id} + '/read?redirect=/problems/' + ${n.problem.id}}"
      class="np-card">
 
-    <!-- Left stripe + icon (by type) -->
     <th:block th:switch="${n.type.name()}">
 
       <th:block th:case="'NEW_PROBLEM'">
@@ -354,20 +365,15 @@
         <div class="np-card-inner">
           <span class="np-icon np-icon--new">
             <svg width="15" height="15" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44Z"/>
             </svg>
           </span>
           <div class="np-body">
             <span class="np-label np-label--new">Nouveau ticket</span>
-            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
-          <span class="np-arrow">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-            </svg>
-          </span>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
       </th:block>
 
@@ -376,20 +382,15 @@
         <div class="np-card-inner">
           <span class="np-icon np-icon--closed">
             <svg width="15" height="15" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </span>
           <div class="np-body">
             <span class="np-label np-label--closed">Ticket résolu</span>
-            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
-          <span class="np-arrow">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-            </svg>
-          </span>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
       </th:block>
 
@@ -398,20 +399,83 @@
         <div class="np-card-inner">
           <span class="np-icon np-icon--assign">
             <svg width="15" height="15" fill="none" stroke="#8b5cf6" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
             </svg>
           </span>
           <div class="np-body">
             <span class="np-label np-label--assign">Ticket assigné</span>
-            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
-          <span class="np-arrow">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
+        </div>
+      </th:block>
+
+      <th:block th:case="'NEW_COMMENT'">
+        <span class="np-stripe np-stripe--comment"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--comment">
+            <svg width="15" height="15" fill="none" stroke="#d97706" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
             </svg>
           </span>
+          <div class="np-body">
+            <span class="np-label np-label--comment">Nouveau message</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+          </div>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
+        </div>
+      </th:block>
+
+      <th:block th:case="'TICKET_IN_PROGRESS'">
+        <span class="np-stripe np-stripe--progress"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--progress">
+            <svg width="15" height="15" fill="none" stroke="#d97706" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l5.653-4.655m5.585-1.768A9.013 9.013 0 0118 9.75c0-1.93-.59-3.72-1.595-5.2m-10.5 6.45l1.595 5.2"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--progress">Pris en charge</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+          </div>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
+        </div>
+      </th:block>
+
+      <th:block th:case="'TICKET_CLOSED'">
+        <span class="np-stripe np-stripe--done"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--done">
+            <svg width="15" height="15" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--done">Dossier clôturé</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+          </div>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
+        </div>
+      </th:block>
+
+      <th:block th:case="'TICKET_REASSIGNED'">
+        <span class="np-stripe np-stripe--reassign"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--reassign">
+            <svg width="15" height="15" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--reassign">Ticket réassigné</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+          </div>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
       </th:block>
 
@@ -419,20 +483,14 @@
         <span class="np-stripe np-stripe--other"></span>
         <div class="np-card-inner">
           <span class="np-icon np-icon--other">
-            <svg width="15" height="15" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"/>
-            </svg>
+            <svg width="15" height="15" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
           </span>
           <div class="np-body">
             <span class="np-label np-label--other">Notification</span>
-            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
-          <span class="np-arrow">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-            </svg>
-          </span>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
       </th:block>
 

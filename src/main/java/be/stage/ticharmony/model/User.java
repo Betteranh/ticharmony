@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -42,6 +44,27 @@ public class User {
     private UserRole role;
 
     private LocalDateTime created_at;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    // Employés (ADMIN/MEMBER) : période d'activité
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "active_from")
+    private LocalDate activeFrom;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "active_to")
+    private LocalDate activeTo;
+
+    // Clients (CLIENT) : période de support
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "support_from")
+    private LocalDate supportFrom;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "support_to")
+    private LocalDate supportTo;
 
     @Override
     public String toString() {

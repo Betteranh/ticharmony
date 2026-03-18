@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByProblemOrderByCreatedAtAsc(Problem problem);
+    List<Comment> findByProblemAndIdGreaterThanOrderByCreatedAtAsc(Problem problem, Long id);
 }

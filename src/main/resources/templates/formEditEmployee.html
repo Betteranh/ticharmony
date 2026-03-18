@@ -278,6 +278,19 @@
                            placeholder="Rue, ville, code postal" class="fc-input"/>
                 </div>
 
+                <!-- Période d'activité -->
+                <div class="section-label" style="margin-top:1.5rem;">Période d'activité</div>
+                <div class="field-row">
+                    <div>
+                        <label for="activeFrom" class="fc-label">Date d'entrée</label>
+                        <input type="date" id="activeFrom" th:field="*{activeFrom}" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="activeTo" class="fc-label">Date de sortie</label>
+                        <input type="date" id="activeTo" th:field="*{activeTo}" class="fc-input"/>
+                    </div>
+                </div>
+
                 <!-- Sécurité -->
                 <div class="section-label">Sécurité</div>
 

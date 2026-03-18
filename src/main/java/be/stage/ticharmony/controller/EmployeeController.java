@@ -61,9 +61,8 @@ public class EmployeeController {
         existing.setEmail(updatedUser.getEmail());
         existing.setTelephone(updatedUser.getTelephone());
         existing.setAdresse(updatedUser.getAdresse());
-        // MàJ du login (optionnel, souvent readonly)
-        // existing.setLogin(updatedUser.getLogin());
-        // Si le mot de passe a été rempli, on l’update :
+        existing.setActiveFrom(updatedUser.getActiveFrom());
+        existing.setActiveTo(updatedUser.getActiveTo());
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
             existing.setPassword(updatedUser.getPassword());
         }
@@ -71,9 +70,19 @@ public class EmployeeController {
         return "redirect:/employees";
     }
 
+    @PostMapping("/{id}/toggle")
+    public String toggleActive(@PathVariable Long id) {
+        User user = userService.getUser(id);
+        if (user != null) {
+            user.setActive(!user.isActive());
+            userService.updateUser(user);
+        }
+        return "redirect:/employees";
+    }
+
     @PostMapping("/delete/{id}")
     public String deleteEmployee(@PathVariable Long id) {
-        userService.deleteUser(id); // Ajoute cette méthode dans ton UserService si besoin
+        userService.deleteUser(id);
         return "redirect:/employees";
     }
 }
