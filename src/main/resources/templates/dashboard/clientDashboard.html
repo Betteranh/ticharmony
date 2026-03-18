@@ -218,7 +218,9 @@
     <div class="fu d1">
         <h1 class="greet-name">
             Bonjour,
-            <span th:if="${currentUser != null}"
+            <span th:if="${activeProfile != null}"
+                  th:text="${activeProfile.displayName}">Profil</span>
+            <span th:if="${activeProfile == null and currentUser != null}"
                   th:text="${currentUser.nomEntreprise ?: currentUser.firstname}">votre entreprise</span> 👋
         </h1>
         <p class="greet-sub">

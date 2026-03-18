@@ -4,12 +4,15 @@ import be.stage.ticharmony.model.Priority;
 import be.stage.ticharmony.model.Problem;
 import be.stage.ticharmony.model.Status;
 import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.UserProfile;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
 public interface ProblemRepository extends CrudRepository<Problem, Long> {
     List<Problem> findByUser(User user);
+
+    List<Problem> findByUserProfile(UserProfile userProfile);
 
     // Méthode de recherche par priorité et statut (si besoin)
     List<Problem> findByPriority(Priority priority);

@@ -107,6 +107,10 @@ public class ProblemService {
         return repository.findByUser(user);
     }
 
+    public Iterable<Problem> getProblemsByUserProfile(UserProfile userProfile) {
+        return repository.findByUserProfile(userProfile);
+    }
+
     // === NOUVEAU : Filtrage combiné avancé ===
     public List<Problem> filterProblems(
             Iterable<Problem> all,

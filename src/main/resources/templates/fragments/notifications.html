@@ -1,76 +1,468 @@
 <!-- src/main/resources/templates/fragments/notifications.html -->
-<div th:fragment="notifications">
-    <div class="px-4 py-2">
-        <!-- Header plus visuel -->
-        <div class="flex items-center mb-4 gap-2">
-            <span class="flex items-center justify-center w-9 h-9 rounded-full bg-indigo-100">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-         class="w-6 h-6 text-indigo-500">
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/>
-    </svg>
-</span>
-            <h3 class="text-xl font-bold text-[#22425d]">Notifications</h3>
+<div th:fragment="notifications" style="display:flex;flex-direction:column;height:calc(100% - 2rem);overflow:hidden;">
+
+<style>
+  /* ═══════════════════════════════════════
+     NOTIFICATION PANEL — TIC HARMONY
+  ═══════════════════════════════════════ */
+
+  /* Force drawer flex-column so content fills height */
+  #drawerNotif {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #f8fafc !important;
+  }
+
+  /* ── Header (dark, matches navbar) ── */
+  .np-header {
+    background: linear-gradient(145deg, #070d1a 0%, #0f2040 100%);
+    padding: 1.1rem 1.1rem 1rem 1.1rem;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative glow spots */
+  .np-header::before {
+    content: '';
+    position: absolute;
+    top: -24px; right: -18px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,130,246,.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .np-header::after {
+    content: '';
+    position: absolute;
+    bottom: -16px; left: 16px;
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139,92,246,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .np-header-row1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.65rem;
+    position: relative; z-index: 1;
+  }
+
+  .np-bell-wrap {
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(59,130,246,.15);
+    border: 1px solid rgba(59,130,246,.25);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .np-title {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #e2e8f0;
+    letter-spacing: -.02em;
+    margin: 0;
+    line-height: 1;
+    flex: 1;
+  }
+
+  .np-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: .6rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(99,102,241,.35);
+  }
+
+  .np-mark-row {
+    display: flex;
+    justify-content: flex-end;
+    position: relative; z-index: 1;
+  }
+
+  .np-mark-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .68rem;
+    font-weight: 600;
+    color: #93c5fd;
+    background: rgba(59,130,246,.1);
+    border: 1px solid rgba(59,130,246,.2);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background .18s, color .18s, border-color .18s;
+    letter-spacing: .02em;
+  }
+  .np-mark-btn:hover {
+    background: rgba(59,130,246,.22);
+    color: #bfdbfe;
+    border-color: rgba(59,130,246,.4);
+  }
+
+  /* ── Scrollable list ── */
+  .np-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: .75rem .75rem;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+  }
+  .np-scroll::-webkit-scrollbar { width: 3px; }
+  .np-scroll::-webkit-scrollbar-track { background: transparent; }
+  .np-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+  /* ── Notification card ── */
+  .np-card {
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8edf2;
+    text-decoration: none;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    opacity: 0;
+    animation: npFadeUp .32s ease forwards;
+    transition: transform .15s ease, box-shadow .15s ease;
+    position: relative;
+  }
+  .np-card:hover {
+    transform: translateX(-4px);
+    box-shadow: 0 4px 14px rgba(0,0,0,.09);
+  }
+  .np-card:hover .np-arrow { opacity: 1; transform: translateX(0); }
+
+  /* Stagger */
+  .np-card:nth-child(1)  { animation-delay: .04s; }
+  .np-card:nth-child(2)  { animation-delay: .09s; }
+  .np-card:nth-child(3)  { animation-delay: .14s; }
+  .np-card:nth-child(4)  { animation-delay: .19s; }
+  .np-card:nth-child(5)  { animation-delay: .24s; }
+  .np-card:nth-child(6)  { animation-delay: .29s; }
+  .np-card:nth-child(7)  { animation-delay: .34s; }
+  .np-card:nth-child(8)  { animation-delay: .39s; }
+
+  @keyframes npFadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Left color stripe */
+  .np-stripe {
+    width: 4px;
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+  .np-stripe--new    { background: linear-gradient(180deg, #3b82f6, #93c5fd); }
+  .np-stripe--closed { background: linear-gradient(180deg, #10b981, #6ee7b7); }
+  .np-stripe--assign { background: linear-gradient(180deg, #8b5cf6, #c4b5fd); }
+  .np-stripe--other  { background: #e5e7eb; }
+
+  /* Card inner layout */
+  .np-card-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 10px 9px 10px 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Icon pill */
+  .np-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .np-icon--new    { background: #eff6ff; }
+  .np-icon--closed { background: #ecfdf5; }
+  .np-icon--assign { background: #f5f3ff; }
+  .np-icon--other  { background: #f9fafb; }
+
+  .np-body { flex: 1; min-width: 0; }
+
+  .np-label {
+    font-family: 'Sora', sans-serif;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .03em;
+    display: block;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .np-label--new    { color: #2563eb; }
+  .np-label--closed { color: #059669; }
+  .np-label--assign { color: #7c3aed; }
+  .np-label--other  { color: #6b7280; }
+
+  .np-ticket {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .75rem;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 158px;
+  }
+
+  .np-time {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .62rem;
+    color: #9ca3af;
+    font-weight: 500;
+    display: block;
+    margin-top: 3px;
+  }
+
+  /* Hover arrow */
+  .np-arrow {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity .15s, transform .15s;
+    color: #94a3b8;
+    flex-shrink: 0;
+    align-self: center;
+    padding-right: 2px;
+  }
+
+  /* ── Empty state ── */
+  .np-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+    animation: npFadeUp .4s ease forwards;
+  }
+
+  .np-empty-orb {
+    width: 68px; height: 68px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #eff6ff 100%);
+    border: 1.5px solid #d1fae5;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 20px rgba(16,185,129,.1);
+  }
+
+  .np-empty-title {
+    font-family: 'Sora', sans-serif;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -.01em;
+    margin: 0 0 .3rem;
+  }
+
+  .np-empty-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .75rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ── Footer ── */
+  .np-footer {
+    flex-shrink: 0;
+    border-top: 1px solid #e8edf2;
+    background: #fff;
+    padding: .75rem 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .np-footer-link {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #3b82f6;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: gap .15s ease, color .15s;
+  }
+  .np-footer-link:hover { color: #1d4ed8; gap: 8px; }
+  .np-footer-link svg { transition: transform .15s; }
+  .np-footer-link:hover svg { transform: translateX(2px); }
+</style>
+
+<!-- ── HEADER ── -->
+<div class="np-header">
+  <!-- Row 1 : bell + title + badge -->
+  <div class="np-header-row1">
+    <span class="np-bell-wrap">
+      <svg width="15" height="15" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+      </svg>
+    </span>
+    <h3 class="np-title">Notifications</h3>
+    <span class="np-badge"
+          th:if="${!#lists.isEmpty(notifications)}"
+          th:text="${notifications.size()} + ' non lues'">3 non lues</span>
+  </div>
+
+  <!-- Row 2 : mark-all button (only when there are notifications) -->
+  <div class="np-mark-row" th:if="${!#lists.isEmpty(notifications)}">
+    <form th:action="@{/notifications/mark-all-read}" method="post" style="margin:0;">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button type="submit" class="np-mark-btn">
+        <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+        </svg>
+        Tout marquer comme lu
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ── SCROLL LIST ── -->
+<div class="np-scroll">
+
+  <!-- Notifications -->
+  <a th:each="n : ${notifications}"
+     th:href="@{/problems/{id}(id=${n.problem.id})}"
+     class="np-card">
+
+    <!-- Left stripe + icon (by type) -->
+    <th:block th:switch="${n.type.name()}">
+
+      <th:block th:case="'NEW_PROBLEM'">
+        <span class="np-stripe np-stripe--new"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--new">
+            <svg width="15" height="15" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44Z"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--new">Nouveau ticket</span>
+            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+          </div>
+          <span class="np-arrow">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+            </svg>
+          </span>
         </div>
-        <ul class="space-y-2">
-            <!-- Notifications non lues -->
-            <li th:each="n : ${notifications}">
-                <a th:href="@{/problems/{id}(id=${n.problem.id})}"
-                   class="flex items-start gap-3 bg-blue-50 hover:bg-blue-100 transition px-3 py-3 rounded-xl shadow group border border-blue-100">
-                    <!-- Icone par type -->
-                    <span class="mt-1">
-                        <span th:switch="${n.type.name()}">
-                          <span th:case="'NEW_PROBLEM'">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24"
-         stroke-width="1.5" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"/>
-    </svg>
-</span>
-                          <span th:case="'PROBLEM_CLOSED'">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24"
-         stroke-width="1.5" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/>
-    </svg>
-</span>
-                          <span th:case="'ASSIGNED_TO_PROBLEM'">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-500" fill="none" viewBox="0 0 24 24"
-         stroke-width="1.5" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-    </svg>
-</span>
-                          <span th:case="*">
-                              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
-                                   viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10"/>
-                              </svg>
-                          </span>
-                        </span>
-                    </span>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <span th:switch="${n.type.name()}" class="text-sm font-semibold text-[#22425d]">
-                                <span th:case="'NEW_PROBLEM'">Nouveau ticket</span>
-                                <span th:case="'PROBLEM_CLOSED'">Ticket résolu</span>
-                                <span th:case="'ASSIGNED_TO_PROBLEM'">Ticket assigné</span>
-                                <span th:case="*">Notification</span>
-                            </span>
-                            <span class="ml-auto text-xs text-gray-400"
-                                  th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
-                        </div>
-                        <div class="text-sm text-gray-700 truncate">
-                            <span th:text="${n.problem.title}">Titre du ticket</span>
-                        </div>
-                    </div>
-                </a>
-            </li>
-            <!-- Si aucune notification -->
-            <li th:if="${#lists.isEmpty(notifications)}"
-                class="text-gray-400 text-center text-base py-8 select-none">
-                <div>Aucune notification</div>
-            </li>
-        </ul>
+      </th:block>
+
+      <th:block th:case="'PROBLEM_CLOSED'">
+        <span class="np-stripe np-stripe--closed"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--closed">
+            <svg width="15" height="15" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--closed">Ticket résolu</span>
+            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+          </div>
+          <span class="np-arrow">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+            </svg>
+          </span>
+        </div>
+      </th:block>
+
+      <th:block th:case="'ASSIGNED_TO_PROBLEM'">
+        <span class="np-stripe np-stripe--assign"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--assign">
+            <svg width="15" height="15" fill="none" stroke="#8b5cf6" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--assign">Ticket assigné</span>
+            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+          </div>
+          <span class="np-arrow">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+            </svg>
+          </span>
+        </div>
+      </th:block>
+
+      <th:block th:case="*">
+        <span class="np-stripe np-stripe--other"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--other">
+            <svg width="15" height="15" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--other">Notification</span>
+            <span class="np-ticket" th:text="${n.problem.title}">Titre du ticket</span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}">01/01 10:00</span>
+          </div>
+          <span class="np-arrow">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+            </svg>
+          </span>
+        </div>
+      </th:block>
+
+    </th:block>
+  </a>
+
+  <!-- ── Empty state ── -->
+  <div th:if="${#lists.isEmpty(notifications)}" class="np-empty">
+    <div class="np-empty-orb">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <path d="M17 3.5L5.5 8.5v7.5c0 6.627 4.77 12.835 11 14.333C22.73 28.835 28.5 22.627 28.5 16V8.5L17 3.5z"
+              fill="#d1fae5" stroke="#10b981" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M12 17l3.5 3.5L22 13" stroke="#059669" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
+    <p class="np-empty-title">Tout est à jour !</p>
+    <p class="np-empty-sub">Vous n'avez aucune<br>notification non lue pour l'instant.</p>
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="np-footer">
+  <a th:href="@{/problems}" class="np-footer-link">
+    Voir tous les tickets
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+    </svg>
+  </a>
+</div>
+
 </div>

@@ -17,7 +17,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                                         Authentication authentication) throws IOException, ServletException {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (roles.contains("ROLE_CLIENT")) {
-            response.sendRedirect(request.getContextPath() + "/clientDashboard");
+            response.sendRedirect(request.getContextPath() + "/select-profile");
         } else if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect(request.getContextPath() + "/adminDashboard");
         } else if (roles.contains("ROLE_MEMBER")) {

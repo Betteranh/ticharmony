@@ -300,11 +300,21 @@
             </div>
         </div>
 
-        <!-- 3. Vos coordonnées -->
+        <!-- 3. Vos informations de contact -->
         <div class="step-card fu d4">
-            <div class="step-question">Qui faites-vous cette demande ? 👤</div>
+            <div class="step-question">Vos informations de contact 👤</div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <!-- CLIENT : nom du profil (lecture seule) + champ lastName masqué -->
+            <div sec:authorize="hasRole('CLIENT')" class="mb-4">
+                <label class="fc-label">Nom du profil</label>
+                <input type="text" th:field="*{ticketUserInfo.firstName}"
+                       class="fc-input" readonly
+                       style="background:var(--cream-d); color:var(--text-2); cursor:default;"/>
+                <input type="hidden" th:field="*{ticketUserInfo.lastName}" th:value="''"/>
+            </div>
+
+            <!-- ADMIN / MEMBER : prénom + nom -->
+            <div sec:authorize="!hasRole('CLIENT')" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label for="ticketFirstName" class="fc-label">Prénom <span class="req">*</span></label>
                     <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}"
@@ -316,6 +326,7 @@
                            placeholder="Ex : Dupont" class="fc-input" required/>
                 </div>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="ticketEmail" class="fc-label">E-mail <span class="req">*</span></label>
@@ -328,6 +339,11 @@
                            placeholder="Ex : 0495 12 34 56" class="fc-input" required/>
                 </div>
             </div>
+
+            <!-- Hint pour CLIENT si email/téléphone déjà connus -->
+            <p sec:authorize="hasRole('CLIENT')" style="font-size:.78rem; color:var(--text-3); margin-top:.75rem;">
+                Votre e-mail et téléphone sont sauvegardés automatiquement pour vos prochaines demandes.
+            </p>
         </div>
 
         <!-- Erreur -->

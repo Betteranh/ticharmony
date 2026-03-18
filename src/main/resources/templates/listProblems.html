@@ -631,33 +631,7 @@
         <!-- Bande de stats -->
         <div class="flex flex-wrap gap-3 mb-5 fu d2">
 
-            <a th:href="@{/problems(status='OPEN')}"
-               class="stat-chip"
-               th:classappend="${selectedStatus != null and selectedStatus.name() == 'OPEN'} ? ' stat-chip--active-blue' : ''">
-                <span class="stat-dot" style="background:#2563eb"></span>
-                <span class="stat-label">Ouverts</span>
-                <span class="stat-count" th:text="${countOpen}">0</span>
-            </a>
-
-            <a th:href="@{/problems(status='IN_PROGRESS')}"
-               class="stat-chip"
-               th:classappend="${selectedStatus != null and selectedStatus.name() == 'IN_PROGRESS'} ? ' stat-chip--active-amber' : ''">
-                <span class="stat-dot" style="background:#d97706"></span>
-                <span class="stat-label">En cours</span>
-                <span class="stat-count" th:text="${countInProgress}">0</span>
-            </a>
-
-            <a th:href="@{/problems(priority='URGENT')}"
-               class="stat-chip"
-               th:classappend="${selectedStatus == null and selectedPriority != null and selectedPriority.name() == 'URGENT'} ? ' stat-chip--active-red' : ''"
-               th:style="${countUrgent > 0} ? 'border-color:#fecaca;' : ''">
-                <span class="stat-dot" th:style="${countUrgent > 0} ? 'background:#dc2626' : 'background:#a8a29e'"></span>
-                <span class="stat-label">Urgents</span>
-                <span class="stat-count"
-                      th:text="${countUrgent}"
-                      th:style="${countUrgent > 0} ? 'color:#dc2626;background:#fef2f2;' : ''">0</span>
-            </a>
-
+            <!-- Non assignés (priorité 1) -->
             <a th:href="@{/problems(unassigned=true)}"
                class="stat-chip"
                th:classappend="${unassigned != null and unassigned} ? ' stat-chip--active-amber' : ''"
@@ -671,6 +645,43 @@
                 <span class="stat-count"
                       th:text="${countUnassigned}"
                       th:style="${countUnassigned > 0} ? 'color:#d97706;background:#fffbeb;' : ''">0</span>
+            </a>
+
+            <!-- À valider (priorité 2) -->
+            <a th:href="@{/problems(status='RESOLVED')}"
+               class="stat-chip"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'RESOLVED'} ? ' stat-chip--active-amber' : ''"
+               th:style="${countResolved > 0 and (selectedStatus == null or selectedStatus.name() != 'RESOLVED')} ? 'border-color:#a7f3d0;' : ''">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                     th:stroke="${countResolved > 0} ? '#059669' : '#a8a29e'"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span class="stat-label">À valider</span>
+                <span class="stat-count"
+                      th:text="${countResolved}"
+                      th:style="${countResolved > 0} ? 'color:#059669;background:#ecfdf5;' : ''">0</span>
+            </a>
+
+            <!-- En cours -->
+            <a th:href="@{/problems(status='IN_PROGRESS')}"
+               class="stat-chip"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'IN_PROGRESS'} ? ' stat-chip--active-amber' : ''">
+                <span class="stat-dot" style="background:#d97706"></span>
+                <span class="stat-label">En cours</span>
+                <span class="stat-count" th:text="${countInProgress}">0</span>
+            </a>
+
+            <!-- Urgents -->
+            <a th:href="@{/problems(priority='URGENT')}"
+               class="stat-chip"
+               th:classappend="${selectedStatus == null and selectedPriority != null and selectedPriority.name() == 'URGENT'} ? ' stat-chip--active-red' : ''"
+               th:style="${countUrgent > 0} ? 'border-color:#fecaca;' : ''">
+                <span class="stat-dot" th:style="${countUrgent > 0} ? 'background:#dc2626' : 'background:#a8a29e'"></span>
+                <span class="stat-label">Urgents</span>
+                <span class="stat-count"
+                      th:text="${countUrgent}"
+                      th:style="${countUrgent > 0} ? 'color:#dc2626;background:#fef2f2;' : ''">0</span>
             </a>
 
         </div>
@@ -693,19 +704,6 @@
                                             (s.name() == 'RESOLVED' ? 'Résolu' :
                                             (s.name() == 'CLOSED' ? 'Fermé' : s.name())))}"
                                     th:selected="${s} == ${selectedStatus}">
-                            </option>
-                        </select>
-
-                        <label for="priorityFilter" class="filter-label">Priorité</label>
-                        <select id="priorityFilter" name="priority" onchange="this.form.submit()" class="filter-select">
-                            <option value="" th:selected="${selectedPriority == null}">Toutes</option>
-                            <option th:each="p : ${allPriorities}"
-                                    th:value="${p}"
-                                    th:text="${p.name() == 'LOW' ? 'Faible' :
-                                            (p.name() == 'MEDIUM' ? 'Normale' :
-                                            (p.name() == 'HIGH' ? 'Élevée' :
-                                            (p.name() == 'URGENT' ? 'Critique' : p.name())))}"
-                                    th:selected="${p} == ${selectedPriority}">
                             </option>
                         </select>
 
@@ -764,7 +762,7 @@
 
                     <div th:if="${allTechStats != null and !#lists.isEmpty(allTechStats)}" style="display:flex;flex-direction:column;gap:.45rem;">
                         <!-- Tous -->
-                        <a th:href="@{/problems(status=${selectedStatus},priority=${selectedPriority},year=${selectedYear},month=${selectedMonth},search=${search})}"
+                        <a th:href="@{/problems(status=${selectedStatus},year=${selectedYear},month=${selectedMonth},search=${search})}"
                            class="tech-chip"
                            th:classappend="${technicianId == null} ? ' tech-chip--active' : ''">
                             <span class="tech-avatar" style="background:var(--violet-bg);color:var(--violet);">
@@ -777,7 +775,7 @@
                         </a>
 
                         <a th:each="ts : ${allTechStats}"
-                           th:href="@{/problems(technicianId=${ts.technicianId},status=${selectedStatus},priority=${selectedPriority},year=${selectedYear},month=${selectedMonth},search=${search})}"
+                           th:href="@{/problems(technicianId=${ts.technicianId},status=${selectedStatus},year=${selectedYear},month=${selectedMonth},search=${search})}"
                            class="tech-chip"
                            th:classappend="${technicianId != null and technicianId == ts.technicianId} ? ' tech-chip--active' : ''">
                             <span class="tech-avatar"
@@ -938,7 +936,7 @@
 
                     <div id="pagination-bottom" class="flex justify-center gap-1.5 mt-5 flex-wrap" th:if="${totalPages > 1}">
                         <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-                           th:href="@{/problems(page=${i},size=8,status=${selectedStatus},priority=${selectedPriority},year=${selectedYear},month=${selectedMonth},search=${search})} + '#pagination-bottom'"
+                           th:href="@{/problems(page=${i},size=8,status=${selectedStatus},year=${selectedYear},month=${selectedMonth},search=${search})} + '#pagination-bottom'"
                            th:classappend="${currentPage == i} ? ' active' : ''"
                            class="pag-btn">
                             <span th:text="${i}"></span>
@@ -965,12 +963,10 @@
 
         function resetFilters() {
             var sf = document.getElementById('statusFilter');
-            var pf = document.getElementById('priorityFilter');
             var yf = document.getElementById('yearFilter');
             var mf = document.getElementById('monthFilter');
             var ts = document.getElementById('ticketSearch');
             if (sf) sf.value = '';
-            if (pf) pf.value = '';
             if (yf) yf.value = '';
             if (mf) mf.value = '';
             if (ts) { ts.value = ''; ts.closest('form').submit(); }

@@ -24,6 +24,11 @@ public class Problem {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Le profil employé qui a soumis le ticket (null pour ADMIN/MEMBER)
+    @ManyToOne
+    @JoinColumn(name = "user_profile_id")
+    private UserProfile userProfile;
+
     // Technicien en charge (optionnel)
     @ManyToOne
     @JoinColumn(name = "technician_id")

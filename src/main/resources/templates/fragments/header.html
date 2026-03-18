@@ -588,16 +588,32 @@
                     </div>
                 </div>
 
-                <!-- User pill (CLIENT) -->
+                <!-- User pill (CLIENT) — affiche le profil actif si disponible -->
                 <div class="nh-user" sec:authorize="hasRole('CLIENT')">
                     <div class="nh-avatar nh-avatar--client"
-                         th:text="${currentUser != null and currentUser.nomEntreprise != null} ? ${#strings.substring(currentUser.nomEntreprise,0,1)} : 'C'">C</div>
+                         th:text="${activeProfile != null} ? ${#strings.substring(activeProfile.displayName,0,1).toUpperCase()} : (${currentUser != null and currentUser.nomEntreprise != null} ? ${#strings.substring(currentUser.nomEntreprise,0,1)} : 'C')"
+                         th:style="${activeProfile != null} ? 'background:' + ${activeProfile.color} : ''">C</div>
                     <div class="nh-user-info">
                         <span class="nh-user-name"
-                              th:text="${currentUser != null} ? ${currentUser.nomEntreprise ?: (currentUser.firstname + ' ' + currentUser.lastname)} : ''">Client</span>
-                        <span class="nh-user-role nh-user-role--client">Client</span>
+                              th:text="${activeProfile != null} ? ${activeProfile.displayName} : (${currentUser != null} ? ${currentUser.nomEntreprise ?: (currentUser.firstname + ' ' + currentUser.lastname)} : '')">Client</span>
+                        <span class="nh-user-role nh-user-role--client"
+                              th:text="${currentUser != null and currentUser.nomEntreprise != null} ? ${currentUser.nomEntreprise} : 'Client'">Client</span>
                     </div>
                 </div>
+
+                <!-- Bouton changer de profil (CLIENT uniquement) -->
+                <a sec:authorize="hasRole('CLIENT')"
+                   th:href="@{/switch-profile}"
+                   th:if="${activeProfile != null}"
+                   title="Changer de profil"
+                   style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1px solid var(--nh-border);background:var(--nh-surf);color:var(--nh-sub);text-decoration:none;transition:color .15s,border-color .15s,background .15s;flex-shrink:0;"
+                   onmouseover="this.style.color='var(--nh-text)';this.style.borderColor='var(--nh-bord-b)'"
+                   onmouseout="this.style.color='var(--nh-sub)';this.style.borderColor='var(--nh-border)'">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                    </svg>
+                </a>
 
                 <!-- Logout -->
                 <form th:action="@{/logout}" method="post" class="nh-logout-form" style="margin:0">

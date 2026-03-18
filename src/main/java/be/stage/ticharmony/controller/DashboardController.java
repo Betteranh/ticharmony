@@ -2,8 +2,11 @@ package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.service.ProblemService;
+import be.stage.ticharmony.service.UserProfileService;
 import be.stage.ticharmony.service.UserService;
+import be.stage.ticharmony.controller.ProfileController;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -23,12 +26,26 @@ public class DashboardController {
     private ProblemService problemService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserProfileService userProfileService;
 
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/clientDashboard")
-    public String clientDashboard(Model model, Authentication auth) {
+    public String clientDashboard(Model model, Authentication auth, HttpSession session) {
+        Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+        if (profileId == null) {
+            return "redirect:/select-profile";
+        }
+
         User currentUser = userService.findByLogin(auth.getName());
+        UserProfile activeProfile = userProfileService.findById(profileId).orElse(null);
+        if (activeProfile == null || !activeProfile.getUser().getId().equals(currentUser.getId())) {
+            session.removeAttribute(ProfileController.SESSION_PROFILE_KEY);
+            return "redirect:/select-profile";
+        }
+
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("activeProfile", activeProfile);
         model.addAttribute("module", "dashboard");
         return "dashboard/clientDashboard";
     }

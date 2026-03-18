@@ -1,10 +1,14 @@
 package be.stage.ticharmony.config;
 
+import be.stage.ticharmony.controller.ProfileController;
 import be.stage.ticharmony.model.Notification;
 import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.UserProfile;
 import be.stage.ticharmony.service.NotificationService;
+import be.stage.ticharmony.service.UserProfileService;
 import be.stage.ticharmony.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +23,8 @@ public class NotificationAdvice {
     private NotificationService notificationService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserProfileService userProfileService;
 
     @ModelAttribute("currentUri")
     public String populateCurrentUri(HttpServletRequest request) {
@@ -37,6 +43,18 @@ public class NotificationAdvice {
             return null;
         }
         return userService.findByLogin(username);
+    }
+
+    @ModelAttribute("activeProfile")
+    public UserProfile populateActiveProfile(Authentication authentication, HttpSession session) {
+        if (authentication == null
+                || authentication instanceof AnonymousAuthenticationToken
+                || !authentication.isAuthenticated()) {
+            return null;
+        }
+        Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+        if (profileId == null) return null;
+        return userProfileService.findById(profileId).orElse(null);
     }
 
     @ModelAttribute("notifications")

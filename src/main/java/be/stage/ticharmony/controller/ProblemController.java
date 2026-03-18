@@ -4,7 +4,9 @@ import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.service.CommentService;
 import be.stage.ticharmony.service.NotificationService;
 import be.stage.ticharmony.service.ProblemService;
+import be.stage.ticharmony.service.UserProfileService;
 import be.stage.ticharmony.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -37,6 +39,9 @@ public class ProblemController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private UserProfileService userProfileService;
 
     /**
      * Prise en charge → IN_PROGRESS puis affiche le formulaire
@@ -167,14 +172,26 @@ public class ProblemController {
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "8") int size,
             Model model,
-            Authentication authentication
+            Authentication authentication,
+            HttpSession session
     ) {
         User currentUser = userService.findByLogin(authentication.getName());
 
         // 1. Récupérer tous les tickets selon le rôle
         Iterable<Problem> allProblems;
         if (currentUser.getRole() == UserRole.CLIENT) {
-            allProblems = service.getProblemsByUser(currentUser);
+            Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+            if (profileId != null) {
+                UserProfile activeProfile = userProfileService.findById(profileId).orElse(null);
+                if (activeProfile != null && activeProfile.getUser().getId().equals(currentUser.getId())) {
+                    allProblems = service.getProblemsByUserProfile(activeProfile);
+                    model.addAttribute("activeProfile", activeProfile);
+                } else {
+                    allProblems = service.getProblemsByUser(currentUser);
+                }
+            } else {
+                allProblems = service.getProblemsByUser(currentUser);
+            }
         } else {
             // ADMIN et MEMBER voient tous les tickets
             allProblems = service.getProblems();
@@ -185,10 +202,12 @@ public class ProblemController {
         if (currentUser.getRole() != UserRole.CLIENT) {
             long countOpen       = allList.stream().filter(p -> p.getStatus() == Status.OPEN).count();
             long countInProgress = allList.stream().filter(p -> p.getStatus() == Status.IN_PROGRESS).count();
+            long countResolved   = allList.stream().filter(p -> p.getStatus() == Status.RESOLVED).count();
             long countUnassigned = allList.stream().filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED).count();
             long countUrgent     = allList.stream().filter(p -> p.getPriority() == Priority.URGENT && p.getStatus() != Status.CLOSED).count();
             model.addAttribute("countOpen",       countOpen);
             model.addAttribute("countInProgress", countInProgress);
+            model.addAttribute("countResolved",   countResolved);
             model.addAttribute("countUnassigned", countUnassigned);
             model.addAttribute("countUrgent",     countUrgent);
 
@@ -303,24 +322,36 @@ public class ProblemController {
      * Formulaire de création.
      */
     @GetMapping("/create")
-    public String showCreateForm(Model model, Authentication authentication) {
+    public String showCreateForm(Model model, Authentication authentication, HttpSession session) {
         Problem problem = new Problem();
-
-        // Récupère l'utilisateur connecté
         User currentUser = userService.findByLogin(authentication.getName());
 
-        // Préremplit les infos s'il s'agit d'un ADMIN
         if (currentUser != null && currentUser.getRole() == UserRole.ADMIN) {
+            // ADMIN : pré-remplir avec ses propres infos
             TicketUserInfo info = new TicketUserInfo();
             info.setFirstName(currentUser.getFirstname());
             info.setLastName(currentUser.getLastname());
             info.setEmail(currentUser.getEmail());
             info.setPhone(currentUser.getTelephone());
             problem.setTicketUserInfo(info);
+
+        } else if (currentUser != null && currentUser.getRole() == UserRole.CLIENT) {
+            // CLIENT : pré-remplir depuis le profil actif
+            Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+            if (profileId != null) {
+                userProfileService.findById(profileId).ifPresent(profile -> {
+                    TicketUserInfo info = new TicketUserInfo();
+                    info.setFirstName(profile.getDisplayName());
+                    info.setLastName("");
+                    info.setEmail(profile.getEmail() != null ? profile.getEmail() : "");
+                    info.setPhone(profile.getPhone() != null ? profile.getPhone() : "");
+                    problem.setTicketUserInfo(info);
+                });
+            }
         }
 
         model.addAttribute("problem", problem);
-        return "formCreateProblem"; // ton template
+        return "formCreateProblem";
     }
 
     /**
@@ -350,7 +381,8 @@ public class ProblemController {
     @PostMapping("/save")
     public String saveProblem(
             @ModelAttribute("problem") Problem formProblem,
-            @RequestParam(value = "technicianId", required = false) Long technicianId
+            @RequestParam(value = "technicianId", required = false) Long technicianId,
+            HttpSession session
     ) {
         if (formProblem.getId() == null) {
             // --- création ---
@@ -360,6 +392,14 @@ public class ProblemController {
             User currentUser = userService.findByLogin(auth.getName());
             formProblem.setUser(currentUser);
 
+            // Rattacher le profil actif si CLIENT
+            if (currentUser.getRole() == UserRole.CLIENT) {
+                Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+                if (profileId != null) {
+                    userProfileService.findById(profileId).ifPresent(formProblem::setUserProfile);
+                }
+            }
+
             // Si un technicien a été sélectionné à la création (optionnel)
             if (technicianId != null && technicianId != 0) {
                 User tech = userService.getUser(technicianId);
@@ -367,6 +407,20 @@ public class ProblemController {
             }
 
             service.createProblem(formProblem);
+
+            // Persister email/téléphone sur le profil CLIENT pour pré-remplissage futur
+            if (currentUser.getRole() == UserRole.CLIENT) {
+                Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+                if (profileId != null && formProblem.getTicketUserInfo() != null) {
+                    userProfileService.findById(profileId).ifPresent(profile -> {
+                        String email = formProblem.getTicketUserInfo().getEmail();
+                        String phone = formProblem.getTicketUserInfo().getPhone();
+                        if (email != null && !email.isBlank()) profile.setEmail(email);
+                        if (phone != null && !phone.isBlank()) profile.setPhone(phone);
+                        userProfileService.save(profile);
+                    });
+                }
+            }
 
             // notification NEW_PROBLEM pour tous les admins
             userService.getAllUsers().stream()
