@@ -200,12 +200,12 @@ public class ProblemController {
         // 2b. Stats globales (admin/membre uniquement)
         List<Problem> allList = StreamSupport.stream(allProblems.spliterator(), false).collect(Collectors.toList());
         if (currentUser.getRole() != UserRole.CLIENT) {
-            long countOpen       = allList.stream().filter(p -> p.getStatus() == Status.OPEN).count();
+            long countActive     = allList.stream().filter(p -> p.getStatus() != Status.CLOSED).count();
             long countInProgress = allList.stream().filter(p -> p.getStatus() == Status.IN_PROGRESS).count();
             long countResolved   = allList.stream().filter(p -> p.getStatus() == Status.RESOLVED).count();
             long countUnassigned = allList.stream().filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED).count();
             long countUrgent     = allList.stream().filter(p -> p.getPriority() == Priority.URGENT && p.getStatus() != Status.CLOSED).count();
-            model.addAttribute("countOpen",       countOpen);
+            model.addAttribute("countActive",     countActive);
             model.addAttribute("countInProgress", countInProgress);
             model.addAttribute("countResolved",   countResolved);
             model.addAttribute("countUnassigned", countUnassigned);
