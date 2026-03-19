@@ -29,7 +29,9 @@ public class NotificationController {
             notificationService.markAllRead(user);
         }
         String referer = request.getHeader("Referer");
-        return "redirect:" + (referer != null ? referer : "/problems");
+        String redirect = (referer != null && referer.contains("/")) ? "/" + referer.replaceAll(".*//[^/]+/", "") : "/problems";
+        if (!redirect.startsWith("/")) redirect = "/problems";
+        return "redirect:" + redirect;
     }
 
     /**
@@ -45,7 +47,8 @@ public class NotificationController {
                 notificationService.markOneRead(user, id);
             }
         }
-        return "redirect:" + redirect;
+        String safeRedirect = (redirect != null && redirect.startsWith("/")) ? redirect : "/problems";
+        return "redirect:" + safeRedirect;
     }
 
     /**

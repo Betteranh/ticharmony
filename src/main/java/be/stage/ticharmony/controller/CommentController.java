@@ -32,13 +32,16 @@ public class CommentController {
     public String addComment(@PathVariable Long problemId,
                              @RequestParam String content,
                              Principal principal) {
+        if (content == null || content.isBlank() || content.length() > 5000) {
+            return "redirect:/problems/" + problemId;
+        }
         Problem problem = problemRepository.findById(problemId).orElseThrow();
         User author = userRepository.findByLogin(principal.getName());
         if (author == null) {
-            throw new UsernameNotFoundException("Utilisateur non trouvé");
+            throw new UsernameNotFoundException("Identifiants invalides");
         }
 
-        commentService.addComment(problem, author, content);
+        commentService.addComment(problem, author, content.trim());
 
         // Notifications NEW_COMMENT : uniquement le technicien assigné et le client du ticket
         User technician = problem.getTechnician();

@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         final User user = userRepository.findByLogin(username);
 
         if (user == null) {
-            throw new UsernameNotFoundException("User " + username + " not found");
+            throw new UsernameNotFoundException("Identifiants invalides");
         }
 
         return new org.springframework.security.core.userdetails.User(

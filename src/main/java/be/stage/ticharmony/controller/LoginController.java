@@ -16,6 +16,7 @@ public class LoginController {
             @RequestParam(required = false) final Boolean loginRequired,
             @RequestParam(required = false) final Boolean loginError,
             @RequestParam(required = false) final Boolean logoutSuccess,
+            @RequestParam(required = false) final Boolean rate,
             final Model model,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
@@ -37,6 +38,10 @@ public class LoginController {
 
         if (loginError == Boolean.TRUE) {
             model.addAttribute("errorMessage", "Échec de la connexion !");
+        }
+
+        if (rate == Boolean.TRUE) {
+            model.addAttribute("errorMessage", "Trop de tentatives de connexion. Veuillez patienter 1 minute avant de réessayer.");
         }
 
         if (logoutSuccess == Boolean.TRUE) {

@@ -28,16 +28,23 @@ public class NotificationService {
         return repo.findByUserAndViewedFalseOrderByCreatedAtDesc(user);
     }
 
+    /** Une seule requête UPDATE au lieu de N saves individuels */
+    @Transactional
     public void markAllRead(User user) {
-        getUnreadForUser(user).forEach(n -> {
-            n.setViewed(true);
-            repo.save(n);
-        });
+        repo.markAllReadByUser(user);
     }
 
-    /**
-     * marque l’assignation lue pour ce user + ce problème
-     */
+    /** COUNT en base — pas de chargement de toutes les entités */
+    public long countUnreadForUser(User user) {
+        return repo.countUnreadByUser(user);
+    }
+
+    /** Une seule requête UPDATE pour un ticket précis */
+    @Transactional
+    public void markAllReadForProblem(User user, Problem problem) {
+        repo.markAllReadByUserAndProblem(user, problem);
+    }
+
     public void markAssignmentNotificationsRead(User user, Problem problem) {
         repo.findByUserAndProblemAndTypeAndViewedFalse(user, problem, NotificationType.ASSIGNED_TO_PROBLEM)
                 .forEach(n -> {
@@ -46,35 +53,20 @@ public class NotificationService {
                 });
     }
 
-    /**
-     * Marque comme lue la ou les notifications non lues
-     * pour cet user / ticket / type donné.
-     */
     public void markReadForProblem(User user, Problem problem, NotificationType type) {
-        List<Notification> toMark = repo.findByUserAndViewedFalseOrderByCreatedAtDesc(user)
-                .stream()
-                .filter(n -> n.getProblem().getId().equals(problem.getId())
-                        && n.getType() == type)
-                .toList();
-        toMark.forEach(n -> {
-            n.setViewed(true);
-            repo.save(n);
-        });
+        repo.findByUserAndProblemAndTypeAndViewedFalse(user, problem, type)
+                .forEach(n -> {
+                    n.setViewed(true);
+                    repo.save(n);
+                });
     }
 
-    /**
-     * Crée une notification uniquement si aucune non-lue du même type n'existe déjà
-     * (évite le spam de notifications identiques)
-     */
     public void notifyOnce(User user, Problem problem, NotificationType type) {
         if (repo.findByUserAndProblemAndTypeAndViewedFalse(user, problem, type).isEmpty()) {
             notify(user, problem, type);
         }
     }
 
-    /**
-     * Marque une notification précise comme lue (si elle appartient à cet utilisateur)
-     */
     public void markOneRead(User user, Long notificationId) {
         repo.findById(notificationId).ifPresent(n -> {
             if (n.getUser().getId().equals(user.getId())) {
@@ -84,27 +76,6 @@ public class NotificationService {
         });
     }
 
-    /**
-     * Marque toutes les notifications non lues pour un utilisateur + ticket donnés
-     */
-    @Transactional
-    public void markAllReadForProblem(User user, Problem problem) {
-        repo.findByUserAndViewedFalseOrderByCreatedAtDesc(user)
-                .stream()
-                .filter(n -> n.getProblem() != null && n.getProblem().getId().equals(problem.getId()))
-                .forEach(n -> { n.setViewed(true); repo.save(n); });
-    }
-
-    /**
-     * Compte les notifications non lues d'un utilisateur
-     */
-    public long countUnreadForUser(User user) {
-        return repo.findByUserAndViewedFalseOrderByCreatedAtDesc(user).size();
-    }
-
-    /**
-     * Supprime toutes les notifications d'un type donné pour un problème
-     */
     @Transactional
     public void deleteNotificationsForProblem(Problem problem, NotificationType type) {
         repo.deleteByProblemAndType(problem, type);

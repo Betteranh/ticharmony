@@ -6,6 +6,7 @@ import be.stage.ticharmony.service.UserService;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +21,17 @@ public class EmployeeController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     @GetMapping
     public String listEmployees(Model model) {
         List<User> employees = userService.getAllUsers().stream()
                 .filter(u -> u.getRole() == UserRole.ADMIN || u.getRole() == UserRole.MEMBER)
                 .collect(Collectors.toList());
+        long activeCount = employees.stream().filter(User::isActive).count();
         model.addAttribute("employees", employees);
+        model.addAttribute("activeCount", activeCount);
         return "listEmployees";
     }
 
@@ -65,7 +71,7 @@ public class EmployeeController {
         existing.setActiveFrom(updatedUser.getActiveFrom());
         existing.setActiveTo(updatedUser.getActiveTo());
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-            existing.setPassword(updatedUser.getPassword());
+            existing.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
         userService.updateUser(existing);
         return "redirect:/employees";

@@ -566,7 +566,8 @@ public class ProblemController {
     /**
      * Supprime un problème.
      */
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteProblem(@PathVariable Long id) {
         service.deleteProblem(id);
         return "redirect:/problems";
@@ -663,6 +664,9 @@ public class ProblemController {
 
             // 2) notifier l'ancien technicien qu'il est réassigné (s'il existe et change)
             User newTech = userService.getUser(technicianId);
+            if (newTech == null || (newTech.getRole() != UserRole.MEMBER && newTech.getRole() != UserRole.ADMIN)) {
+                return "redirect:/problems/" + id;
+            }
             if (oldTech != null && !oldTech.getId().equals(newTech.getId())) {
                 notificationService.notify(oldTech, problem, NotificationType.TICKET_REASSIGNED);
                 notificationService.markAssignmentNotificationsRead(oldTech, problem);

@@ -358,23 +358,6 @@
                     </div>
                 </div>
 
-                <!-- Rôle -->
-                <div class="si-row">
-                    <div class="si-icon">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="si-label">Rôle</div>
-                        <div style="margin-top:3px;">
-                            <span th:if="${user.role != null and user.role.name() == 'ADMIN'}"  class="role-badge role-admin">Admin</span>
-                            <span th:if="${user.role != null and user.role.name() == 'MEMBER'}" class="role-badge role-member">Technicien</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Statut -->
                 <div class="si-row">
                     <div class="si-icon">
@@ -395,6 +378,23 @@
                                 <svg width="5" height="5" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
                                 Inactif
                             </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rôle -->
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Rôle</div>
+                        <div style="margin-top:3px;">
+                            <span th:if="${user.role != null and user.role.name() == 'ADMIN'}"  class="role-badge role-admin">Admin</span>
+                            <span th:if="${user.role != null and user.role.name() == 'MEMBER'}" class="role-badge role-member">Technicien</span>
                         </div>
                     </div>
                 </div>
@@ -448,11 +448,13 @@
 
     </div>
 
+
 </div>
 
 <th:block layout:fragment="scripts">
 <script>
 /*<![CDATA[*/
+
 function togglePw() {
     var input = document.getElementById('password');
     var icon  = document.getElementById('eyeIcon');
