@@ -39,8 +39,10 @@ public class ProfileController {
     public String showSelectProfile(Model model, Principal principal, HttpSession session) {
         User user = userRepository.findByLogin(principal.getName());
         List<UserProfile> profiles = profileService.getActiveProfiles(user);
+        List<UserProfile> allProfiles = profileService.getAllProfiles(user);
 
         model.addAttribute("profiles", profiles);
+        model.addAttribute("allProfiles", allProfiles);
         model.addAttribute("availableColors", AVAILABLE_COLORS);
         model.addAttribute("companyName", user.getNomEntreprise());
         return "profile/selectProfile";
@@ -77,6 +79,24 @@ public class ProfileController {
         String safeName = displayName.trim().isEmpty() ? "Employé" : displayName.trim();
         String safeColor = AVAILABLE_COLORS.contains(color) ? color : AVAILABLE_COLORS.get(0);
         profileService.create(user, safeName, safeColor);
+        return "redirect:/select-profile";
+    }
+
+    @PostMapping("/profiles/{id}/edit")
+    public String editProfile(@PathVariable Long id,
+                              @RequestParam String displayName,
+                              @RequestParam String color,
+                              Principal principal) {
+        User user = userRepository.findByLogin(principal.getName());
+        profileService.findById(id).ifPresent(p -> {
+            if (p.getUser().getId().equals(user.getId())) {
+                String safeName = displayName.trim().isEmpty() ? p.getDisplayName() : displayName.trim();
+                String safeColor = AVAILABLE_COLORS.contains(color) ? color : p.getColor();
+                p.setDisplayName(safeName);
+                p.setColor(safeColor);
+                profileService.save(p);
+            }
+        });
         return "redirect:/select-profile";
     }
 

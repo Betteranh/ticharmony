@@ -5,33 +5,47 @@
 <head>
     <title>Mon espace – TicHarmony</title>
     <style>
-        body { background: #faf9f7 !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body { background: #eef2f8 !important; }
 
         :root {
-            --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
-            --green:    #16a34a;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
-            --sh-lg:    0 8px 32px rgba(0,0,0,.09), 0 3px 10px rgba(0,0,0,.05);
+            --white:      #ffffff;
+            --bg:         #eef2f8;
+            --bg-d:       #dde4ef;
+            --border:     #d1d9e8;
+            --text:       #1a2035;
+            --text-2:     #5a6480;
+            --text-3:     #9aa3b8;
+            --blue:       #2563eb;
+            --blue-bg:    #eff6ff;
+            --blue-br:    #bfdbfe;
+            --green:      #16a34a;
+            --green-bg:   #f0fdf4;
+            --green-br:   #bbf7d0;
+            --amber:      #d97706;
+            --amber-bg:   #fffbeb;
+            --amber-br:   #fde68a;
+            --red:        #dc2626;
+            --red-bg:     #fef2f2;
+            --red-br:     #fecaca;
+            --sh:         0 2px 10px rgba(37,99,235,.06), 0 1px 4px rgba(0,0,0,.04);
+            --sh-lg:      0 8px 28px rgba(37,99,235,.1), 0 3px 10px rgba(0,0,0,.05);
+            --radius:     14px;
         }
 
         .cd-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
-            padding: 3rem 0 6rem;
+            padding: 2.5rem 0 6rem;
+            max-width: 680px;
+            margin: 0 auto;
         }
 
         /* ── Greeting ── */
         .greet-name {
-            font-family: 'Sora', sans-serif;
-            font-size: 2rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.85rem;
             font-weight: 800;
             color: var(--text);
             letter-spacing: -.035em;
@@ -39,15 +53,132 @@
             margin-bottom: .35rem;
         }
         .greet-sub {
-            font-size: 1rem;
+            font-size: .92rem;
             color: var(--text-2);
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* pulsing dot */
+        .dot-green {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            flex-shrink: 0;
+            animation: pg 2s ease-in-out infinite;
+        }
+        @keyframes pg {
+            0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,.45); }
+            50%      { box-shadow: 0 0 0 5px rgba(22,163,74,0); }
+        }
+
+        /* ── Alert banner (tickets à confirmer) ── */
+        .alert-banner {
+            background: var(--amber-bg);
+            border: 1px solid var(--amber-br);
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+        }
+        .alert-banner-header {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+        }
+        .alert-banner-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            background: #fef3c7;
+            border: 1px solid var(--amber-br);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .alert-banner-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .95rem;
+            font-weight: 800;
+            color: #92400e;
+        }
+        .alert-banner-sub {
+            font-size: .82rem;
+            color: #b45309;
+        }
+        .alert-ticket-list {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+        .alert-ticket-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            background: var(--white);
+            border: 1px solid var(--amber-br);
+            border-radius: 10px;
+            padding: .7rem 1rem;
+            text-decoration: none;
+        }
+        .alert-ticket-item:hover {
+            border-color: var(--amber);
+            box-shadow: 0 2px 8px rgba(217,119,6,.12);
+        }
+        .alert-ticket-title {
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .alert-ticket-num {
+            font-size: .78rem;
+            color: var(--text-3);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .alert-ticket-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--amber);
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .78rem;
+            font-weight: 700;
+            padding: .38rem .85rem;
+            border-radius: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: background .15s;
+        }
+        .alert-ticket-item:hover .alert-ticket-cta { background: #b45309; }
+
+        /* ── Active count badge ── */
+        .active-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-br);
+            border-radius: 8px;
+            padding: .3rem .75rem;
+            font-size: .8rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 1.25rem;
         }
 
         /* ── Cards ── */
         .card {
             background: var(--white);
-            border-radius: 18px;
+            border-radius: var(--radius);
             box-shadow: var(--sh);
             text-decoration: none;
             color: inherit;
@@ -55,54 +186,54 @@
             transition: transform .2s ease, box-shadow .2s ease;
         }
         .card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: var(--sh-lg);
         }
 
         /* Primary CTA */
         .card-primary {
-            border-left: 5px solid var(--violet);
-            padding: 2.25rem 2.25rem 2.25rem 2rem;
+            border-left: 4px solid var(--blue);
+            padding: 1.75rem 1.75rem 1.75rem 1.6rem;
             margin-bottom: 1rem;
         }
         .card-primary-label {
-            font-size: .72rem;
+            font-size: .7rem;
             font-weight: 700;
-            letter-spacing: .1em;
+            letter-spacing: .09em;
             text-transform: uppercase;
-            color: var(--violet);
-            margin-bottom: .5rem;
+            color: var(--blue);
+            margin-bottom: .45rem;
         }
         .card-primary-title {
-            font-family: 'Sora', sans-serif;
-            font-size: 1.45rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
             font-weight: 800;
             color: var(--text);
             letter-spacing: -.025em;
             line-height: 1.2;
-            margin-bottom: .5rem;
+            margin-bottom: .45rem;
         }
         .card-primary-desc {
-            font-size: .95rem;
+            font-size: .9rem;
             color: var(--text-2);
             line-height: 1.65;
-            margin-bottom: 1.4rem;
+            margin-bottom: 1.25rem;
         }
         .cta-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--violet);
+            background: var(--blue);
             color: #fff;
-            font-family: 'Sora', sans-serif;
-            font-size: .92rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .9rem;
             font-weight: 700;
-            padding: .85rem 1.75rem;
+            padding: .8rem 1.5rem;
             border-radius: 11px;
-            box-shadow: 0 4px 14px rgba(124,58,237,.28);
+            box-shadow: 0 4px 14px rgba(37,99,235,.25);
             transition: background .15s, transform .15s;
         }
-        .cta-btn:hover { background: #6d28d9; transform: translateY(-1px); }
+        .cta-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
         .cta-btn svg { transition: transform .15s; }
         .cta-btn:hover svg { transform: translateX(3px); }
 
@@ -110,48 +241,48 @@
         .card-secondary {
             display: flex;
             align-items: center;
-            gap: 1.1rem;
-            padding: 1.5rem 1.75rem;
-            margin-bottom: 2.5rem;
+            gap: 1rem;
+            padding: 1.3rem 1.5rem;
+            margin-bottom: 1rem;
         }
         .sec-icon {
-            width: 46px; height: 46px;
-            border-radius: 12px;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
+            width: 44px; height: 44px;
+            border-radius: 11px;
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-br);
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
         .sec-title {
-            font-family: 'Sora', sans-serif;
-            font-size: .98rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .95rem;
             font-weight: 700;
             color: var(--text);
-            margin-bottom: .15rem;
+            margin-bottom: .12rem;
         }
-        .sec-desc { font-size: .85rem; color: var(--text-2); }
+        .sec-desc { font-size: .82rem; color: var(--text-2); }
         .sec-arrow {
             margin-left: auto;
             flex-shrink: 0;
             color: var(--text-3);
             transition: transform .15s, color .15s;
         }
-        .card-secondary:hover .sec-arrow { transform: translateX(4px); color: var(--violet); }
+        .card-secondary:hover .sec-arrow { transform: translateX(4px); color: var(--blue); }
 
         /* Contact */
         .contact-card {
             background: var(--white);
-            border-radius: 18px;
+            border-radius: var(--radius);
             box-shadow: var(--sh);
             overflow: hidden;
         }
         .contact-header {
-            padding: 1.3rem 1.75rem;
-            border-bottom: 1px solid var(--cream-d);
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
         }
         .contact-header-title {
-            font-family: 'Sora', sans-serif;
-            font-size: .95rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .9rem;
             font-weight: 700;
             color: var(--text);
         }
@@ -161,54 +292,40 @@
         .contact-channel {
             display: flex;
             align-items: center;
-            gap: .9rem;
-            padding: 1.4rem 1.75rem;
+            gap: .85rem;
+            padding: 1.25rem 1.5rem;
             text-decoration: none;
             color: inherit;
             transition: background .15s;
-            border-right: 1px solid var(--cream-d);
+            border-right: 1px solid var(--border);
         }
         .contact-channel:last-child { border-right: none; }
         @media (max-width: 540px) {
-            .contact-channel { border-right: none; border-bottom: 1px solid var(--cream-d); }
+            .contact-channel { border-right: none; border-bottom: 1px solid var(--border); }
             .contact-channel:last-child { border-bottom: none; }
         }
-        .contact-channel:hover { background: var(--cream); }
+        .contact-channel:hover { background: var(--bg); }
 
         .ch-icon {
-            width: 42px; height: 42px;
-            border-radius: 11px;
+            width: 40px; height: 40px;
+            border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .ch-label { font-size: .67rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-3); margin-bottom: .25rem; }
-        .ch-value { font-family: 'Sora', sans-serif; font-size: .98rem; font-weight: 700; }
+        .ch-label { font-size: .65rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-3); margin-bottom: .2rem; }
+        .ch-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .92rem; font-weight: 700; }
 
         /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(12px); }
+            from { opacity: 0; transform: translateY(10px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
-        .d1 { animation-delay: .04s; }
-        .d2 { animation-delay: .1s;  }
-        .d3 { animation-delay: .16s; }
-        .d4 { animation-delay: .22s; }
-
-        /* pulsing dot */
-        .dot-green {
-            display: inline-block;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--green);
-            animation: pg 2s ease-in-out infinite;
-            margin-right: 6px;
-            vertical-align: middle;
-        }
-        @keyframes pg {
-            0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,.45); }
-            50%      { box-shadow: 0 0 0 5px rgba(22,163,74,0); }
-        }
+        .d1 { animation-delay: .03s; }
+        .d2 { animation-delay: .09s; }
+        .d3 { animation-delay: .15s; }
+        .d4 { animation-delay: .21s; }
+        .d5 { animation-delay: .27s; }
     </style>
 </head>
 
@@ -224,12 +341,61 @@
                   th:text="${currentUser.nomEntreprise ?: currentUser.firstname}">votre entreprise</span> 👋
         </h1>
         <p class="greet-sub">
-            <span class="dot-green"></span>Support actif &nbsp;·&nbsp; Lun–Ven, 9h30–17h30
+            <span class="dot-green"></span>
+            Support actif &nbsp;·&nbsp; Lun–Ven, 9h30–17h30
         </p>
     </div>
 
+    <!-- Badge tickets actifs -->
+    <div class="active-badge fu d1" th:if="${activeCount > 0}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+            <rect x="9" y="3" width="6" height="4" rx="2"/>
+        </svg>
+        <span th:text="${activeCount} + ' demande' + (${activeCount} > 1 ? 's' : '') + ' en cours de traitement'">1 demande en cours</span>
+    </div>
+
+    <!-- ⚠ Bannière tickets à confirmer -->
+    <div class="alert-banner fu d2" th:if="${resolvedPending != null and !resolvedPending.isEmpty()}">
+        <div class="alert-banner-header">
+            <div class="alert-banner-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <div>
+                <div class="alert-banner-title"
+                     th:text="${resolvedPending.size()} + ' demande' + (${resolvedPending.size()} > 1 ? 's' : '') + ' attend' + (${resolvedPending.size()} > 1 ? 'ent' : '') + ' votre réponse'">
+                    1 demande attend votre réponse
+                </div>
+                <div class="alert-banner-sub">Notre technicien a traité ces tickets — confirmez-les ou reouvrez-les.</div>
+            </div>
+        </div>
+        <div class="alert-ticket-list">
+            <a th:each="p : ${resolvedPending}"
+               th:href="@{'/problems/' + ${p.id}}"
+               class="alert-ticket-item">
+                <div style="min-width:0;">
+                    <div class="alert-ticket-title" th:text="${p.title}">Titre du ticket</div>
+                    <div class="alert-ticket-num" th:text="'Demande #' + ${p.id}">Demande #0</div>
+                </div>
+                <span class="alert-ticket-cta">
+                    Répondre
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </span>
+            </a>
+        </div>
+    </div>
+
     <!-- Signaler un problème -->
-    <a th:href="@{/problems/create}" class="card card-primary fu d2">
+    <a th:href="@{/problems/create}" class="card card-primary fu d3">
         <div class="card-primary-label">Action principale</div>
         <div class="card-primary-title">J'ai un problème à signaler</div>
         <p class="card-primary-desc">
@@ -245,9 +411,9 @@
     </a>
 
     <!-- Voir mes demandes -->
-    <a th:href="@{/problems}" class="card card-secondary fu d3">
+    <a th:href="@{/problems}" class="card card-secondary fu d4">
         <div class="sec-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
                  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
                 <rect x="9" y="3" width="6" height="4" rx="2"/>
@@ -255,11 +421,11 @@
             </svg>
         </div>
         <div>
-            <div class="sec-title">Mes demandes en cours</div>
-            <p class="sec-desc">Suivez l'avancement de vos signalements.</p>
+            <div class="sec-title">Toutes mes demandes</div>
+            <p class="sec-desc">Consultez l'historique et suivez l'avancement de vos signalements.</p>
         </div>
         <div class="sec-arrow">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="9 18 15 12 9 6"/>
             </svg>
@@ -267,14 +433,14 @@
     </a>
 
     <!-- Nous contacter -->
-    <div class="contact-card fu d4">
+    <div class="contact-card fu d5">
         <div class="contact-header">
             <div class="contact-header-title">Besoin de nous parler directement ?</div>
         </div>
         <div class="contact-channels">
             <a href="tel:+32495576535" class="contact-channel">
-                <div class="ch-icon" style="background:#f0fdf4; border:1px solid #bbf7d0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
+                <div class="ch-icon" style="background:var(--green-bg); border:1px solid var(--green-br);">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
                          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 14a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 3.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 10.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 17z"/>
                     </svg>
@@ -285,8 +451,8 @@
                 </div>
             </a>
             <a href="mailto:info@tic-harmony.be" class="contact-channel">
-                <div class="ch-icon" style="background:var(--violet-bg); border:1px solid var(--violet-br);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed"
+                <div class="ch-icon" style="background:var(--blue-bg); border:1px solid var(--blue-br);">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
                          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                         <polyline points="22,6 12,13 2,6"/>
@@ -294,7 +460,7 @@
                 </div>
                 <div>
                     <div class="ch-label">E-mail</div>
-                    <div class="ch-value" style="color:var(--violet);">info@tic-harmony.be</div>
+                    <div class="ch-value" style="color:var(--blue);">info@tic-harmony.be</div>
                 </div>
             </a>
         </div>

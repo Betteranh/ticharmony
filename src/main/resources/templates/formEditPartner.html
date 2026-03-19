@@ -5,26 +5,34 @@
 <head>
     <title>Modifier un partenaire – TicHarmony</title>
     <style>
-        body { background: #faf9f7 !important; }
+        body { background: #eef2f8 !important; }
 
         :root {
+            --bg:       #eef2f8;
             --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --blue:     #2563eb;
+            --blue-dk:  #1d4ed8;
+            --blue-bg:  #eff6ff;
+            --blue-br:  #bfdbfe;
+            --text:     #0f172a;
+            --text-2:   #64748b;
+            --text-3:   #94a3b8;
+            --border:   #e2e8f0;
+            --green:    #16a34a;
+            --green-bg: #f0fdf4;
+            --green-br: #bbf7d0;
+            --red:      #dc2626;
+            --red-bg:   #fef2f2;
+            --red-br:   #fecaca;
+            --sh:       0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.04);
+            --radius:   14px;
         }
 
         .fep-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
-            max-width: 860px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -34,7 +42,7 @@
             font-size: .85rem; font-weight: 600; color: var(--text-3);
             text-decoration: none; margin-bottom: 1.75rem; transition: color .15s;
         }
-        .back-link:hover { color: var(--violet); }
+        .back-link:hover { color: var(--blue); }
         .back-link svg { transition: transform .15s; }
         .back-link:hover svg { transform: translateX(-3px); }
 
@@ -43,34 +51,44 @@
         .fep-avatar {
             width: 52px; height: 52px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800;
             text-transform: uppercase; flex-shrink: 0;
-            background: var(--violet-bg); border: 1px solid var(--violet-br); color: var(--violet);
+            background: var(--blue-bg); border: 1px solid var(--blue-br); color: var(--blue);
         }
         .fep-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.6rem; font-weight: 800;
             letter-spacing: -.03em; color: var(--text);
         }
         .fep-sub { font-size: .88rem; color: var(--text-2); margin-top: 2px; }
 
         /* ── Layout ── */
-        .fep-grid { display: block; }
+        .fep-grid {
+            display: grid; grid-template-columns: 1fr 230px;
+            gap: 1.25rem; align-items: start;
+        }
+        @media (max-width: 780px) { .fep-grid { grid-template-columns: 1fr; } }
 
         /* ── Cards ── */
         .fep-card {
             background: var(--white);
-            border-radius: 18px; box-shadow: var(--sh);
+            border-radius: var(--radius); box-shadow: var(--sh);
             padding: 1.75rem 2rem;
         }
+        .sidebar-card {
+            background: var(--white);
+            border-radius: var(--radius); box-shadow: var(--sh);
+            padding: 1.25rem 1.5rem;
+        }
+
         /* ── Section label ── */
         .section-label {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .68rem; font-weight: 700;
             letter-spacing: .1em; text-transform: uppercase;
             color: var(--text-3);
             padding-bottom: .6rem;
-            border-bottom: 1px solid var(--cream-d);
+            border-bottom: 1px solid var(--border);
             margin-bottom: 1.25rem;
         }
 
@@ -89,46 +107,46 @@
         }
         .fc-input {
             width: 100%; padding: .7rem 1rem;
-            background: var(--cream); border: 1px solid var(--cream-d);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: 10px; color: var(--text);
-            font-family: 'DM Sans', sans-serif; font-size: .92rem; outline: none;
-            transition: border-color .2s, box-shadow .2s, background .2s;
+            font-family: 'Nunito', sans-serif; font-size: .92rem; outline: none;
+            transition: border-color .15s, box-shadow .15s, background .15s;
             box-sizing: border-box;
         }
         .fc-input::placeholder { color: var(--text-3); }
         .fc-input:focus {
-            border-color: var(--violet); background: var(--white);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            border-color: var(--blue); background: var(--white);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
         .fc-hint { font-size: .73rem; color: var(--text-3); margin-top: .3rem; }
 
         /* ── Select ── */
         .fc-select {
             width: 100%; padding: .7rem 2.2rem .7rem 1rem;
-            background: var(--cream); border: 1px solid var(--cream-d);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: 10px; color: var(--text);
-            font-family: 'DM Sans', sans-serif; font-size: .92rem; outline: none;
+            font-family: 'Nunito', sans-serif; font-size: .92rem; outline: none;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right .75rem center;
-            transition: border-color .2s, box-shadow .2s, background .2s;
+            transition: border-color .15s, box-shadow .15s, background .15s;
             cursor: pointer; box-sizing: border-box;
         }
         .fc-select:focus {
-            border-color: var(--violet); background-color: var(--white);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            border-color: var(--blue); background-color: var(--white);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
 
-        /* ── Login display ── */
+        /* ── Login display (read-only) ── */
         .login-display {
             display: flex; align-items: center; gap: 8px;
-            background: var(--cream); border: 1px solid var(--cream-d);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: 10px; padding: .7rem 1rem;
         }
         .login-display svg { color: var(--text-3); flex-shrink: 0; }
         .login-display span {
-            font-family: 'Sora', sans-serif;
-            font-size: .88rem; font-weight: 600; color: var(--violet);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .88rem; font-weight: 600; color: var(--text-2);
         }
 
         /* ── Password toggle ── */
@@ -146,7 +164,7 @@
         .info-banner {
             display: flex; align-items: flex-start; gap: .75rem;
             background: #fffbeb; border: 1px solid #fde68a;
-            border-radius: 12px; padding: .9rem 1.1rem;
+            border-radius: 10px; padding: .85rem 1rem;
             margin-bottom: 1.25rem;
         }
         .info-banner-text { font-size: .82rem; color: #92400e; line-height: 1.6; }
@@ -157,22 +175,51 @@
         .btn-submit {
             flex: 1; min-width: 160px;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            background: var(--violet); color: #fff; border: none;
+            background: var(--blue); color: #fff; border: none;
             padding: .9rem 1.5rem; border-radius: 12px;
-            font-family: 'Sora', sans-serif; font-size: .9rem; font-weight: 700;
-            cursor: pointer; box-shadow: 0 4px 14px rgba(124,58,237,.25);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,.25);
             transition: background .15s, transform .15s;
         }
-        .btn-submit:hover { background: #6d28d9; transform: translateY(-1px); }
+        .btn-submit:hover { background: var(--blue-dk); transform: translateY(-1px); }
         .btn-cancel {
             display: inline-flex; align-items: center; gap: 6px;
             padding: .9rem 1.5rem; border-radius: 12px;
-            background: var(--white); border: 1px solid var(--cream-d);
-            color: var(--text-2); font-family: 'Sora', sans-serif;
+            background: var(--white); border: 1px solid var(--border);
+            color: var(--text-2); font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .9rem; font-weight: 600;
             text-decoration: none; transition: background .15s, color .15s;
         }
-        .btn-cancel:hover { background: var(--cream-d); color: var(--text); }
+        .btn-cancel:hover { background: var(--bg); color: var(--text); }
+
+        /* ── Sidebar info rows ── */
+        .si-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: .65rem 0; border-bottom: 1px solid var(--border);
+        }
+        .si-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .si-row:first-child { padding-top: 0; }
+        .si-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: var(--bg); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .si-label { font-size: .7rem; color: var(--text-3); }
+        .si-value  { font-size: .86rem; font-weight: 600; color: var(--text); margin-top: 1px; }
+
+        /* ── Badges ── */
+        .role-badge {
+            display: inline-block; padding: .2rem .65rem; border-radius: 99px;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .72rem; font-weight: 700;
+            background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-br);
+        }
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: .2rem .65rem; border-radius: 99px;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .72rem; font-weight: 700;
+        }
+        .status-active   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
+        .status-inactive { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br); }
 
         /* ── Animations ── */
         @keyframes fadeUp {
@@ -222,19 +269,21 @@
                     <input type="text" id="nomEntreprise" th:field="*{nomEntreprise}" required
                            placeholder="Nom de l'entreprise" class="fc-input"/>
                 </div>
-                <div class="field">
-                    <label for="tva" class="fc-label">Numéro TVA</label>
-                    <input type="text" id="tva" th:field="*{tva}"
-                           placeholder="BE 0123 456 789" class="fc-input"/>
-                </div>
-                <div class="field" style="margin-bottom:1.5rem;">
-                    <label for="adresse" class="fc-label">Adresse</label>
-                    <input type="text" id="adresse" th:field="*{adresse}"
-                           placeholder="Rue, ville, code postal" class="fc-input"/>
+                <div class="field-row">
+                    <div>
+                        <label for="tva" class="fc-label">Numéro TVA</label>
+                        <input type="text" id="tva" th:field="*{tva}"
+                               placeholder="BE 0123 456 789" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="adresse" class="fc-label">Adresse</label>
+                        <input type="text" id="adresse" th:field="*{adresse}"
+                               placeholder="Rue, ville, code postal" class="fc-input"/>
+                    </div>
                 </div>
 
                 <!-- Contact -->
-                <div class="section-label">Contact</div>
+                <div class="section-label" style="margin-top:1.5rem;">Contact</div>
                 <div class="field-row">
                     <div>
                         <label for="firstname" class="fc-label">Prénom</label>
@@ -252,18 +301,21 @@
                     <input type="email" id="email" th:field="*{email}" required
                            placeholder="adresse@email.com" class="fc-input"/>
                 </div>
-                <div class="field">
-                    <label for="telephone" class="fc-label">Téléphone</label>
-                    <input type="text" id="telephone" th:field="*{telephone}"
-                           placeholder="0X XX XX XX XX" class="fc-input"/>
-                </div>
-                <div class="field" style="margin-bottom:1.5rem;">
-                    <label for="langue" class="fc-label">Langue</label>
-                    <select id="langue" th:field="*{langue}" required class="fc-select">
-                        <option value="fr">🇫🇷 Français</option>
-                        <option value="en">🇬🇧 English</option>
-                        <option value="nl">🇧🇪 Nederlands</option>
-                    </select>
+                <div class="field-row">
+                    <div>
+                        <label for="telephone" class="fc-label">Téléphone</label>
+                        <input type="text" id="telephone" th:field="*{telephone}"
+                               placeholder="0X XX XX XX XX" class="fc-input"/>
+                    </div>
+                    <div>
+                        <label for="langue" class="fc-label">Langue</label>
+                        <select id="langue" th:field="*{langue}" required class="fc-select">
+                            <option value="fr">Français</option>
+                            <option value="en">English</option>
+                            <option value="nl">Nederlands</option>
+                            <option value="de">Deutsch</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Contrat de support -->
@@ -280,10 +332,9 @@
                 </div>
 
                 <!-- Accès -->
-                <div class="section-label">Accès</div>
-
+                <div class="section-label" style="margin-top:1.5rem;">Accès</div>
                 <div class="field">
-                    <label class="fc-label">Login</label>
+                    <label class="fc-label">Identifiant</label>
                     <div class="login-display">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -291,11 +342,12 @@
                         </svg>
                         <span th:text="${user.login}">login</span>
                     </div>
-                    <div class="fc-hint">Le login ne peut pas être modifié</div>
+                    <div class="fc-hint">L'identifiant ne peut pas être modifié</div>
                     <input type="hidden" th:field="*{login}"/>
                 </div>
 
-                <!-- Info bannière mot de passe -->
+                <!-- Sécurité -->
+                <div class="section-label" style="margin-top:1.5rem;">Sécurité</div>
                 <div class="info-banner">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706"
                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;">
@@ -306,11 +358,10 @@
                         <strong>Mot de passe optionnel</strong> — laissez vide pour conserver le mot de passe actuel.
                     </div>
                 </div>
-
                 <div class="field">
                     <label for="password" class="fc-label">Nouveau mot de passe</label>
                     <div class="pw-wrap">
-                        <input type="password" id="password" name="newPassword"
+                        <input type="password" id="password" th:field="*{password}"
                                autocomplete="new-password"
                                placeholder="••••••••" class="fc-input"/>
                         <button type="button" class="pw-toggle" onclick="togglePw()">
@@ -343,6 +394,112 @@
 
             </form>
         </div>
+
+        <!-- ── Sidebar ── -->
+        <aside>
+            <div class="sidebar-card fu d3">
+                <div class="section-label" style="margin-bottom:1rem;">Infos non modifiables</div>
+
+                <!-- Identifiant -->
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Identifiant</div>
+                        <div class="si-value" th:text="${user.login}"></div>
+                    </div>
+                </div>
+
+                <!-- Rôle -->
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Rôle</div>
+                        <div style="margin-top:3px;">
+                            <span class="role-badge">Client</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statut -->
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 8 12 12 14 14"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Statut</div>
+                        <div style="margin-top:3px;">
+                            <span th:if="${user.active}" class="status-badge status-active">
+                                <svg width="5" height="5" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
+                                Actif
+                            </span>
+                            <span th:unless="${user.active}" class="status-badge status-inactive">
+                                <svg width="5" height="5" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
+                                Inactif
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ID système -->
+                <div class="si-row">
+                    <div class="si-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <path d="M7 15h0M2 9.5h20"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">ID système</div>
+                        <div class="si-value" th:text="'#' + ${user.id}"></div>
+                    </div>
+                </div>
+
+                <!-- Actif depuis -->
+                <div class="si-row" th:if="${user.activeFrom != null}">
+                    <div class="si-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Actif depuis</div>
+                        <div class="si-value" th:text="${#temporals.format(user.activeFrom, 'dd/MM/yyyy')}"></div>
+                    </div>
+                </div>
+
+                <!-- Désactivé le -->
+                <div class="si-row" th:if="${user.activeTo != null}">
+                    <div class="si-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="si-label">Désactivé le</div>
+                        <div class="si-value" style="color:var(--red);"
+                             th:text="${#temporals.format(user.activeTo, 'dd/MM/yyyy')}"></div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
 
     </div>
 

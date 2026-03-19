@@ -5,23 +5,33 @@
 <head>
     <title>Choisir un profil – Tic Harmony</title>
     <style>
-        body { background: #faf9f7 !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body { background: #eef2f8 !important; }
 
         :root {
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
-            --sh-lg:    0 8px 32px rgba(0,0,0,.09), 0 3px 10px rgba(0,0,0,.05);
+            --white:      #ffffff;
+            --bg:         #eef2f8;
+            --bg-d:       #dde4ef;
+            --border:     #d1d9e8;
+            --text:       #1a2035;
+            --text-2:     #5a6480;
+            --text-3:     #9aa3b8;
+            --blue:       #2563eb;
+            --blue-bg:    #eff6ff;
+            --blue-br:    #bfdbfe;
+            --red:        #dc2626;
+            --red-bg:     #fef2f2;
+            --red-br:     #fecaca;
+            --green-bg:   #f0fdf4;
+            --green-br:   #bbf7d0;
+            --sh:         0 2px 10px rgba(37,99,235,.06), 0 1px 4px rgba(0,0,0,.04);
+            --sh-lg:      0 8px 28px rgba(37,99,235,.1), 0 3px 10px rgba(0,0,0,.05);
+            --radius:     14px;
         }
 
         .sp-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 3rem 0 6rem;
             max-width: 640px;
@@ -38,7 +48,7 @@
             margin-bottom: .4rem;
         }
         .sp-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 800;
             font-size: 1.9rem;
             color: var(--text);
@@ -55,15 +65,14 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Profile card */
         .sp-card {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: .55rem;
-            background: #fff;
-            border: 1.5px solid var(--cream-d);
-            border-radius: 16px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
             padding: 1.4rem 1.1rem 1.1rem;
             width: 118px;
             cursor: pointer;
@@ -73,12 +82,11 @@
             animation: spUp .35s ease forwards;
         }
         .sp-card:hover {
-            border-color: var(--violet-br);
-            box-shadow: 0 6px 20px rgba(124,58,237,.12);
+            border-color: var(--blue-br);
+            box-shadow: 0 6px 20px rgba(37,99,235,.12);
             transform: translateY(-3px);
         }
 
-        /* Stagger */
         .sp-card:nth-child(1) { animation-delay: .04s; }
         .sp-card:nth-child(2) { animation-delay: .09s; }
         .sp-card:nth-child(3) { animation-delay: .14s; }
@@ -95,16 +103,15 @@
             width: 52px; height: 52px;
             border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.25rem;
             font-weight: 800;
             color: #fff;
-            letter-spacing: -.01em;
         }
         .sp-name {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: .8rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text);
             text-align: center;
             max-width: 100px;
@@ -120,36 +127,36 @@
             align-items: center;
             gap: .55rem;
             background: transparent;
-            border: 1.5px dashed var(--cream-d);
-            border-radius: 16px;
+            border: 1.5px dashed var(--border);
+            border-radius: var(--radius);
             padding: 1.4rem 1.1rem 1.1rem;
             width: 118px;
             cursor: pointer;
             color: var(--text-3);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: .8rem;
-            font-weight: 600;
+            font-weight: 700;
             transition: border-color .18s, color .18s, background .18s, transform .15s;
             animation: spUp .35s .34s ease forwards;
             opacity: 0;
         }
         .sp-add-btn:hover {
-            border-color: var(--violet-br);
-            color: var(--violet);
-            background: var(--violet-bg);
+            border-color: var(--blue-br);
+            color: var(--blue);
+            background: var(--blue-bg);
             transform: translateY(-3px);
         }
         .sp-add-icon {
             width: 52px; height: 52px;
             border-radius: 14px;
-            background: var(--cream);
-            border: 1.5px solid var(--cream-d);
+            background: var(--bg);
+            border: 1.5px solid var(--border);
             display: flex; align-items: center; justify-content: center;
             transition: background .18s, border-color .18s;
         }
         .sp-add-btn:hover .sp-add-icon {
-            background: var(--violet-bg);
-            border-color: var(--violet-br);
+            background: var(--blue-bg);
+            border-color: var(--blue-br);
         }
 
         /* ── Manage toggle ── */
@@ -157,9 +164,9 @@
             margin-top: .25rem;
         }
         .sp-manage-link {
-            font-family: 'DM Sans', sans-serif;
-            font-size: .75rem;
-            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            font-size: .8rem;
+            font-weight: 700;
             color: var(--text-3);
             background: none;
             border: none;
@@ -176,9 +183,9 @@
         .sp-manage-section {
             display: none;
             margin-top: 1.5rem;
-            background: #fff;
-            border: 1px solid var(--cream-d);
-            border-radius: 16px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             box-shadow: var(--sh);
             overflow: hidden;
         }
@@ -186,12 +193,12 @@
 
         .sp-manage-header {
             padding: .9rem 1.25rem;
-            border-bottom: 1px solid var(--cream-d);
+            border-bottom: 1px solid var(--border);
         }
         .sp-manage-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .88rem;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text);
         }
 
@@ -200,7 +207,7 @@
             align-items: center;
             gap: .85rem;
             padding: .85rem 1.25rem;
-            border-bottom: 1px solid var(--cream-d);
+            border-bottom: 1px solid var(--border);
         }
         .sp-manage-row-item:last-child { border-bottom: none; }
 
@@ -208,34 +215,75 @@
             width: 34px; height: 34px;
             border-radius: 9px;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .78rem;
             font-weight: 800;
             color: #fff;
             flex-shrink: 0;
         }
         .sp-manage-name {
-            font-family: 'DM Sans', sans-serif;
-            font-size: .85rem;
-            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            font-size: .88rem;
+            font-weight: 700;
             color: var(--text);
             flex: 1;
         }
-        .sp-deactivate-btn {
-            font-family: 'DM Sans', sans-serif;
+        .sp-inactive-badge {
             font-size: .68rem;
             font-weight: 700;
-            color: #dc2626;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
+            color: var(--text-3);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: .15rem .5rem;
+            margin-left: .35rem;
+        }
+        .sp-manage-actions {
+            display: flex;
+            gap: .4rem;
+            flex-shrink: 0;
+        }
+        .sp-edit-btn {
+            font-family: 'Nunito', sans-serif;
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--blue);
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-br);
+            border-radius: 7px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .sp-edit-btn:hover { background: #dbeafe; }
+        .sp-deactivate-btn {
+            font-family: 'Nunito', sans-serif;
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--red);
+            background: var(--red-bg);
+            border: 1px solid var(--red-br);
             border-radius: 7px;
             padding: 4px 10px;
             cursor: pointer;
             transition: background .15s;
         }
         .sp-deactivate-btn:hover { background: #fee2e2; }
+        .sp-reactivate-btn {
+            font-family: 'Nunito', sans-serif;
+            font-size: .72rem;
+            font-weight: 700;
+            color: #16a34a;
+            background: var(--green-bg);
+            border: 1px solid var(--green-br);
+            border-radius: 7px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .sp-reactivate-btn:hover { background: #dcfce7; }
 
-        /* ── Create modal ── */
+        /* ── Modals ── */
         .sp-modal-overlay {
             position: fixed;
             inset: 0;
@@ -254,9 +302,9 @@
             pointer-events: auto;
         }
         .sp-modal {
-            background: #fff;
-            border: 1px solid var(--cream-d);
-            border-radius: 20px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
             padding: 1.75rem;
             width: 100%;
             max-width: 360px;
@@ -267,7 +315,7 @@
         .sp-modal-overlay.open .sp-modal { transform: scale(1) translateY(0); }
 
         .sp-modal-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 800;
             font-size: 1rem;
             color: var(--text);
@@ -284,18 +332,18 @@
         }
         .sp-input {
             width: 100%;
-            background: var(--cream);
-            border: 1.5px solid var(--cream-d);
+            background: var(--bg);
+            border: 1.5px solid var(--border);
             border-radius: 9px;
             padding: .6rem .85rem;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .88rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: .9rem;
             color: var(--text);
             outline: none;
             transition: border-color .15s;
             margin-bottom: 1rem;
         }
-        .sp-input:focus { border-color: var(--violet-br); background: #fff; }
+        .sp-input:focus { border-color: var(--blue-br); background: var(--white); }
 
         .sp-colors {
             display: flex;
@@ -313,7 +361,7 @@
             outline-offset: 2px;
         }
         .sp-color-opt:hover { transform: scale(1.15); }
-        .sp-color-opt.selected { outline-color: var(--violet); }
+        .sp-color-opt.selected { outline-color: var(--blue); }
 
         .sp-modal-actions {
             display: flex;
@@ -321,12 +369,12 @@
             justify-content: flex-end;
         }
         .sp-btn-cancel {
-            font-family: 'DM Sans', sans-serif;
-            font-size: .8rem;
-            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            font-size: .82rem;
+            font-weight: 700;
             color: var(--text-2);
             background: none;
-            border: 1.5px solid var(--cream-d);
+            border: 1.5px solid var(--border);
             border-radius: 8px;
             padding: .5rem 1rem;
             cursor: pointer;
@@ -334,19 +382,19 @@
         }
         .sp-btn-cancel:hover { border-color: var(--text-3); color: var(--text); }
         .sp-btn-create {
-            font-family: 'DM Sans', sans-serif;
-            font-size: .8rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: .82rem;
             font-weight: 700;
             color: #fff;
-            background: var(--violet);
+            background: var(--blue);
             border: none;
             border-radius: 8px;
             padding: .5rem 1.25rem;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(124,58,237,.25);
+            box-shadow: 0 4px 12px rgba(37,99,235,.25);
             transition: background .15s, transform .1s;
         }
-        .sp-btn-create:hover { background: #6d28d9; transform: translateY(-1px); }
+        .sp-btn-create:hover { background: #1d4ed8; transform: translateY(-1px); }
     </style>
 </head>
 
@@ -358,8 +406,6 @@
 
     <!-- Profile cards grid -->
     <div class="sp-grid">
-
-        <!-- Active profiles -->
         <div th:each="p : ${profiles}">
             <form th:action="@{/select-profile/{id}(id=${p.id})}" method="post" style="display:contents;">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
@@ -372,7 +418,6 @@
             </form>
         </div>
 
-        <!-- Add profile -->
         <button type="button" class="sp-add-btn" id="openCreateModal">
             <div class="sp-add-icon">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -381,37 +426,54 @@
             </div>
             <span>Ajouter</span>
         </button>
-
     </div>
 
-    <!-- Manage profiles toggle -->
-    <div class="sp-manage-row" th:if="${!#lists.isEmpty(profiles)}">
+    <!-- Manage toggle -->
+    <div class="sp-manage-row" th:if="${!#lists.isEmpty(allProfiles)}">
         <button type="button" class="sp-manage-link" id="toggleManage">
             Gérer les profils
         </button>
     </div>
 
     <!-- Manage section -->
-    <div class="sp-manage-section" id="manageSection" th:if="${!#lists.isEmpty(profiles)}">
+    <div class="sp-manage-section" id="manageSection" th:if="${!#lists.isEmpty(allProfiles)}">
         <div class="sp-manage-header">
-            <span class="sp-manage-title">Désactiver un profil</span>
+            <span class="sp-manage-title">Gérer les profils</span>
         </div>
-        <div th:each="p : ${profiles}" class="sp-manage-row-item">
+        <div th:each="p : ${allProfiles}" class="sp-manage-row-item">
             <div class="sp-manage-avatar"
                  th:style="'background:' + ${p.color}"
                  th:text="${#strings.substring(p.displayName, 0, 1).toUpperCase()}">J</div>
-            <span class="sp-manage-name" th:text="${p.displayName}">Jean</span>
-            <form th:action="@{/profiles/{id}/deactivate(id=${p.id})}" method="post" style="margin:0;">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <button type="submit" class="sp-deactivate-btn">Désactiver</button>
-            </form>
+            <span class="sp-manage-name">
+                <span th:text="${p.displayName}">Jean</span>
+                <span th:unless="${p.active}" class="sp-inactive-badge">Inactif</span>
+            </span>
+            <div class="sp-manage-actions">
+                <!-- Modifier (actif uniquement) -->
+                <button th:if="${p.active}" type="button" class="sp-edit-btn"
+                        th:attr="data-id=${p.id}, data-name=${p.displayName}, data-color=${p.color}"
+                        onclick="openEditModal(this)">
+                    Modifier
+                </button>
+                <!-- Désactiver (actif) -->
+                <form th:if="${p.active}" th:action="@{/profiles/{id}/deactivate(id=${p.id})}" method="post" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="sp-deactivate-btn">Désactiver</button>
+                </form>
+                <!-- Réactiver (inactif) -->
+                <form th:unless="${p.active}" th:action="@{/profiles/{id}/reactivate(id=${p.id})}" method="post" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="sp-reactivate-btn">Réactiver</button>
+                </form>
+            </div>
         </div>
     </div>
 
 </div>
 
-<!-- Create profile modal -->
 <div layout:fragment="scripts">
+
+    <!-- Modal créer un profil -->
     <div class="sp-modal-overlay" id="createModal">
         <div class="sp-modal">
             <p class="sp-modal-title">Nouveau profil</p>
@@ -419,16 +481,16 @@
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <label class="sp-label" for="displayName">Prénom ou nom</label>
                 <input class="sp-input" type="text" name="displayName" id="displayName"
-                       placeholder="Ex : Jean, Marie..." maxlength="50" required autocomplete="off">
+                       placeholder="Ex : Jean, Marie…" maxlength="50" required autocomplete="off">
                 <label class="sp-label">Couleur de l'avatar</label>
-                <input type="hidden" name="color" id="selectedColor" th:value="${availableColors[0]}">
-                <div class="sp-colors">
+                <input type="hidden" name="color" id="selectedColorCreate" th:value="${availableColors[0]}">
+                <div class="sp-colors" id="colorsCreate">
                     <div th:each="c, i : ${availableColors}"
                          class="sp-color-opt"
                          th:classappend="${i.index == 0} ? ' selected' : ''"
                          th:style="'background:' + ${c}"
                          th:attr="data-color=${c}"
-                         onclick="selectColor(this)">
+                         onclick="selectColor(this, 'selectedColorCreate', 'colorsCreate')">
                     </div>
                 </div>
                 <div class="sp-modal-actions">
@@ -439,25 +501,86 @@
         </div>
     </div>
 
-    <script>
-        // Modal
-        const modal = document.getElementById('createModal');
-        document.getElementById('openCreateModal').addEventListener('click', () => {
-            modal.classList.add('open');
-            document.getElementById('displayName').focus();
-        });
-        document.getElementById('cancelCreate').addEventListener('click', () => modal.classList.remove('open'));
-        modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
+    <!-- Modal modifier un profil -->
+    <div class="sp-modal-overlay" id="editModal">
+        <div class="sp-modal">
+            <p class="sp-modal-title">Modifier le profil</p>
+            <form id="editForm" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <label class="sp-label" for="editDisplayName">Prénom ou nom</label>
+                <input class="sp-input" type="text" name="displayName" id="editDisplayName"
+                       maxlength="50" required autocomplete="off">
+                <label class="sp-label">Couleur de l'avatar</label>
+                <input type="hidden" name="color" id="selectedColorEdit">
+                <div class="sp-colors" id="colorsEdit">
+                    <div th:each="c : ${availableColors}"
+                         class="sp-color-opt"
+                         th:style="'background:' + ${c}"
+                         th:attr="data-color=${c}"
+                         onclick="selectColor(this, 'selectedColorEdit', 'colorsEdit')">
+                    </div>
+                </div>
+                <div class="sp-modal-actions">
+                    <button type="button" class="sp-btn-cancel" id="cancelEdit">Annuler</button>
+                    <button type="submit" class="sp-btn-create">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        // Color picker
-        function selectColor(el) {
-            document.querySelectorAll('.sp-color-opt').forEach(c => c.classList.remove('selected'));
+    <script>
+        /*<![CDATA[*/
+
+        // ── Color picker ──
+        function selectColor(el, hiddenId, containerId) {
+            document.querySelectorAll('#' + containerId + ' .sp-color-opt')
+                    .forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
-            document.getElementById('selectedColor').value = el.dataset.color;
+            document.getElementById(hiddenId).value = el.dataset.color;
         }
 
-        // Manage toggle
+        // ── Modal créer ──
+        const createModal = document.getElementById('createModal');
+        document.getElementById('openCreateModal').addEventListener('click', () => {
+            createModal.classList.add('open');
+            document.getElementById('displayName').focus();
+        });
+        document.getElementById('cancelCreate').addEventListener('click', () => createModal.classList.remove('open'));
+        createModal.addEventListener('click', e => { if (e.target === createModal) createModal.classList.remove('open'); });
+
+        // ── Modal modifier ──
+        const editModal = document.getElementById('editModal');
+
+        function openEditModal(btn) {
+            const id    = btn.getAttribute('data-id');
+            const name  = btn.getAttribute('data-name');
+            const color = btn.getAttribute('data-color');
+
+            document.getElementById('editForm').action = '/profiles/' + id + '/edit';
+            document.getElementById('editDisplayName').value = name;
+            document.getElementById('selectedColorEdit').value = color;
+
+            // Sélectionner la bonne couleur visuellement
+            document.querySelectorAll('#colorsEdit .sp-color-opt').forEach(c => {
+                c.classList.toggle('selected', c.dataset.color === color);
+            });
+
+            editModal.classList.add('open');
+            document.getElementById('editDisplayName').focus();
+        }
+
+        document.getElementById('cancelEdit').addEventListener('click', () => editModal.classList.remove('open'));
+        editModal.addEventListener('click', e => { if (e.target === editModal) editModal.classList.remove('open'); });
+
+        // ── Fermer avec Escape ──
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                createModal.classList.remove('open');
+                editModal.classList.remove('open');
+            }
+        });
+
+        // ── Manage toggle ──
         const toggleBtn = document.getElementById('toggleManage');
         if (toggleBtn) {
             toggleBtn.addEventListener('click', function () {
@@ -466,6 +589,8 @@
                 this.textContent = section.classList.contains('open') ? 'Masquer' : 'Gérer les profils';
             });
         }
+
+        /*]]>*/
     </script>
 </div>
 

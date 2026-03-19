@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Controller
@@ -63,8 +64,9 @@ public class EmployeeSignupController {
 
         // Encoder le mot de passe
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // Initialiser created_at
+        // Initialiser created_at et activeFrom
         user.setCreated_at(LocalDateTime.now());
+        user.setActiveFrom(LocalDate.now());
         // Le rôle est automatiquement MEMBER (pas d'input dans le form)
         user.setRole(be.stage.ticharmony.model.UserRole.MEMBER);
         // Type "employee"

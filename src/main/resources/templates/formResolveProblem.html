@@ -3,121 +3,135 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Résoudre la demande</title>
+    <title>Soumettre la résolution</title>
     <style>
-        body { background: #faf9f7 !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body { background: #eef2f8 !important; }
 
         :root {
-            --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
-            --green:    #16a34a;
-            --green-bg: #f0fdf4;
-            --green-br: #bbf7d0;
-            --red:      #dc2626;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --white:      #ffffff;
+            --bg:         #eef2f8;
+            --bg-d:       #dde4ef;
+            --border:     #d1d9e8;
+            --text:       #1a2035;
+            --text-2:     #5a6480;
+            --text-3:     #9aa3b8;
+            --blue:       #2563eb;
+            --blue-bg:    #eff6ff;
+            --blue-br:    #bfdbfe;
+            --green:      #16a34a;
+            --green-bg:   #f0fdf4;
+            --green-br:   #bbf7d0;
+            --amber:      #d97706;
+            --amber-bg:   #fffbeb;
+            --amber-br:   #fde68a;
+            --red:        #dc2626;
+            --red-bg:     #fef2f2;
+            --red-br:     #fecaca;
+            --sh:         0 2px 10px rgba(37,99,235,.06), 0 1px 4px rgba(0,0,0,.04);
+            --sh-lg:      0 8px 28px rgba(37,99,235,.1), 0 3px 10px rgba(0,0,0,.05);
+            --radius:     14px;
         }
 
         .fr-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
-            max-width: 860px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
         /* ── Back link ── */
         .back-link {
             display: inline-flex; align-items: center; gap: 6px;
-            font-size: .85rem; font-weight: 600; color: var(--text-3);
+            font-size: .88rem; font-weight: 700; color: var(--text-3);
             text-decoration: none; margin-bottom: 1.75rem; transition: color .15s;
         }
-        .back-link:hover { color: var(--violet); }
+        .back-link:hover { color: var(--blue); }
         .back-link svg { transition: transform .15s; }
         .back-link:hover svg { transform: translateX(-3px); }
 
         /* ── Page title ── */
         .page-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.7rem; font-weight: 800;
             color: var(--text); letter-spacing: -.03em;
-            margin-bottom: .3rem;
+            margin-bottom: .25rem;
         }
-        .page-sub {
-            font-size: .95rem; color: var(--text-2);
-            margin-bottom: 2rem;
+        .page-sub { font-size: .9rem; color: var(--text-2); margin-bottom: 2rem; }
+
+        /* ── Info banner ── */
+        .info-banner {
+            display: flex; align-items: flex-start; gap: .75rem;
+            background: var(--green-bg); border: 1px solid var(--green-br);
+            border-radius: var(--radius); padding: 1rem 1.15rem;
+            margin-bottom: 1rem;
         }
+        .info-banner-text {
+            font-size: .875rem; line-height: 1.65; color: #15803d;
+        }
+        .info-banner-text strong { font-weight: 700; }
 
         /* ── Cards ── */
         .fr-card {
             background: var(--white);
-            border-radius: 18px;
+            border-radius: var(--radius);
             box-shadow: var(--sh);
-            padding: 1.5rem 1.75rem;
+            padding: 1.4rem 1.6rem;
             margin-bottom: 1rem;
         }
 
-        /* ── Section label ── */
         .section-label {
-            font-family: 'Sora', sans-serif;
-            font-size: .72rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .7rem; font-weight: 700;
             letter-spacing: .08em; text-transform: uppercase;
-            color: var(--text-3); margin-bottom: .75rem;
+            color: var(--text-3); margin-bottom: .85rem;
         }
 
         /* ── Problem recap ── */
         .recap-title {
-            font-family: 'Sora', sans-serif;
-            font-size: 1.1rem; font-weight: 800;
-            color: var(--text); margin-bottom: .75rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.05rem; font-weight: 800;
+            color: var(--text); margin-bottom: .65rem;
         }
         .recap-desc {
-            font-size: .95rem; line-height: 1.7;
+            font-size: .9rem; line-height: 1.7;
             color: var(--text-2);
-            background: var(--cream);
-            border: 1px solid var(--cream-d);
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 10px;
             padding: .85rem 1rem;
             margin-bottom: 1rem;
         }
-        .meta-row {
-            display: flex; flex-wrap: wrap; gap: .5rem;
-        }
+        .meta-row { display: flex; flex-wrap: wrap; gap: .4rem; }
         .meta-chip {
             display: inline-flex; align-items: center; gap: .4rem;
-            background: var(--cream); border: 1px solid var(--cream-d);
-            border-radius: 8px; padding: .3rem .75rem;
-            font-size: .82rem; color: var(--text-2);
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 7px; padding: .28rem .7rem;
+            font-size: .8rem; color: var(--text-2); font-weight: 600;
         }
         .meta-chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-
-        /* ── Priority badges ── */
-        .b-urgent { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:8px; padding:.3rem .75rem; font-size:.82rem; font-weight:700; }
-        .b-high   { background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; border-radius:8px; padding:.3rem .75rem; font-size:.82rem; font-weight:700; }
-        .b-medium { background:var(--violet-bg); color:var(--violet); border:1px solid var(--violet-br); border-radius:8px; padding:.3rem .75rem; font-size:.82rem; font-weight:700; }
-        .b-low    { background:#f5f5f4; color:#a8a29e; border:1px solid #e7e5e4; border-radius:8px; padding:.3rem .75rem; font-size:.82rem; font-weight:700; }
+        .b-urgent { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br);   border-radius: 7px; padding: .28rem .7rem; font-size: .8rem; font-weight: 700; }
+        .b-high   { background: #fff7ed;         color: #ea580c;      border: 1px solid #fed7aa;         border-radius: 7px; padding: .28rem .7rem; font-size: .8rem; font-weight: 700; }
+        .b-medium { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-br);  border-radius: 7px; padding: .28rem .7rem; font-size: .8rem; font-weight: 700; }
+        .b-low    { background: var(--bg);       color: var(--text-3); border: 1px solid var(--border);   border-radius: 7px; padding: .28rem .7rem; font-size: .8rem; font-weight: 700; }
 
         /* ── Textarea ── */
         .fc-label {
             display: block;
-            font-size: .82rem; font-weight: 600;
+            font-size: .82rem; font-weight: 700;
             color: var(--text-2); margin-bottom: .4rem;
         }
         .fc-label .req { color: var(--red); }
         .fc-textarea {
             width: 100%;
             padding: .85rem 1rem;
-            background: var(--cream);
-            border: 1px solid var(--cream-d);
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 10px;
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: .95rem; line-height: 1.7;
             outline: none; resize: vertical;
             min-height: 160px;
@@ -130,7 +144,7 @@
             box-shadow: 0 0 0 3px rgba(22,163,74,.1);
         }
         .char-hint {
-            font-size: .75rem; color: var(--text-3);
+            font-size: .75rem; font-weight: 600; color: var(--text-3);
             margin-top: .35rem; text-align: right;
             transition: color .2s;
         }
@@ -141,37 +155,25 @@
             flex: 1; min-width: 200px;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             background: var(--green); color: #fff;
-            border: none; padding: .9rem 1.5rem; border-radius: 12px;
-            font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700;
+            border: none; padding: .9rem 1.5rem; border-radius: 11px;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; font-weight: 700;
             cursor: pointer; box-shadow: 0 4px 14px rgba(22,163,74,.25);
             transition: background .15s, transform .15s;
         }
         .btn-submit:hover { background: #15803d; transform: translateY(-1px); }
         .btn-cancel {
             display: inline-flex; align-items: center; gap: 6px;
-            padding: .9rem 1.5rem; border-radius: 12px;
-            background: var(--white); border: 1px solid var(--cream-d);
-            color: var(--text-2); font-family: 'Sora', sans-serif;
-            font-size: .9rem; font-weight: 600;
+            padding: .9rem 1.4rem; border-radius: 11px;
+            background: var(--white); border: 1px solid var(--border);
+            color: var(--text-2); font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .88rem; font-weight: 700;
             text-decoration: none; transition: background .15s, color .15s;
         }
-        .btn-cancel:hover { background: var(--cream-d); color: var(--text); }
-
-        /* ── Info banner ── */
-        .info-banner {
-            display: flex; align-items: flex-start; gap: .75rem;
-            background: var(--green-bg); border: 1px solid var(--green-br);
-            border-radius: 12px; padding: 1rem 1.1rem;
-            margin-bottom: 1rem;
-        }
-        .info-banner-text {
-            font-size: .88rem; line-height: 1.6; color: #15803d;
-        }
-        .info-banner-text strong { font-weight: 700; }
+        .btn-cancel:hover { background: var(--bg-d, #dde4ef); color: var(--text); }
 
         /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(12px); }
+            from { opacity: 0; transform: translateY(10px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
@@ -184,7 +186,6 @@
 
 <div layout:fragment="content" class="fr-root">
 
-    <!-- Back link -->
     <a th:href="@{'/problems/' + ${problem.id}}" class="back-link fu d1">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -193,7 +194,6 @@
         Retour à la demande
     </a>
 
-    <!-- Page title -->
     <div class="fu d1">
         <h1 class="page-title">Soumettre la résolution</h1>
         <p class="page-sub" th:text="'Demande #' + ${problem.id} + ' — ' + ${problem.title}"></p>
@@ -206,39 +206,35 @@
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
         <div class="info-banner-text">
-            Une fois soumise, la résolution sera <strong>vérifiée par un administrateur</strong> avant la clôture du ticket.
-            Soyez précis pour faciliter la validation.
+            Une fois soumise, la résolution sera envoyée au client pour confirmation.
+            Soyez <strong>précis et complet</strong> pour éviter une réouverture du ticket.
         </div>
     </div>
 
-    <!-- Problem recap -->
+    <!-- Rappel de la demande -->
     <div class="fr-card fu d2">
         <div class="section-label">Rappel de la demande</div>
         <div class="recap-title" th:text="${problem.title}"></div>
         <div class="recap-desc" th:text="${problem.description}"></div>
         <div class="meta-row">
-            <!-- Demandeur -->
             <span class="meta-chip" th:if="${problem.ticketUserInfo != null}">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
                 <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
             </span>
-            <!-- Entreprise -->
             <span class="meta-chip" th:if="${problem.user != null}">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
                 </svg>
                 <span th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}"></span>
             </span>
-            <!-- Catégorie -->
             <span class="meta-chip">
-                <span class="meta-chip-dot" style="background:#2563eb;"></span>
+                <span class="meta-chip-dot" style="background:var(--blue);"></span>
                 <span th:text="${problem.category}"></span>
             </span>
-            <!-- Priorité -->
             <span th:if="${problem.priority.name() == 'URGENT'}" class="b-urgent">⚠ Critique</span>
             <span th:if="${problem.priority.name() == 'HIGH'}"   class="b-high">↑ Élevée</span>
             <span th:if="${problem.priority.name() == 'MEDIUM'}" class="b-medium">Normale</span>
@@ -246,7 +242,7 @@
         </div>
     </div>
 
-    <!-- Resolution form -->
+    <!-- Formulaire de résolution -->
     <div class="fr-card fu d3">
         <div class="section-label">Votre résolution</div>
         <form th:action="@{'/problems/' + ${problem.id} + '/resolve'}" method="post">
@@ -256,7 +252,7 @@
                 Décrivez les étapes effectuées <span class="req">*</span>
             </label>
             <textarea id="resolution" name="resolution" rows="7" required class="fc-textarea"
-                      placeholder="Ex : Redémarrage du service réseau, mise à jour du pilote, remplacement du composant défaillant…&#10;&#10;Détaillez ce que vous avez fait pour que l'admin puisse valider la résolution."></textarea>
+                      placeholder="Ex : Redémarrage du service réseau, mise à jour du pilote, remplacement du composant défaillant…&#10;&#10;Soyez précis — le client lira cette résolution avant de confirmer."></textarea>
             <div class="char-hint" id="charHint">0 caractère</div>
 
             <div class="btn-row">

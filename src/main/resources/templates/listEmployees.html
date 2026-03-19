@@ -5,26 +5,31 @@
 <head>
     <title>Gestion des employés</title>
     <style>
-        body { background: #faf9f7 !important; }
+        body { background: #eef2f8 !important; }
 
         :root {
+            --bg:       #eef2f8;
             --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
+            --blue:     #2563eb;
+            --blue-dk:  #1d4ed8;
+            --blue-bg:  #eff6ff;
+            --blue-br:  #bfdbfe;
+            --text:     #0f172a;
+            --text-2:   #64748b;
+            --text-3:   #94a3b8;
+            --border:   #e2e8f0;
             --red:      #dc2626;
             --red-bg:   #fef2f2;
             --red-br:   #fecaca;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --green:    #16a34a;
+            --green-bg: #f0fdf4;
+            --green-br: #bbf7d0;
+            --sh:       0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.04);
+            --radius:   14px;
         }
 
         .le-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
         }
@@ -33,11 +38,14 @@
         .le-header {
             display: flex; align-items: flex-start;
             justify-content: space-between; gap: 1rem;
-            flex-wrap: wrap; margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.25rem;
         }
         .le-title {
-            font-family: 'Sora', sans-serif;
-            font-size: 1.8rem; font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.85rem; font-weight: 800;
             color: var(--text); letter-spacing: -.03em;
             margin-bottom: .2rem;
         }
@@ -45,18 +53,38 @@
 
         .btn-new {
             display: inline-flex; align-items: center; gap: 7px;
-            background: var(--violet); color: #fff;
+            background: var(--blue); color: #fff;
             padding: .7rem 1.3rem; border-radius: 11px;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .85rem; font-weight: 700;
             text-decoration: none; white-space: nowrap;
-            box-shadow: 0 4px 14px rgba(124,58,237,.25);
+            box-shadow: 0 4px 14px rgba(37,99,235,.25);
             transition: background .15s, transform .15s;
         }
-        .btn-new:hover { background: #6d28d9; transform: translateY(-1px); }
+        .btn-new:hover { background: var(--blue-dk); transform: translateY(-1px); }
+
+        /* ── Toolbar ── */
+        .toolbar {
+            display: flex; align-items: center; gap: .75rem;
+            margin-bottom: 1rem; flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: .35rem .95rem; border-radius: 99px;
+            border: 1.5px solid var(--border);
+            background: var(--white); color: var(--text-2);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .78rem; font-weight: 700;
+            cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+            white-space: nowrap;
+        }
+        .filter-btn:hover { background: var(--bg); border-color: var(--border); }
+        .filter-btn--active {
+            background: var(--blue); border-color: var(--blue); color: #fff;
+            box-shadow: 0 2px 8px rgba(37,99,235,.25);
+        }
+        .filter-btn--active:hover { background: var(--blue-dk); border-color: var(--blue-dk); }
 
         /* ── Search ── */
-        .search-wrap { position: relative; margin-bottom: 1rem; }
+        .search-wrap { position: relative; flex: 1; min-width: 180px; }
         .search-icon {
             position: absolute; left: 13px; top: 50%;
             transform: translateY(-50%);
@@ -65,43 +93,50 @@
         .search-input {
             width: 100%;
             background: var(--white);
-            border: 1px solid var(--cream-d);
+            border: 1px solid var(--border);
             border-radius: 11px;
             color: var(--text);
-            padding: .7rem .7rem .7rem 2.5rem;
-            font-family: 'DM Sans', sans-serif;
+            padding: .65rem .7rem .65rem 2.5rem;
+            font-family: 'Nunito', sans-serif;
             font-size: .9rem; outline: none;
             box-shadow: var(--sh);
-            transition: border-color .2s, box-shadow .2s;
+            transition: border-color .15s, box-shadow .15s;
         }
         .search-input::placeholder { color: var(--text-3); }
         .search-input:focus {
-            border-color: var(--violet);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
 
         /* ── Table card ── */
         .table-card {
             background: var(--white);
-            border-radius: 16px; box-shadow: var(--sh);
+            border-radius: var(--radius);
+            border-top: 3px solid var(--blue);
+            box-shadow: 0 4px 28px rgba(15,23,42,.08), 0 1px 6px rgba(15,23,42,.04);
             overflow: hidden;
         }
         .le-table { width: 100%; border-collapse: collapse; }
-        .le-table thead tr { border-bottom: 1px solid var(--cream-d); }
+        .le-table thead tr {
+            background: var(--bg);
+            border-bottom: 1.5px solid var(--border);
+        }
         .le-table th {
             padding: .85rem 1.1rem;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .68rem; font-weight: 700;
             letter-spacing: .08em; text-transform: uppercase;
             color: var(--text-3); text-align: left;
         }
         .le-table th.center { text-align: center; }
         .le-table tbody tr {
-            border-bottom: 1px solid var(--cream-d);
+            border-bottom: 1px solid var(--border);
             transition: background .12s;
         }
         .le-table tbody tr:last-child { border-bottom: none; }
-        .le-table tbody tr:hover { background: var(--cream); }
+        .le-table tbody tr:hover { background: var(--bg); box-shadow: inset 3px 0 0 var(--blue); }
+        .le-table tbody tr.emp-row.inactive { opacity: .5; }
+        .le-table tbody tr.emp-row.inactive:hover { background: var(--bg); }
         .le-table td { padding: .85rem 1.1rem; vertical-align: middle; }
         .le-table td.center { text-align: center; }
 
@@ -109,22 +144,22 @@
         .emp-avatar {
             width: 36px; height: 36px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .75rem; font-weight: 800;
             flex-shrink: 0; text-transform: uppercase;
         }
-        .avatar-admin  { background: var(--violet-bg); color: var(--violet); border: 1px solid var(--violet-br); }
-        .avatar-member { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .avatar-admin  { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-br); }
+        .avatar-member { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
 
-        .emp-name { font-weight: 600; color: var(--text); font-size: .9rem; }
+        .emp-name { font-weight: 700; color: var(--text); font-size: .9rem; font-family: 'Plus Jakarta Sans', sans-serif; }
         .emp-id   { font-size: .73rem; color: var(--text-3); margin-top: 2px; }
 
         /* ── Login badge ── */
         .login-badge {
             display: inline-flex; align-items: center; gap: 5px;
-            background: var(--cream); border: 1px solid var(--cream-d);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: 6px; padding: .25rem .6rem;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .78rem; font-weight: 600; color: var(--text-2);
         }
 
@@ -133,121 +168,92 @@
             color: var(--text-2); font-size: .85rem;
             text-decoration: none; transition: color .15s;
         }
-        .email-link:hover { color: var(--violet); }
+        .email-link:hover { color: var(--blue); }
 
         /* ── Role select ── */
         .role-form { display: flex; align-items: center; gap: 6px; }
         .role-select {
-            background: var(--cream);
-            border: 1px solid var(--cream-d);
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text);
             padding: .3rem 1.8rem .3rem .65rem;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: .82rem; outline: none;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 7px center;
             cursor: pointer;
-            transition: border-color .2s;
+            transition: border-color .15s;
         }
-        .role-select:focus { border-color: var(--violet); }
+        .role-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
         .role-confirm-btn {
             width: 28px; height: 28px; border-radius: 7px;
-            background: var(--violet-bg);
-            border: 1px solid var(--violet-br);
-            color: var(--violet);
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-br);
+            color: var(--blue);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: background .15s; flex-shrink: 0;
         }
-        .role-confirm-btn:hover { background: var(--violet-br); }
+        .role-confirm-btn:hover { background: var(--blue-br); }
 
         /* ── Action buttons ── */
         .act-edit {
             display: inline-flex; align-items: center; gap: 5px;
             padding: .28rem .75rem; border-radius: 7px;
-            background: var(--violet-bg); border: 1px solid var(--violet-br);
-            color: var(--violet);
+            background: var(--blue-bg); border: 1px solid var(--blue-br);
+            color: var(--blue);
             font-size: .78rem; font-weight: 600;
-            text-decoration: none; font-family: 'Sora', sans-serif;
-            transition: background .15s;
+            text-decoration: none; font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background .15s; white-space: nowrap;
         }
-        .act-edit:hover { background: var(--violet-br); }
-        .act-delete {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: .28rem .75rem; border-radius: 7px;
-            background: var(--red-bg); border: 1px solid var(--red-br);
-            color: var(--red);
-            font-size: .78rem; font-weight: 600;
-            font-family: 'Sora', sans-serif;
-            cursor: pointer; transition: background .15s;
-        }
-        .act-delete:hover { background: #fee2e2; }
+        .act-edit:hover { background: var(--blue-br); }
 
-        /* ── Toggle actif/inactif ── */
         .act-toggle-off {
             display: inline-flex; align-items: center; gap: 5px;
             padding: .28rem .75rem; border-radius: 7px;
             background: #fef9c3; border: 1px solid #fde047;
             color: #854d0e; font-size: .78rem; font-weight: 600;
-            font-family: 'Sora', sans-serif;
-            cursor: pointer; transition: background .15s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: background .15s; white-space: nowrap;
         }
         .act-toggle-off:hover { background: #fef08a; }
+
         .act-toggle-on {
             display: inline-flex; align-items: center; gap: 5px;
             padding: .28rem .75rem; border-radius: 7px;
-            background: #f0fdf4; border: 1px solid #bbf7d0;
-            color: #15803d; font-size: .78rem; font-weight: 600;
-            font-family: 'Sora', sans-serif;
-            cursor: pointer; transition: background .15s;
+            background: var(--green-bg); border: 1px solid var(--green-br);
+            color: var(--green); font-size: .78rem; font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: background .15s; white-space: nowrap;
         }
         .act-toggle-on:hover { background: #dcfce7; }
 
         /* ── Statut badge ── */
-        .status-active   { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Sora',sans-serif;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0; }
-        .status-inactive { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Sora',sans-serif;background:#fef2f2;color:#dc2626;border:1px solid #fecaca; }
-
-        /* ── Ligne inactive grisée ── */
-        .emp-row.inactive { opacity: .5; }
-
-        /* ── Période ── */
-        .period-text { font-size:.78rem; color:var(--text-2); white-space:nowrap; }
-        .period-none { font-size:.78rem; color:var(--text-3); }
+        .status-active {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: .18rem .6rem; border-radius: 99px;
+            font-size: .68rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br);
+        }
+        .status-inactive {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: .18rem .6rem; border-radius: 99px;
+            font-size: .68rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--red-bg); color: var(--red); border: 1px solid var(--red-br);
+        }
 
         /* ── Empty state ── */
         .empty-state { padding: 4rem 1rem; text-align: center; }
         .empty-icon {
             width: 52px; height: 52px; border-radius: 14px;
-            background: var(--violet-bg); border: 1px solid var(--violet-br);
+            background: var(--blue-bg); border: 1px solid var(--blue-br);
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 1rem;
         }
-
-        /* ── Role badge (display) ── */
-        .role-pill {
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: .2rem .65rem; border-radius: 99px;
-            font-family: 'Sora', sans-serif; font-size: .7rem; font-weight: 700;
-        }
-        .role-admin  { background: var(--violet-bg); color: var(--violet); border: 1px solid var(--violet-br); }
-        .role-member { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-
-        /* ── Filtre buttons ── */
-        .filter-btn {
-            padding: .3rem .9rem; border-radius: 99px;
-            border: 1px solid var(--cream-d);
-            background: var(--white); color: var(--text-2);
-            font-family: 'Sora', sans-serif; font-size: .75rem; font-weight: 600;
-            cursor: pointer; transition: background .15s, border-color .15s, color .15s;
-        }
-        .filter-btn:hover { background: var(--cream); border-color: var(--cream-d); }
-        .filter-btn--active {
-            background: var(--violet); border-color: var(--violet);
-            color: #fff;
-        }
-        .filter-btn--active:hover { background: #6d28d9; border-color: #6d28d9; }
 
         /* ── Animations ── */
         @keyframes fadeUp {
@@ -260,33 +266,68 @@
         .d3 { animation-delay: .16s; }
         .d4 { animation-delay: .22s; }
 
-        /* ── Polish v2 ── */
-        .le-title  { font-size: 2rem; }
-        .le-header {
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--cream-d);
-            margin-bottom: 1.25rem;
+        /* ── Modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,.45);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
         }
-        .toolbar {
-            display: flex; align-items: center; gap: .75rem;
-            margin-bottom: 1rem; flex-wrap: wrap;
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--white);
+            border-radius: 18px;
+            box-shadow: 0 24px 64px rgba(0,0,0,.18);
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            animation: fadeUp .25s ease;
         }
-        .toolbar .search-wrap { flex: 1; min-width: 180px; margin-bottom: 0; }
-        .table-card {
-            border-top: 3px solid var(--violet);
-            box-shadow: 0 4px 28px rgba(0,0,0,.09), 0 1px 6px rgba(0,0,0,.04);
+        .modal-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.1rem;
         }
-        .le-table thead tr {
-            background: var(--cream);
-            border-bottom: 1.5px solid var(--cream-d);
+        .modal-icon.danger  { background: var(--red-bg);   border: 1.5px solid var(--red-br); }
+        .modal-icon.success { background: var(--green-bg); border: 1.5px solid var(--green-br); }
+        .modal-icon.info    { background: var(--blue-bg);  border: 1.5px solid var(--blue-br); }
+        .modal-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.05rem; font-weight: 800;
+            color: var(--text); margin-bottom: .5rem;
         }
-        .le-table tbody tr:hover {
-            background: #f5f3ff;
-            box-shadow: inset 3px 0 0 var(--violet);
+        .modal-body {
+            font-size: .88rem; color: var(--text-2);
+            line-height: 1.6; margin-bottom: 1.5rem;
         }
-        .le-table tbody tr.emp-row.inactive:hover { background: var(--cream); }
-        .filter-btn--active { box-shadow: 0 2px 8px rgba(124,58,237,.3); }
-        .act-edit, .act-toggle-off, .act-toggle-on { white-space: nowrap; }
+        .modal-actions { display: flex; gap: .65rem; justify-content: flex-end; }
+        .modal-btn-cancel {
+            padding: .65rem 1.3rem;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 9px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .85rem; font-weight: 700; color: var(--text-2);
+            cursor: pointer; transition: background .15s;
+        }
+        .modal-btn-cancel:hover { background: #dde4ef; color: var(--text); }
+        .modal-btn-confirm {
+            padding: .65rem 1.3rem;
+            border: none; border-radius: 9px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .85rem; font-weight: 700; color: #fff;
+            cursor: pointer; transition: background .15s;
+        }
+        .modal-btn-confirm.is-danger  { background: var(--red); }
+        .modal-btn-confirm.is-danger:hover  { background: #b91c1c; }
+        .modal-btn-confirm.is-success { background: var(--green); }
+        .modal-btn-confirm.is-success:hover { background: #15803d; }
+        .modal-btn-confirm.is-blue    { background: var(--blue); }
+        .modal-btn-confirm.is-blue:hover    { background: var(--blue-dk); }
     </style>
 </head>
 
@@ -307,13 +348,13 @@
         </a>
     </div>
 
-    <!-- Toolbar: filtres + recherche -->
-    <div class="toolbar fu d3">
+    <!-- Toolbar -->
+    <div class="toolbar fu d2">
         <div style="display:flex;gap:.5rem;flex-shrink:0;">
             <button onclick="setFilter('active')"   id="f-active"   class="filter-btn filter-btn--active">Actifs</button>
             <button onclick="setFilter('inactive')" id="f-inactive" class="filter-btn">Inactifs</button>
         </div>
-        <div class="search-wrap" style="flex:1;min-width:180px;margin-bottom:0;">
+        <div class="search-wrap">
             <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -325,7 +366,7 @@
     </div>
 
     <!-- Table -->
-    <div class="table-card fu d4">
+    <div class="table-card fu d3">
         <div style="overflow-x:auto;">
             <table class="le-table" id="empTable">
                 <thead>
@@ -336,7 +377,6 @@
                         <th>Téléphone</th>
                         <th>Rôle</th>
                         <th>Statut</th>
-
                         <th class="center">Actions</th>
                     </tr>
                 </thead>
@@ -389,13 +429,17 @@
                             <form th:action="@{/employees/changeRole}" method="post" class="role-form">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                 <input type="hidden" name="userId" th:value="${employee.id}"/>
-                                <select name="newRole" class="role-select">
+                                <select name="newRole" class="role-select"
+                                        th:data-name="${employee.firstname + ' ' + employee.lastname}"
+                                        th:data-current="${employee.role != null ? employee.role.name() : ''}"
+                                        th:data-current-label="${employee.role != null and employee.role.name() == 'ADMIN'} ? 'Admin' : 'Technicien'">
                                     <option th:selected="${employee.role != null and employee.role.name() == 'ADMIN'}"
                                             value="ADMIN">Admin</option>
                                     <option th:selected="${employee.role != null and employee.role.name() == 'MEMBER'}"
                                             value="MEMBER">Technicien</option>
                                 </select>
-                                <button type="submit" class="role-confirm-btn" title="Appliquer">
+                                <button type="button" class="role-confirm-btn" title="Appliquer"
+                                        onclick="openRoleModal(this.closest('form'))">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"/>
@@ -416,7 +460,7 @@
                             </span>
                         </td>
 
-<!-- Actions -->
+                        <!-- Actions -->
                         <td class="center">
                             <div style="display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;">
                                 <a th:href="@{'/employees/edit/' + ${employee.id}}" class="act-edit">
@@ -429,10 +473,10 @@
                                 </a>
                                 <form th:action="@{'/employees/' + ${employee.id} + '/toggle'}" method="post" style="display:inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                    <button type="submit"
+                                    <button type="button"
                                             th:class="${employee.active} ? 'act-toggle-off' : 'act-toggle-on'"
                                             th:attr="data-name=${employee.firstname + ' ' + employee.lastname},data-active=${employee.active}"
-                                            onclick="return confirmToggle(this)">
+                                            onclick="openToggleModal(this)">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path th:if="${employee.active}"
@@ -455,13 +499,13 @@
                                 <div class="empty-icon">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
                                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                                         style="color:var(--violet);">
+                                         style="color:var(--blue);">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                         <circle cx="9" cy="7" r="4"/>
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/>
                                     </svg>
                                 </div>
-                                <div style="font-family:'Sora',sans-serif;font-weight:700;color:var(--text);margin-bottom:.35rem;">Aucun employé</div>
+                                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--text);margin-bottom:.35rem;">Aucun employé</div>
                                 <div style="font-size:.85rem;color:var(--text-3);">Créez votre premier employé avec le bouton ci-dessus.</div>
                             </div>
                         </td>
@@ -478,21 +522,52 @@
         </div>
     </div>
 
+    <!-- Modal activation/désactivation -->
+    <div id="toggleModal" class="modal-overlay" onclick="if(event.target===this) closeToggleModal()">
+        <div class="modal-box">
+            <div id="toggleModalIcon" class="modal-icon danger">
+                <svg id="toggleModalIconSvg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/><path d="M12 2v10"/>
+                </svg>
+            </div>
+            <div id="toggleModalTitle" class="modal-title">Désactiver cet employé ?</div>
+            <p id="toggleModalBody" class="modal-body"></p>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn-cancel" onclick="closeToggleModal()">Annuler</button>
+                <button type="button" id="toggleModalBtn" class="modal-btn-confirm is-danger" onclick="submitToggle()">Désactiver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal changement de rôle -->
+    <div id="roleModal" class="modal-overlay" onclick="if(event.target===this) closeRoleModal()">
+        <div class="modal-box">
+            <div class="modal-icon info">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <div id="roleModalTitle" class="modal-title">Changer le rôle ?</div>
+            <p id="roleModalBody" class="modal-body"></p>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn-cancel" onclick="closeRoleModal()">Annuler</button>
+                <button type="button" id="roleModalBtn" class="modal-btn-confirm is-blue" onclick="submitRole()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <th:block layout:fragment="scripts">
 <script>
 /*<![CDATA[*/
-var currentFilter = 'active';
 
-function confirmToggle(btn) {
-    var name   = btn.getAttribute('data-name');
-    var active = btn.getAttribute('data-active') === 'true';
-    var msg = active
-        ? 'Désactiver ' + name + ' ? Son accès sera bloqué.'
-        : 'Réactiver ' + name + ' ?';
-    return confirm(msg);
-}
+/* ── Filter + search ── */
+var currentFilter = 'active';
 
 function setFilter(f) {
     currentFilter = f;
@@ -513,8 +588,8 @@ function applyFilters() {
     var visible = 0;
     rows.forEach(function(r) {
         var isInactive = r.classList.contains('inactive');
-        var matchFilter = (currentFilter === 'active'   && !isInactive)
-            || (currentFilter === 'inactive' &&  isInactive);
+        var matchFilter = (currentFilter === 'active' && !isInactive)
+                       || (currentFilter === 'inactive' && isInactive);
         var matchSearch = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
         var show = matchFilter && matchSearch;
         r.style.display = show ? '' : 'none';
@@ -529,6 +604,82 @@ function applyFilters() {
             : 'Aucun employé dans cette catégorie.';
     }
 }
+
+/* ── Toggle modal ── */
+var pendingToggleForm = null;
+
+function openToggleModal(btn) {
+    var name   = btn.getAttribute('data-name');
+    var active = btn.getAttribute('data-active') === 'true';
+    pendingToggleForm = btn.closest('form');
+
+    var icon    = document.getElementById('toggleModalIcon');
+    var iconSvg = document.getElementById('toggleModalIconSvg');
+    var title   = document.getElementById('toggleModalTitle');
+    var body    = document.getElementById('toggleModalBody');
+    var confirm = document.getElementById('toggleModalBtn');
+
+    if (active) {
+        icon.className = 'modal-icon danger';
+        iconSvg.setAttribute('stroke', '#dc2626');
+        iconSvg.innerHTML = '<path d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/><path d="M12 2v10"/>';
+        title.textContent = 'Désactiver ' + name + ' ?';
+        body.textContent  = 'Son accès à l\'application sera bloqué immédiatement. Vous pourrez le réactiver à tout moment.';
+        confirm.textContent = 'Désactiver';
+        confirm.className = 'modal-btn-confirm is-danger';
+    } else {
+        icon.className = 'modal-icon success';
+        iconSvg.setAttribute('stroke', '#16a34a');
+        iconSvg.innerHTML = '<path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+        title.textContent = 'Réactiver ' + name + ' ?';
+        body.textContent  = 'Son accès à l\'application sera rétabli.';
+        confirm.textContent = 'Réactiver';
+        confirm.className = 'modal-btn-confirm is-success';
+    }
+
+    document.getElementById('toggleModal').classList.add('open');
+}
+
+function closeToggleModal() {
+    document.getElementById('toggleModal').classList.remove('open');
+    pendingToggleForm = null;
+}
+
+function submitToggle() {
+    if (pendingToggleForm) pendingToggleForm.submit();
+}
+
+/* ── Role modal ── */
+var pendingRoleForm = null;
+
+function openRoleModal(form) {
+    var select       = form.querySelector('select[name="newRole"]');
+    var name         = select.dataset.name || '';
+    var current      = select.dataset.current || '';
+    var currentLabel = select.dataset.currentLabel || current;
+    var newRole      = select.value;
+    var newLabel     = newRole === 'ADMIN' ? 'Admin' : 'Technicien';
+
+    if (!newRole || newRole === current) return;
+
+    pendingRoleForm = form;
+
+    document.getElementById('roleModalTitle').textContent = 'Changer le rôle de ' + name + ' ?';
+    document.getElementById('roleModalBody').textContent  =
+        'Le rôle passera de ' + currentLabel + ' à ' + newLabel + '. Cette modification prend effet immédiatement.';
+
+    document.getElementById('roleModal').classList.add('open');
+}
+
+function closeRoleModal() {
+    document.getElementById('roleModal').classList.remove('open');
+    pendingRoleForm = null;
+}
+
+function submitRole() {
+    if (pendingRoleForm) pendingRoleForm.submit();
+}
+
 /*]]>*/
 </script>
 </th:block>

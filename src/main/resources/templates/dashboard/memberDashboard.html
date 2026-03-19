@@ -5,88 +5,117 @@
 <head>
     <title>Tableau de bord technicien</title>
     <style>
-        body { background: #faf9f7 !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body { background: #eef2f8 !important; }
 
         :root {
-            --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
-            --green:    #16a34a;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --white:      #ffffff;
+            --bg:         #eef2f8;
+            --bg-d:       #dde4ef;
+            --border:     #d1d9e8;
+            --text:       #1a2035;
+            --text-2:     #5a6480;
+            --text-3:     #9aa3b8;
+            --blue:       #2563eb;
+            --blue-bg:    #eff6ff;
+            --blue-br:    #bfdbfe;
+            --green:      #16a34a;
+            --green-bg:   #f0fdf4;
+            --green-br:   #bbf7d0;
+            --amber:      #d97706;
+            --amber-bg:   #fffbeb;
+            --amber-br:   #fde68a;
+            --red:        #dc2626;
+            --red-bg:     #fef2f2;
+            --red-br:     #fecaca;
+            --sh:         0 2px 10px rgba(37,99,235,.06), 0 1px 4px rgba(0,0,0,.04);
+            --sh-lg:      0 8px 28px rgba(37,99,235,.1), 0 3px 10px rgba(0,0,0,.05);
+            --radius:     14px;
         }
 
         .mbr-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
         }
 
         /* ── Greeting ── */
         .greet-name {
-            font-family: 'Sora', sans-serif;
-            font-size: 1.9rem; font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.85rem; font-weight: 800;
             color: var(--text); letter-spacing: -.035em;
             line-height: 1.15; margin-bottom: .3rem;
         }
-        .greet-sub { font-size: .95rem; color: var(--text-2); margin-bottom: 1.5rem; }
+        .greet-sub { font-size: .92rem; color: var(--text-2); margin-bottom: 1.75rem; }
 
-        /* ── Stat strip ── */
-        .stat-strip {
-            display: flex; align-items: stretch;
-            background: var(--white); border-radius: 16px;
-            box-shadow: var(--sh); overflow: hidden;
+        /* ── Stat cards ── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .75rem;
             margin-bottom: 1.5rem;
         }
-        .stat-item {
-            flex: 1; padding: 1.1rem 1.25rem;
-            display: flex; flex-direction: column; align-items: center;
-            text-decoration: none; color: inherit;
-            border-right: 1px solid var(--cream-d);
-            transition: background .12s;
+        @media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--sh);
+            padding: 1.1rem 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            transition: transform .18s, box-shadow .18s;
         }
-        .stat-item:last-child { border-right: none; }
-        .stat-item:hover { background: var(--cream); }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--sh-lg); }
+
+        .stat-icon {
+            width: 42px; height: 42px;
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .stat-body { min-width: 0; }
         .stat-num {
-            font-family: 'Sora', sans-serif;
-            font-size: 2rem; font-weight: 800; line-height: 1;
-            letter-spacing: -.04em; margin-bottom: .25rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.8rem; font-weight: 800; line-height: 1;
+            letter-spacing: -.04em;
         }
         .stat-lbl {
-            font-size: .68rem; font-weight: 700;
-            letter-spacing: .07em; text-transform: uppercase;
-            color: var(--text-3); text-align: center;
-        }
-        @media (max-width: 600px) {
-            .stat-strip { flex-wrap: wrap; }
-            .stat-item { flex: 1 1 50%; border-bottom: 1px solid var(--cream-d); }
-            .stat-item:nth-child(2n) { border-right: none; }
+            font-size: .7rem; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: var(--text-3); margin-top: .2rem;
         }
 
-        /* ── Ticket list section ── */
+        /* ── Ticket section ── */
         .ticket-section {
             background: var(--white);
-            border-radius: 16px; box-shadow: var(--sh); overflow: hidden;
+            border-radius: var(--radius);
+            box-shadow: var(--sh);
+            overflow: hidden;
+            margin-bottom: 1rem;
         }
         .ticket-section-header {
-            padding: 1.2rem 1.5rem;
+            padding: 1.1rem 1.4rem;
             display: flex; align-items: center;
             justify-content: space-between; gap: 1rem;
-            border-bottom: 1px solid var(--cream-d); flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
         }
         .section-heading {
-            font-family: 'Sora', sans-serif;
-            font-size: .95rem; font-weight: 800; color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .92rem; font-weight: 800; color: var(--text);
+        }
+        .section-sub {
+            font-size: .75rem; color: var(--text-3); margin-top: .12rem;
         }
         .view-all-link {
-            font-size: .82rem; font-weight: 600;
-            color: var(--violet); text-decoration: none;
+            font-size: .8rem; font-weight: 700;
+            color: var(--blue); text-decoration: none;
             display: inline-flex; align-items: center; gap: 4px;
+            white-space: nowrap;
             transition: gap .15s;
         }
         .view-all-link:hover { gap: 7px; }
@@ -94,66 +123,73 @@
         /* ── Ticket rows ── */
         .ticket-row {
             display: flex; align-items: center; gap: .85rem;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--cream-d);
+            padding: .95rem 1.4rem;
+            border-bottom: 1px solid var(--border);
             text-decoration: none; color: inherit;
-            border-left: 3px solid var(--row-accent, var(--cream-d));
+            border-left: 4px solid var(--row-accent, var(--border));
             transition: background .12s;
         }
         .ticket-row:last-child { border-bottom: none; }
-        .ticket-row:hover { background: var(--cream); }
+        .ticket-row:hover { background: var(--bg); }
+        .ticket-row.row-urgent { background: rgba(220,38,38,.03); }
+        .ticket-row.row-urgent:hover { background: rgba(220,38,38,.06); }
+        .ticket-row.row-high { background: rgba(234,88,12,.02); }
+        .ticket-row.row-high:hover { background: rgba(234,88,12,.05); }
 
         .ticket-id {
-            font-family: 'Sora', sans-serif; font-size: .68rem;
-            font-weight: 700; color: var(--text-3);
-            background: var(--cream); border: 1px solid var(--cream-d);
+            font-size: .68rem; font-weight: 700; color: var(--text-3);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: 5px; padding: .15rem .45rem;
             white-space: nowrap; flex-shrink: 0;
         }
         .ticket-title {
-            font-family: 'Sora', sans-serif; font-size: .88rem;
-            font-weight: 600; color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .87rem; font-weight: 700; color: var(--text);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .ticket-meta {
-            display: flex; align-items: center; gap: .4rem;
-            flex-wrap: wrap; font-size: .75rem; color: var(--text-3);
+            display: flex; align-items: center; gap: .35rem;
+            flex-wrap: wrap; font-size: .74rem; color: var(--text-3);
             margin-top: .2rem;
         }
+        .ticket-date { font-weight: 600; }
 
-        /* ── Badges ── */
+        /* ── Priority badges ── */
         .badge {
             display: inline-flex; align-items: center; gap: .3rem;
             padding: .22rem .6rem; border-radius: 6px;
-            font-family: 'Sora', sans-serif; font-size: .66rem;
-            font-weight: 700; letter-spacing: .04em;
-            text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .66rem; font-weight: 700;
+            letter-spacing: .04em; text-transform: uppercase;
+            white-space: nowrap; flex-shrink: 0;
         }
-        .bdot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-        .b-open     { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
-        .b-progress { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
-        .b-urgent   { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
-        .b-high     { background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; }
-        .b-medium   { background:var(--violet-bg); color:var(--violet); border:1px solid var(--violet-br); }
-        .b-low      { background:#f5f5f4; color:#a8a29e; border:1px solid #e7e5e4; }
+        .b-urgent { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br); }
+        .b-high   { background: #fff7ed;          color: #ea580c;      border: 1px solid #fed7aa; }
+        .b-medium { background: var(--blue-bg);   color: var(--blue);  border: 1px solid var(--blue-br); }
+        .b-low    { background: var(--bg);        color: var(--text-3); border: 1px solid var(--border); }
 
-        .ticket-arrow { color: var(--text-3); flex-shrink: 0; transition: transform .15s, color .15s; }
-        .ticket-row:hover .ticket-arrow { transform: translateX(4px); color: var(--violet); }
+        .ticket-arrow {
+            color: var(--text-3); flex-shrink: 0;
+            transition: transform .15s, color .15s;
+        }
+        .ticket-row:hover .ticket-arrow { transform: translateX(4px); color: var(--blue); }
 
         /* ── Empty state ── */
-        .empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-3); }
-        .empty-state p { font-size: .85rem; margin-top: .4rem; }
+        .empty-state {
+            text-align: center; padding: 2rem 1rem;
+            color: var(--text-3); font-size: .85rem;
+        }
 
         /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(12px); }
+            from { opacity: 0; transform: translateY(10px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
-        .d1 { animation-delay: .04s; }
-        .d2 { animation-delay: .10s; }
-        .d3 { animation-delay: .16s; }
-        .d4 { animation-delay: .22s; }
+        .d1 { animation-delay: .03s; }
+        .d2 { animation-delay: .09s; }
+        .d3 { animation-delay: .15s; }
+        .d4 { animation-delay: .21s; }
     </style>
 </head>
 
@@ -162,75 +198,109 @@
     <!-- Greeting -->
     <div class="fu d1">
         <h1 class="greet-name">Bonjour, <span th:text="${currentUser.firstname}">Technicien</span> 👋</h1>
-        <p class="greet-sub">Vos tickets assignés · TicHarmony</p>
+        <p class="greet-sub">Voici l'état de vos tickets assignés.</p>
     </div>
 
-    <!-- ── Stat strip ── -->
-    <div class="stat-strip fu d2">
-        <a th:href="@{/problems}" class="stat-item">
-            <div class="stat-num" style="color:#7c3aed;" th:text="${totalTickets}">0</div>
-            <div class="stat-lbl">Mes tickets</div>
+    <!-- ── Stat cards ── -->
+    <div class="stat-grid fu d2">
+
+        <a th:href="@{/problems(status='IN_PROGRESS')}" class="stat-card">
+            <div class="stat-icon" style="background:var(--amber-bg); border:1px solid var(--amber-br);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706"
+                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+            </div>
+            <div class="stat-body">
+                <div class="stat-num"
+                     th:style="${inProgressTickets > 0} ? 'color:var(--amber)' : 'color:var(--text-3)'"
+                     th:text="${inProgressTickets}">0</div>
+                <div class="stat-lbl">En cours</div>
+            </div>
         </a>
-        <a th:href="@{/problems(status='OPEN')}" class="stat-item">
-            <div class="stat-num"
-                 th:style="${newTickets > 0} ? 'color:#2563eb' : 'color:#a8a29e'"
-                 th:text="${newTickets}">0</div>
-            <div class="stat-lbl">À prendre en charge</div>
+
+        <a th:href="@{/problems(status='RESOLVED')}" class="stat-card">
+            <div class="stat-icon" style="background:var(--green-bg); border:1px solid var(--green-br);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
+                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <div class="stat-body">
+                <div class="stat-num"
+                     th:style="${resolvedTickets > 0} ? 'color:var(--green)' : 'color:var(--text-3)'"
+                     th:text="${resolvedTickets}">0</div>
+                <div class="stat-lbl">Confirmation client</div>
+            </div>
         </a>
-        <a th:href="@{/problems(status='IN_PROGRESS')}" class="stat-item">
-            <div class="stat-num"
-                 th:style="${inProgressTickets > 0} ? 'color:#d97706' : 'color:#a8a29e'"
-                 th:text="${inProgressTickets}">0</div>
-            <div class="stat-lbl">En cours</div>
+
+        <a th:href="@{/problems}" class="stat-card">
+            <div class="stat-icon" style="background:var(--blue-bg); border:1px solid var(--blue-br);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+                     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="2"/>
+                    <path d="M9 12h6M9 16h4"/>
+                </svg>
+            </div>
+            <div class="stat-body">
+                <div class="stat-num"
+                     th:style="${totalTickets > 0} ? 'color:var(--blue)' : 'color:var(--text-3)'"
+                     th:text="${totalTickets}">0</div>
+                <div class="stat-lbl">Total actifs</div>
+            </div>
         </a>
-        <a th:href="@{/problems(status='RESOLVED')}" class="stat-item">
-            <div class="stat-num"
-                 th:style="${resolvedTickets > 0} ? 'color:#16a34a' : 'color:#a8a29e'"
-                 th:text="${resolvedTickets}">0</div>
-            <div class="stat-lbl">Résolus</div>
-        </a>
+
     </div>
 
-    <!-- ── À prendre en charge ── -->
-    <div class="ticket-section fu d3" style="margin-bottom:1rem;">
+    <!-- ── En cours ── -->
+    <div class="ticket-section fu d3">
         <div class="ticket-section-header">
             <div>
-                <div class="section-heading">À prendre en charge</div>
-                <div style="font-size:.78rem;color:var(--text-3);margin-top:.15rem;">Ces tickets vous sont assignés et attendent votre action</div>
+                <div class="section-heading">En cours de traitement</div>
+                <div class="section-sub">Tickets que vous êtes en train de traiter</div>
             </div>
-            <a th:if="${openTotal > 0}" th:href="@{/problems(status='OPEN')}" class="view-all-link"
-               th:text="${openTotal > 5} ? 'Tout voir (' + ${openTotal} + ' →)' : 'Tout voir →'"></a>
+            <a th:if="${inProgressTotal > 0}" th:href="@{/problems(status='IN_PROGRESS')}" class="view-all-link"
+               th:text="${inProgressTotal > 5} ? 'Tout voir (' + ${inProgressTotal} + ') →' : 'Tout voir →'"></a>
         </div>
 
-        <div th:if="${#lists.isEmpty(openList)}" class="empty-state">
-            <p>✅ Aucun ticket en attente de prise en charge</p>
+        <div th:if="${#lists.isEmpty(inProgressList)}" class="empty-state">
+            Aucun ticket en cours de traitement
         </div>
 
-        <div th:if="${!#lists.isEmpty(openList)}">
-            <th:block th:each="problem : ${openList}">
+        <div th:if="${!#lists.isEmpty(inProgressList)}">
+            <th:block th:each="problem : ${inProgressList}">
                 <a th:href="@{'/problems/' + ${problem.id}}"
+                   th:classappend="${problem.priority != null and problem.priority.name() == 'URGENT'} ? 'row-urgent' :
+                                   (${problem.priority != null and problem.priority.name() == 'HIGH'} ? 'row-high' : '')"
                    class="ticket-row"
                    th:style="${problem.priority != null and problem.priority.name() == 'URGENT'} ? '--row-accent:#dc2626' :
                              (${problem.priority != null and problem.priority.name() == 'HIGH'}   ? '--row-accent:#ea580c' :
-                             '--row-accent:#2563eb')">
+                             '--row-accent:#d97706')">
                     <div style="flex:1;min-width:0;">
-                        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.25rem;">
+                        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.22rem;">
                             <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
                             <span class="ticket-title" th:text="${problem.title}"></span>
                         </div>
                         <div class="ticket-meta">
-                            <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
+                            <span class="ticket-date"
+                                  th:attr="data-date=${#temporals.format(problem.createdAt, 'yyyy-MM-dd')}"
+                                  th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
                             <span>·</span>
-                            <span th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}"></span>
-                            <span th:if="${problem.ticketUserInfo != null}">·</span>
-                            <span th:if="${problem.ticketUserInfo != null}"
-                                  th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
+                            <span th:text="${problem.user != null and problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user?.nomEntreprise}"></span>
+                            <th:block th:if="${problem.ticketUserInfo != null}">
+                                <span>·</span>
+                                <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
+                            </th:block>
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
                         <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">⚠ Critique</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">↑ Élevée</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
                     </div>
                     <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -241,46 +311,48 @@
         </div>
     </div>
 
-    <!-- ── En cours ── -->
+    <!-- ── En attente de confirmation client ── -->
     <div class="ticket-section fu d4">
         <div class="ticket-section-header">
             <div>
-                <div class="section-heading">En cours de traitement</div>
-                <div style="font-size:.78rem;color:var(--text-3);margin-top:.15rem;">Tickets que vous êtes en train de traiter</div>
+                <div class="section-heading">En attente de confirmation client</div>
+                <div class="section-sub">Résolutions soumises — le client doit confirmer ou rouvrir</div>
             </div>
-            <a th:if="${inProgressTotal > 0}" th:href="@{/problems(status='IN_PROGRESS')}" class="view-all-link"
-               th:text="${inProgressTotal > 5} ? 'Tout voir (' + ${inProgressTotal} + ' →)' : 'Tout voir →'"></a>
+            <a th:if="${resolvedPendingTotal > 0}" th:href="@{/problems(status='RESOLVED')}" class="view-all-link"
+               th:text="${resolvedPendingTotal > 5} ? 'Tout voir (' + ${resolvedPendingTotal} + ') →' : 'Tout voir →'"></a>
         </div>
 
-        <div th:if="${#lists.isEmpty(inProgressList)}" class="empty-state">
-            <p>Aucun ticket en cours de traitement</p>
+        <div th:if="${#lists.isEmpty(resolvedPendingList)}" class="empty-state">
+            Aucune résolution en attente de confirmation
         </div>
 
-        <div th:if="${!#lists.isEmpty(inProgressList)}">
-            <th:block th:each="problem : ${inProgressList}">
+        <div th:if="${!#lists.isEmpty(resolvedPendingList)}">
+            <th:block th:each="problem : ${resolvedPendingList}">
                 <a th:href="@{'/problems/' + ${problem.id}}"
                    class="ticket-row"
-                   th:style="${problem.priority != null and problem.priority.name() == 'URGENT'} ? '--row-accent:#dc2626' :
-                             (${problem.priority != null and problem.priority.name() == 'HIGH'}   ? '--row-accent:#ea580c' :
-                             '--row-accent:#d97706')">
+                   style="--row-accent:#16a34a;">
                     <div style="flex:1;min-width:0;">
-                        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.25rem;">
+                        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.22rem;">
                             <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
                             <span class="ticket-title" th:text="${problem.title}"></span>
                         </div>
                         <div class="ticket-meta">
-                            <span th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
+                            <span class="ticket-date"
+                                  th:attr="data-date=${#temporals.format(problem.createdAt, 'yyyy-MM-dd')}"
+                                  th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
                             <span>·</span>
-                            <span th:text="${problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user.nomEntreprise}"></span>
-                            <span th:if="${problem.ticketUserInfo != null}">·</span>
-                            <span th:if="${problem.ticketUserInfo != null}"
-                                  th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
+                            <span th:text="${problem.user != null and problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user?.nomEntreprise}"></span>
+                            <th:block th:if="${problem.ticketUserInfo != null}">
+                                <span>·</span>
+                                <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
+                            </th:block>
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">Élevée</span>
                         <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">⚠ Critique</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">↑ Élevée</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
                     </div>
                     <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -292,5 +364,29 @@
     </div>
 
 </div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        /*<![CDATA[*/
+        function relativeDate(dateStr) {
+            var d = new Date(dateStr);
+            var now = new Date();
+            var diffMs = now - d;
+            var diffMins  = Math.floor(diffMs / 60000);
+            var diffHours = Math.floor(diffMs / 3600000);
+            var diffDays  = Math.floor(diffMs / 86400000);
+            if (diffMins  < 60)  return 'il y a ' + diffMins + ' min';
+            if (diffHours < 24)  return 'il y a ' + diffHours + 'h';
+            if (diffDays  === 1) return 'hier';
+            if (diffDays  < 7)   return 'il y a ' + diffDays + ' jours';
+            if (diffDays  < 30)  return 'il y a ' + Math.floor(diffDays / 7) + ' sem.';
+            return d.toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        document.querySelectorAll('.ticket-date[data-date]').forEach(function(el) {
+            el.textContent = relativeDate(el.getAttribute('data-date'));
+        });
+        /*]]>*/
+    </script>
+</th:block>
 
 </html>

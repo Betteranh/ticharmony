@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,14 @@ public class EmployeeController {
     public String toggleActive(@PathVariable Long id) {
         User user = userService.getUser(id);
         if (user != null) {
-            user.setActive(!user.isActive());
+            boolean nowActive = !user.isActive();
+            user.setActive(nowActive);
+            if (nowActive) {
+                user.setActiveFrom(LocalDate.now());
+                user.setActiveTo(null);
+            } else {
+                user.setActiveTo(LocalDate.now());
+            }
             userService.updateUser(user);
         }
         return "redirect:/employees";

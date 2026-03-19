@@ -5,26 +5,28 @@
 <head>
     <title>Nouvel employé – TicHarmony</title>
     <style>
-        body { background: #faf9f7 !important; }
+        body { background: #eef2f8 !important; }
 
         :root {
+            --bg:       #eef2f8;
             --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
+            --blue:     #2563eb;
+            --blue-dk:  #1d4ed8;
+            --blue-bg:  #eff6ff;
+            --blue-br:  #bfdbfe;
+            --text:     #0f172a;
+            --text-2:   #64748b;
+            --text-3:   #94a3b8;
+            --border:   #e2e8f0;
             --red:      #dc2626;
             --red-bg:   #fef2f2;
             --red-br:   #fecaca;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --sh:       0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.04);
+            --radius:   14px;
         }
 
         .es-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
             max-width: 860px;
@@ -37,13 +39,13 @@
             font-size: .85rem; font-weight: 600; color: var(--text-3);
             text-decoration: none; margin-bottom: 1.75rem; transition: color .15s;
         }
-        .back-link:hover { color: var(--violet); }
+        .back-link:hover { color: var(--blue); }
         .back-link svg { transition: transform .15s; }
         .back-link:hover svg { transform: translateX(-3px); }
 
         /* ── Page title ── */
         .page-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.7rem; font-weight: 800;
             color: var(--text); letter-spacing: -.03em;
             margin-bottom: .25rem;
@@ -52,7 +54,7 @@
 
         /* ── Layout ── */
         .es-grid {
-            display: grid; grid-template-columns: 1fr 260px;
+            display: grid; grid-template-columns: 1fr 250px;
             gap: 1.25rem; align-items: start;
         }
         @media (max-width: 780px) { .es-grid { grid-template-columns: 1fr; } }
@@ -60,23 +62,23 @@
         /* ── Cards ── */
         .es-card {
             background: var(--white);
-            border-radius: 18px; box-shadow: var(--sh);
+            border-radius: var(--radius); box-shadow: var(--sh);
             padding: 1.75rem 2rem;
         }
         .sidebar-card {
             background: var(--white);
-            border-radius: 18px; box-shadow: var(--sh);
-            padding: 1.5rem;
+            border-radius: var(--radius); box-shadow: var(--sh);
+            padding: 1.25rem 1.5rem;
         }
 
         /* ── Section label ── */
         .section-label {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .68rem; font-weight: 700;
             letter-spacing: .1em; text-transform: uppercase;
             color: var(--text-3);
             padding-bottom: .6rem;
-            border-bottom: 1px solid var(--cream-d);
+            border-bottom: 1px solid var(--border);
             margin-bottom: 1.25rem;
         }
 
@@ -98,20 +100,20 @@
         .fc-label .req { color: var(--red); }
         .fc-input {
             width: 100%; padding: .7rem 1rem;
-            background: var(--cream);
-            border: 1px solid var(--cream-d);
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 10px;
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: .92rem; outline: none;
-            transition: border-color .2s, box-shadow .2s, background .2s;
+            transition: border-color .15s, box-shadow .15s, background .15s;
             box-sizing: border-box;
         }
         .fc-input::placeholder { color: var(--text-3); }
         .fc-input:focus {
-            border-color: var(--violet);
+            border-color: var(--blue);
             background: var(--white);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
         .fc-hint { font-size: .73rem; color: var(--text-3); margin-top: .3rem; }
 
@@ -129,7 +131,7 @@
         /* ── Password strength ── */
         .pw-strength-bar {
             height: 3px; border-radius: 2px;
-            background: var(--cream-d); margin-top: 8px; overflow: hidden;
+            background: var(--border); margin-top: 8px; overflow: hidden;
         }
         .pw-strength-fill {
             height: 100%; border-radius: 2px;
@@ -141,7 +143,7 @@
         .error-box {
             display: flex; align-items: center; gap: 10px;
             background: var(--red-bg); border: 1px solid var(--red-br);
-            border-radius: 12px; padding: .85rem 1.1rem;
+            border-radius: 10px; padding: .85rem 1.1rem;
             font-size: .88rem; color: var(--red); font-weight: 600;
             margin-bottom: 1.25rem;
         }
@@ -151,28 +153,28 @@
         .btn-submit {
             flex: 1; min-width: 180px;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            background: var(--violet); color: #fff;
+            background: var(--blue); color: #fff;
             border: none; padding: .9rem 1.5rem; border-radius: 12px;
-            font-family: 'Sora', sans-serif; font-size: .9rem; font-weight: 700;
-            cursor: pointer; box-shadow: 0 4px 14px rgba(124,58,237,.25);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,.25);
             transition: background .15s, transform .15s;
         }
-        .btn-submit:hover { background: #6d28d9; transform: translateY(-1px); }
+        .btn-submit:hover { background: var(--blue-dk); transform: translateY(-1px); }
         .btn-cancel {
             display: inline-flex; align-items: center; gap: 6px;
             padding: .9rem 1.5rem; border-radius: 12px;
-            background: var(--white); border: 1px solid var(--cream-d);
-            color: var(--text-2); font-family: 'Sora', sans-serif;
+            background: var(--white); border: 1px solid var(--border);
+            color: var(--text-2); font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .9rem; font-weight: 600;
             text-decoration: none; transition: background .15s, color .15s;
         }
-        .btn-cancel:hover { background: var(--cream-d); color: var(--text); }
+        .btn-cancel:hover { background: var(--bg); color: var(--text); }
 
         /* ── Sidebar tips ── */
         .tip-item {
             display: flex; gap: 8px; align-items: flex-start;
             font-size: .8rem; color: var(--text-2); line-height: 1.55;
-            padding: .55rem 0; border-bottom: 1px solid var(--cream-d);
+            padding: .55rem 0; border-bottom: 1px solid var(--border);
         }
         .tip-item:last-child { border-bottom: none; padding-bottom: 0; }
         .tip-item:first-child { padding-top: 0; }
@@ -199,13 +201,13 @@
              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
         </svg>
-        Retour à la liste des employés
+        Retour à la liste
     </a>
 
     <!-- Title -->
     <div class="fu d1">
         <h1 class="page-title">Nouvel employé</h1>
-        <p class="page-sub">Créez un compte pour un administrateur ou technicien</p>
+        <p class="page-sub">Créez un compte technicien — le rôle peut être modifié ensuite depuis la liste</p>
     </div>
 
     <!-- Grid -->
@@ -231,22 +233,18 @@
                                placeholder="Dupont" class="fc-input"/>
                     </div>
                 </div>
-                <div class="field">
+                <div class="field" style="margin-bottom:1.75rem;">
                     <label for="telephone" class="fc-label">Téléphone</label>
                     <input type="text" id="telephone" th:field="*{telephone}"
-                           placeholder="+32 4XX XX XX XX" class="fc-input"/>
-                </div>
-                <div class="field" style="margin-bottom:1.75rem;">
-                    <label for="adresse" class="fc-label">Adresse</label>
-                    <input type="text" id="adresse" th:field="*{adresse}"
-                           placeholder="Rue, Numéro, Code postal Ville" class="fc-input"/>
+                           placeholder="0X XX XX XX XX" class="fc-input"/>
+                    <div class="fc-hint">Commence par 0 · 9 ou 10 chiffres sans espaces</div>
                 </div>
 
                 <!-- Informations de connexion -->
                 <div class="section-label">Informations de connexion</div>
 
                 <div class="field">
-                    <label for="login" class="fc-label">Nom d'utilisateur <span class="req">*</span></label>
+                    <label for="login" class="fc-label">Identifiant <span class="req">*</span></label>
                     <input type="text" id="login" th:field="*{login}" maxlength="60" required
                            placeholder="jean.dupont" class="fc-input"/>
                     <div class="fc-hint">Maximum 60 caractères · Utilisé pour la connexion</div>
@@ -298,7 +296,7 @@
                             <circle cx="8.5" cy="7" r="4"/>
                             <line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
                         </svg>
-                        Créer l'employé
+                        Créer le compte
                     </button>
                 </div>
 
@@ -310,8 +308,8 @@
             <div class="sidebar-card fu d3">
                 <div class="section-label" style="margin-bottom:1rem;">Bonnes pratiques</div>
                 <div class="tip-item">
-                    <div class="tip-dot" style="background:var(--violet);"></div>
-                    <div>Login en <strong>minuscules</strong>, sans espaces (ex : jean.dupont)</div>
+                    <div class="tip-dot" style="background:var(--blue);"></div>
+                    <div>Identifiant en <strong>minuscules</strong>, sans espaces (ex : jean.dupont)</div>
                 </div>
                 <div class="tip-item">
                     <div class="tip-dot" style="background:#d97706;"></div>
@@ -320,6 +318,10 @@
                 <div class="tip-item">
                     <div class="tip-dot" style="background:#16a34a;"></div>
                     <div>Email professionnel recommandé pour les <strong>notifications</strong></div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-dot" style="background:var(--text-3);"></div>
+                    <div>Le rôle est <strong>Technicien</strong> par défaut — modifiable depuis la liste</div>
                 </div>
             </div>
         </aside>
@@ -349,7 +351,7 @@ function checkStrength(val) {
     if (!val) {
         bar.style.width = '0%';
         label.textContent = 'Saisissez un mot de passe';
-        label.style.color = '#a8a29e';
+        label.style.color = '#94a3b8';
         return;
     }
     var score = 0;

@@ -7,7 +7,8 @@ public enum NotificationType {
     NEW_COMMENT("Nouveau message"),
     TICKET_IN_PROGRESS("Ticket pris en charge"),
     TICKET_CLOSED("Dossier clôturé"),
-    TICKET_REASSIGNED("Ticket réassigné");
+    TICKET_REASSIGNED("Ticket réassigné"),
+    TICKET_REOPENED("Ticket rouvert par le client");
 
     private final String label;
 

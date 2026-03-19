@@ -48,24 +48,30 @@ public class ProblemController {
      */
     @GetMapping("/{id}/take")
     @PreAuthorize("hasRole('MEMBER')")
-    public String takeInCharge(@PathVariable Long id,
-                               Model model,
-                               Authentication auth) {
+    public String takeInCharge(@PathVariable Long id, Authentication auth) {
         Problem problem = service.getProblem(id);
+        if (problem == null) return "redirect:/problems";
         User current = userService.findByLogin(auth.getName());
-        // on autorise seulement le technicien assigné, et si OPEN ou déjà IN_PROGRESS
-        if (problem == null
-                || !current.equals(problem.getTechnician())
-                || (problem.getStatus() != Status.OPEN
-                && problem.getStatus() != Status.IN_PROGRESS)) {
+
+        // Cas 1 : ticket non assigné → self-assignation
+        if (problem.getTechnician() == null && problem.getStatus() == Status.OPEN) {
+            problem.setTechnician(current);
+            problem.setStatus(Status.IN_PROGRESS);
+            service.updateProblem(problem);
+            // Notifier les admins
+            userService.getUsersByRole(UserRole.ADMIN).forEach(admin ->
+                    notificationService.notify(admin, problem, NotificationType.ASSIGNED_TO_PROBLEM));
+            // Notifier le client
+            if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
+                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+            }
             return "redirect:/problems/" + id;
         }
 
-        // si on arrive la première fois, on passe de OPEN → IN_PROGRESS
-        if (problem.getStatus() == Status.OPEN) {
+        // Cas 2 : déjà assigné au technicien et encore OPEN (fallback)
+        if (current.equals(problem.getTechnician()) && problem.getStatus() == Status.OPEN) {
             problem.setStatus(Status.IN_PROGRESS);
             service.updateProblem(problem);
-            // Notifier le client que son ticket est pris en charge
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
                 notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
             }
@@ -101,7 +107,7 @@ public class ProblemController {
             // 2) on marque la notif "ASSIGNED_TO_PROBLEM" comme lue
             notificationService.markAssignmentNotificationsRead(current, problem);
         }
-        return "redirect:/problems";
+        return "redirect:/problems?status=IN_PROGRESS";
     }
 
     @GetMapping("/{id}/resolve")
@@ -193,8 +199,14 @@ public class ProblemController {
             } else {
                 allProblems = service.getProblemsByUser(currentUser);
             }
+        } else if (currentUser.getRole() == UserRole.MEMBER) {
+            // MEMBER voit ses tickets assignés + les tickets non assignés
+            allProblems = StreamSupport.stream(service.getProblems().spliterator(), false)
+                    .filter(p -> p.getTechnician() == null
+                            || p.getTechnician().getId().equals(currentUser.getId()))
+                    .collect(Collectors.toList());
         } else {
-            // ADMIN et MEMBER voient tous les tickets
+            // ADMIN voit tous les tickets
             allProblems = service.getProblems();
         }
 
@@ -405,6 +417,7 @@ public class ProblemController {
             if (technicianId != null && technicianId != 0) {
                 User tech = userService.getUser(technicianId);
                 formProblem.setTechnician(tech);
+                formProblem.setStatus(Status.IN_PROGRESS);
             }
 
             service.createProblem(formProblem);
@@ -482,9 +495,9 @@ public class ProblemController {
                 existing.setTechnician(null);
             }
 
-            // Si le technicien a été changé, remettre le statut à OPEN
+            // Si le technicien a été changé, passer en IN_PROGRESS directement
             if (techChanged) {
-                existing.setStatus(Status.OPEN);
+                existing.setStatus(Status.IN_PROGRESS);
             }
 
             // Mise à jour du ticket
@@ -493,6 +506,62 @@ public class ProblemController {
         return "redirect:/problems/" + formProblem.getId();
     }
 
+
+    /**
+     * Confirmation client : le problème est bien résolu → CLOSED directement.
+     */
+    @PostMapping("/{id}/confirm")
+    @PreAuthorize("hasRole('CLIENT')")
+    public String confirmResolution(@PathVariable Long id, Authentication auth) {
+        Problem problem = service.getProblem(id);
+        User current = userService.findByLogin(auth.getName());
+        if (problem != null
+                && problem.getStatus() == Status.RESOLVED
+                && problem.getUser() != null
+                && problem.getUser().getId().equals(current.getId())) {
+
+            problem.setStatus(Status.CLOSED);
+            service.updateProblem(problem);
+
+            notificationService.deleteNotificationsForProblem(problem, NotificationType.NEW_PROBLEM);
+            notificationService.deleteNotificationsForProblem(problem, NotificationType.PROBLEM_CLOSED);
+
+            // Notifier les admins que le client a confirmé et que le ticket est clos
+            userService.getUsersByRole(UserRole.ADMIN).forEach(admin ->
+                    notificationService.notify(admin, problem, NotificationType.TICKET_CLOSED)
+            );
+        }
+        return "redirect:/problems/" + id;
+    }
+
+    /**
+     * Réouverture client : le problème n'est pas résolu → retour en IN_PROGRESS.
+     */
+    @PostMapping("/{id}/reopen")
+    @PreAuthorize("hasRole('CLIENT')")
+    public String reopenProblem(@PathVariable Long id, Authentication auth) {
+        Problem problem = service.getProblem(id);
+        User current = userService.findByLogin(auth.getName());
+        if (problem != null
+                && problem.getStatus() == Status.RESOLVED
+                && problem.getUser() != null
+                && problem.getUser().getId().equals(current.getId())) {
+
+            problem.setStatus(Status.IN_PROGRESS);
+            problem.setResolution(null);
+            service.updateProblem(problem);
+
+            // Notifier le technicien
+            if (problem.getTechnician() != null) {
+                notificationService.notify(problem.getTechnician(), problem, NotificationType.TICKET_REOPENED);
+            }
+            // Notifier les admins
+            userService.getUsersByRole(UserRole.ADMIN).forEach(admin ->
+                    notificationService.notify(admin, problem, NotificationType.TICKET_REOPENED)
+            );
+        }
+        return "redirect:/problems/" + id;
+    }
 
     /**
      * Supprime un problème.
@@ -603,8 +672,9 @@ public class ProblemController {
             problem.setTechnician(newTech);
             problem.setPriority(priority);
 
-            // 4) si l'admin s'assigne lui-même → IN_PROGRESS
-            if (newTech.getId().equals(admin.getId())) {
+            // 4) passer automatiquement en IN_PROGRESS dès l'assignation
+            boolean wasOpen = problem.getStatus() == Status.OPEN;
+            if (wasOpen) {
                 problem.setStatus(Status.IN_PROGRESS);
             }
 
@@ -613,6 +683,11 @@ public class ProblemController {
             // 5) notifier le nouveau technicien (sauf si c'est l'admin lui-même)
             if (!newTech.getId().equals(admin.getId())) {
                 notificationService.notify(newTech, problem, NotificationType.ASSIGNED_TO_PROBLEM);
+            }
+
+            // 6) notifier le client que son ticket est pris en charge
+            if (wasOpen && problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
+                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
             }
         }
         return "redirect:/problems/" + id;

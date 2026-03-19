@@ -6,24 +6,28 @@
 <head>
     <title>Signaler un problème</title>
     <style>
-        body { background: #faf9f7 !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body { background: #eef2f8 !important; }
 
         :root {
-            --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
-            --red:      #dc2626;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --white:      #ffffff;
+            --bg:         #eef2f8;
+            --bg-d:       #dde4ef;
+            --border:     #d1d9e8;
+            --text:       #1a2035;
+            --text-2:     #5a6480;
+            --text-3:     #9aa3b8;
+            --blue:       #2563eb;
+            --blue-bg:    #eff6ff;
+            --blue-br:    #bfdbfe;
+            --red:        #dc2626;
+            --sh:         0 2px 10px rgba(37,99,235,.06), 0 1px 4px rgba(0,0,0,.04);
+            --radius:     14px;
         }
 
         .fc-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
             max-width: 660px;
@@ -36,19 +40,19 @@
             align-items: center;
             gap: 6px;
             font-size: .85rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-3);
             text-decoration: none;
             margin-bottom: 2rem;
             transition: color .15s;
         }
-        .back-link:hover { color: var(--violet); }
+        .back-link:hover { color: var(--blue); }
         .back-link svg { transition: transform .15s; }
         .back-link:hover svg { transform: translateX(-3px); }
 
         /* ── Page title ── */
         .page-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.8rem;
             font-weight: 800;
             color: var(--text);
@@ -64,14 +68,14 @@
         /* ── Step card ── */
         .step-card {
             background: var(--white);
-            border-radius: 18px;
+            border-radius: var(--radius);
             box-shadow: var(--sh);
             padding: 1.75rem 2rem;
             margin-bottom: 1rem;
         }
         .step-question {
-            font-family: 'Sora', sans-serif;
-            font-size: 1.1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.05rem;
             font-weight: 800;
             color: var(--text);
             margin-bottom: 1.25rem;
@@ -81,7 +85,7 @@
         .fc-label {
             display: block;
             font-size: .82rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-2);
             margin-bottom: .4rem;
         }
@@ -89,23 +93,28 @@
         .fc-input {
             width: 100%;
             padding: .75rem 1rem;
-            background: var(--cream);
-            border: 1px solid var(--cream-d);
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 10px;
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: .95rem;
             outline: none;
             transition: border-color .2s, box-shadow .2s, background .2s;
         }
         .fc-input::placeholder { color: var(--text-3); }
         .fc-input:focus {
-            border-color: var(--violet);
+            border-color: var(--blue);
             background: var(--white);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+        .fc-input[readonly] {
+            background: var(--bg-d);
+            color: var(--text-2);
+            cursor: default;
         }
         textarea.fc-input {
-            resize: none;
+            resize: vertical;
             min-height: 140px;
             line-height: 1.65;
             font-size: 1rem;
@@ -125,25 +134,24 @@
             align-items: center;
             gap: .7rem;
             padding: .8rem .95rem;
-            background: var(--cream);
-            border: 2px solid var(--cream-d);
+            background: var(--bg);
+            border: 2px solid var(--border);
             border-radius: 11px;
             cursor: pointer;
             transition: border-color .15s, background .15s;
             position: relative;
         }
-        .cat-card:hover { border-color: var(--violet-br); background: var(--violet-bg); }
-        .cat-card.selected { border-color: var(--violet); background: var(--violet-bg); }
+        .cat-card:hover { border-color: var(--blue-br); background: var(--blue-bg); }
+        .cat-card.selected { border-color: var(--blue); background: var(--blue-bg); }
         .cat-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
         .cat-emoji { font-size: 1.3rem; flex-shrink: 0; line-height: 1; }
         .cat-name {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .82rem;
             font-weight: 700;
             color: var(--text);
         }
         .cat-desc { font-size: .72rem; color: var(--text-3); margin-top: .1rem; }
-
 
         /* ── Error ── */
         .fc-error {
@@ -163,18 +171,18 @@
             align-items: center;
             gap: 9px;
             padding: 1rem 2.25rem;
-            background: var(--violet);
+            background: var(--blue);
             color: #fff;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1rem;
             font-weight: 700;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(124,58,237,.28);
+            box-shadow: 0 4px 14px rgba(37,99,235,.25);
             transition: background .15s, transform .15s;
         }
-        .btn-submit:hover { background: #6d28d9; transform: translateY(-1px); }
+        .btn-submit:hover { background: #1d4ed8; transform: translateY(-1px); }
         .btn-submit svg { transition: transform .15s; }
         .btn-submit:hover svg { transform: translateX(3px); }
 
@@ -183,16 +191,16 @@
             align-items: center;
             padding: 1rem 1.6rem;
             background: var(--white);
-            border: 1px solid var(--cream-d);
+            border: 1px solid var(--border);
             color: var(--text-2);
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: .9rem;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 12px;
             text-decoration: none;
             transition: background .15s, color .15s;
         }
-        .btn-cancel:hover { background: var(--cream-d); color: var(--text); }
+        .btn-cancel:hover { background: var(--bg-d); color: var(--text); }
 
         /* ── Contact footer ── */
         .contact-footer {
@@ -202,8 +210,8 @@
             color: var(--text-3);
         }
         .contact-footer a {
-            color: var(--violet);
-            font-weight: 600;
+            color: var(--blue);
+            font-weight: 700;
             text-decoration: none;
         }
         .contact-footer a:hover { text-decoration: underline; }
@@ -219,7 +227,6 @@
         .d3 { animation-delay: .15s; }
         .d4 { animation-delay: .21s; }
         .d5 { animation-delay: .27s; }
-        .d6 { animation-delay: .33s; }
     </style>
 </head>
 
@@ -308,8 +315,7 @@
             <div sec:authorize="hasRole('CLIENT')" class="mb-4">
                 <label class="fc-label">Nom du profil</label>
                 <input type="text" th:field="*{ticketUserInfo.firstName}"
-                       class="fc-input" readonly
-                       style="background:var(--cream-d); color:var(--text-2); cursor:default;"/>
+                       class="fc-input" readonly/>
                 <input type="hidden" th:field="*{ticketUserInfo.lastName}" th:value="''"/>
             </div>
 
@@ -340,7 +346,7 @@
                 </div>
             </div>
 
-            <!-- Hint pour CLIENT si email/téléphone déjà connus -->
+            <!-- Hint pour CLIENT -->
             <p sec:authorize="hasRole('CLIENT')" style="font-size:.78rem; color:var(--text-3); margin-top:.75rem;">
                 Votre e-mail et téléphone sont sauvegardés automatiquement pour vos prochaines demandes.
             </p>
@@ -373,7 +379,6 @@
 <th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
-        /* Category selection */
         document.querySelectorAll('[data-cat]').forEach(function(card) {
             var radio = card.querySelector('input[type=radio]');
             if (radio && radio.checked) card.classList.add('selected');
@@ -382,7 +387,6 @@
                 card.classList.add('selected');
             });
         });
-
         /*]]>*/
     </script>
 </th:block>

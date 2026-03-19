@@ -44,8 +44,23 @@ public class DashboardController {
             return "redirect:/select-profile";
         }
 
+        List<Problem> profileProblems = StreamSupport
+                .stream(problemService.getProblemsByUserProfile(activeProfile).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<Problem> resolvedPending = profileProblems.stream()
+                .filter(p -> p.getStatus() == Status.RESOLVED)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        long activeCount = profileProblems.stream()
+                .filter(p -> p.getStatus() == Status.OPEN || p.getStatus() == Status.IN_PROGRESS)
+                .count();
+
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("activeProfile", activeProfile);
+        model.addAttribute("resolvedPending", resolvedPending);
+        model.addAttribute("activeCount", activeCount);
         model.addAttribute("module", "dashboard");
         return "dashboard/clientDashboard";
     }
@@ -225,20 +240,20 @@ public class DashboardController {
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
 
-        List<Problem> openList = all.stream()
-                .filter(p -> p.getStatus() == Status.OPEN)
-                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
-                .collect(Collectors.toList());
-
         List<Problem> inProgressList = all.stream()
                 .filter(p -> p.getStatus() == Status.IN_PROGRESS)
                 .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .collect(Collectors.toList());
 
-        model.addAttribute("openList",          openList.stream().limit(5).collect(Collectors.toList()));
-        model.addAttribute("openTotal",         (long) openList.size());
-        model.addAttribute("inProgressList",    inProgressList.stream().limit(5).collect(Collectors.toList()));
-        model.addAttribute("inProgressTotal",   (long) inProgressList.size());
+        List<Problem> resolvedPendingList = all.stream()
+                .filter(p -> p.getStatus() == Status.RESOLVED)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("inProgressList",       inProgressList.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("inProgressTotal",      (long) inProgressList.size());
+        model.addAttribute("resolvedPendingList",  resolvedPendingList.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("resolvedPendingTotal", (long) resolvedPendingList.size());
         model.addAttribute("module", "dashboard");
 
         return "dashboard/memberDashboard";

@@ -479,6 +479,23 @@
         </div>
       </th:block>
 
+      <th:block th:case="'TICKET_REOPENED'">
+        <span class="np-stripe np-stripe--reassign"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--reassign">
+            <svg width="15" height="15" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--reassign">Ticket rouvert</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+          </div>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
+        </div>
+      </th:block>
+
       <th:block th:case="*">
         <span class="np-stripe np-stripe--other"></span>
         <div class="np-card-inner">
