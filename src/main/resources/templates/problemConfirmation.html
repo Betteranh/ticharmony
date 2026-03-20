@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Demande envoyée – TicHarmony</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body { background: #eef2f8 !important; }
+
+        :root {
+            --white:     #ffffff;
+            --bg:        #eef2f8;
+            --border:    #d1d9e8;
+            --text:      #1a2035;
+            --text-2:    #5a6480;
+            --text-3:    #9aa3b8;
+            --blue:      #2563eb;
+            --blue-bg:   #eff6ff;
+            --blue-br:   #bfdbfe;
+            --green:     #16a34a;
+            --green-bg:  #f0fdf4;
+            --green-br:  #bbf7d0;
+            --amber:     #d97706;
+            --amber-bg:  #fffbeb;
+            --amber-br:  #fde68a;
+            --sh:        0 2px 10px rgba(37,99,235,.06), 0 1px 4px rgba(0,0,0,.04);
+            --sh-lg:     0 8px 28px rgba(37,99,235,.1), 0 3px 10px rgba(0,0,0,.05);
+            --radius:    16px;
+        }
+
+        .cf-root {
+            font-family: 'Nunito', sans-serif;
+            color: var(--text);
+            padding: 3rem 1rem 6rem;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ── Icône succès ── */
+        .success-icon-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.75rem;
+        }
+        .success-ring {
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            background: var(--green-bg);
+            border: 3px solid var(--green-br);
+            display: flex; align-items: center; justify-content: center;
+            animation: popIn .5s cubic-bezier(.34,1.56,.64,1) forwards;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(.5); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .checkmark-svg {
+            animation: drawCheck .4s ease .3s both;
+        }
+        @keyframes drawCheck {
+            from { opacity: 0; transform: scale(.5) rotate(-10deg); }
+            to   { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        /* ── Headline ── */
+        .cf-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -.035em;
+            line-height: 1.2;
+            text-align: center;
+            margin-bottom: .5rem;
+        }
+        .cf-sub {
+            text-align: center;
+            font-size: .95rem;
+            color: var(--text-2);
+            margin-bottom: 2rem;
+            line-height: 1.65;
+        }
+
+        /* ── Ticket ref card ── */
+        .ticket-ref-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--sh);
+            border: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .ticket-ref-icon {
+            width: 44px; height: 44px;
+            border-radius: 11px;
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-br);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            color: var(--blue);
+        }
+        .ticket-ref-num {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: .2rem;
+        }
+        .ticket-ref-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Étapes suivantes ── */
+        .next-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--sh);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .next-card-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 1rem;
+        }
+        .next-steps { display: flex; flex-direction: column; gap: .75rem; }
+        .next-step {
+            display: flex;
+            align-items: flex-start;
+            gap: .85rem;
+        }
+        .ns-icon {
+            width: 36px; height: 36px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            margin-top: .1rem;
+        }
+        .ns-blue   { background: var(--blue-bg); border: 1px solid var(--blue-br); color: var(--blue); }
+        .ns-amber  { background: var(--amber-bg); border: 1px solid var(--amber-br); color: var(--amber); }
+        .ns-green  { background: var(--green-bg); border: 1px solid var(--green-br); color: var(--green); }
+        .ns-text { flex: 1; }
+        .ns-label {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: .15rem;
+        }
+        .ns-desc {
+            font-size: .82rem;
+            color: var(--text-2);
+            line-height: 1.55;
+        }
+
+        /* ── Boutons ── */
+        .cf-actions {
+            display: flex;
+            flex-direction: column;
+            gap: .65rem;
+            margin-top: 1.5rem;
+        }
+        .btn-primary-cf {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 1rem 1.5rem;
+            background: var(--blue);
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .95rem;
+            font-weight: 700;
+            border-radius: 12px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(37,99,235,.25);
+            transition: background .15s, transform .15s;
+        }
+        .btn-primary-cf:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .btn-secondary-cf {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: .9rem 1.5rem;
+            background: var(--white);
+            color: var(--text-2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            transition: background .15s, color .15s;
+        }
+        .btn-secondary-cf:hover { background: var(--bg); color: var(--text); }
+
+        /* ── Contact footer ── */
+        .cf-contact {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: .85rem;
+            color: var(--text-3);
+        }
+        .cf-contact a {
+            color: var(--green);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        .cf-contact a:hover { text-decoration: underline; }
+
+        /* ── Animations entrée ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fu { opacity: 0; animation: fadeUp .4s ease forwards; }
+        .d1 { animation-delay: .1s; }
+        .d2 { animation-delay: .2s; }
+        .d3 { animation-delay: .3s; }
+        .d4 { animation-delay: .4s; }
+        .d5 { animation-delay: .5s; }
+    </style>
+</head>
+
+<div layout:fragment="content" class="cf-root">
+
+    <!-- Icône succès -->
+    <div class="success-icon-wrap">
+        <div class="success-ring">
+            <svg class="checkmark-svg" width="44" height="44" viewBox="0 0 24 24" fill="none"
+                 stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Titre -->
+    <div class="fu d1">
+        <h1 class="cf-title">Votre demande a bien été envoyée !</h1>
+        <p class="cf-sub">
+            Notre équipe a reçu votre signalement et va l'analyser rapidement.<br>
+            Vous serez notifié dès qu'un technicien prend en charge votre dossier.
+        </p>
+    </div>
+
+    <!-- Référence du ticket -->
+    <div class="ticket-ref-card fu d2">
+        <div class="ticket-ref-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="2"/>
+                <path d="M9 12h6M9 16h4"/>
+            </svg>
+        </div>
+        <div style="min-width:0;">
+            <div class="ticket-ref-num" th:text="'Demande n°' + ${problem.id}">Demande n°0</div>
+            <div class="ticket-ref-title" th:text="${problem.title}">Titre du ticket</div>
+        </div>
+    </div>
+
+    <!-- Étapes suivantes -->
+    <div class="next-card fu d3">
+        <div class="next-card-title">Ce qui se passe maintenant</div>
+        <div class="next-steps">
+            <div class="next-step">
+                <div class="ns-icon ns-blue">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </div>
+                <div class="ns-text">
+                    <div class="ns-label">Analyse de votre demande</div>
+                    <div class="ns-desc">Notre équipe examine votre signalement pour comprendre le problème.</div>
+                </div>
+            </div>
+            <div class="next-step">
+                <div class="ns-icon ns-amber">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="ns-text">
+                    <div class="ns-label">Attribution d'un technicien</div>
+                    <div class="ns-desc">Un spécialiste sera assigné à votre dossier dans les meilleurs délais.</div>
+                </div>
+            </div>
+            <div class="next-step">
+                <div class="ns-icon ns-green">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                </div>
+                <div class="ns-text">
+                    <div class="ns-label">Prise de contact</div>
+                    <div class="ns-desc">Votre technicien vous contacte ou vous écrit directement dans la discussion de votre demande.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="cf-actions fu d4">
+        <a th:href="@{'/problems/' + ${problem.id}}" class="btn-primary-cf">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="2"/>
+            </svg>
+            Voir ma demande
+        </a>
+        <a sec:authorize="hasRole('CLIENT')" th:href="@{/clientDashboard}" class="btn-secondary-cf">
+            Retour à mon espace
+        </a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/adminDashboard}" class="btn-secondary-cf">
+            Retour au tableau de bord
+        </a>
+    </div>
+
+    <!-- Contact -->
+    <div class="cf-contact fu d5">
+        Besoin d'aide urgente ?
+        <a href="tel:+32495576535">+32 (0) 495 57 65 35</a>
+        &nbsp;·&nbsp; Lun–Ven, 9h30–17h30
+    </div>
+
+</div>
+</html>

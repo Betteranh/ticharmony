@@ -84,7 +84,7 @@ public class ProblemController {
      * Soumet la résolution → RESOLVED + notifie les ADMIN
      */
     @PostMapping("/{id}/resolve")
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole('MEMBER', 'ADMIN')")
     public String submitResolution(@PathVariable Long id,
                                    @RequestParam String resolution,
                                    Authentication auth) {
@@ -111,7 +111,7 @@ public class ProblemController {
     }
 
     @GetMapping("/{id}/resolve")
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole('MEMBER', 'ADMIN')")
     public String showResolveForm(@PathVariable Long id,
                                   Model model,
                                   Authentication auth) {
@@ -332,6 +332,23 @@ public class ProblemController {
 
 
     /**
+     * Page de confirmation après création d'un ticket.
+     */
+    @GetMapping("/{id}/confirmation")
+    public String showConfirmation(@PathVariable Long id, Model model, Authentication auth) {
+        Problem problem = service.getProblem(id);
+        if (problem == null) return "redirect:/problems";
+        User current = userService.findByLogin(auth.getName());
+        // Seul le créateur peut voir la confirmation
+        if (problem.getUser() == null || !problem.getUser().getId().equals(current.getId())) {
+            return "redirect:/problems/" + id;
+        }
+        model.addAttribute("problem", problem);
+        model.addAttribute("currentUser", current);
+        return "problemConfirmation";
+    }
+
+    /**
      * Formulaire de création.
      */
     @GetMapping("/create")
@@ -421,6 +438,7 @@ public class ProblemController {
             }
 
             service.createProblem(formProblem);
+            long newId = formProblem.getId(); // on capture l'id avant la suite
 
             // Persister email/téléphone sur le profil CLIENT pour pré-remplissage futur
             if (currentUser.getRole() == UserRole.CLIENT) {
@@ -447,6 +465,9 @@ public class ProblemController {
             if (formProblem.getTechnician() != null) {
                 notificationService.notify(formProblem.getTechnician(), formProblem, NotificationType.ASSIGNED_TO_PROBLEM);
             }
+
+            // Rediriger vers la page de confirmation pour les nouveaux tickets
+            return "redirect:/problems/" + newId + "/confirmation";
 
         } else {
             // --- mise à jour ---
@@ -571,6 +592,17 @@ public class ProblemController {
     public String deleteProblem(@PathVariable Long id) {
         service.deleteProblem(id);
         return "redirect:/problems";
+    }
+
+    /**
+     * Retourne le statut actuel d’un ticket (polling JSON pour le client).
+     */
+    @GetMapping("/{id}/status")
+    @ResponseBody
+    public Map<String, String> getTicketStatus(@PathVariable Long id, Authentication auth) {
+        Problem problem = service.getProblem(id);
+        if (problem == null) return Map.of("status", "NOT_FOUND");
+        return Map.of("status", problem.getStatus().name());
     }
 
     /**
