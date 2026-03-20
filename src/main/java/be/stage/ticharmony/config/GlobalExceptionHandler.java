@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,6 +22,15 @@ public class GlobalExceptionHandler {
         log.warn("Page non trouvée : {}", request.getRequestURI());
         model.addAttribute("errorMessage", "Page non trouvée");
         model.addAttribute("errorDetails", "La page demandée n'existe pas.");
+        return "error/404";
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleNoResource(NoResourceFoundException ex, HttpServletRequest request, Model model) {
+        // Ressource statique introuvable (ex: favicon.ico) — pas d'erreur à logger
+        model.addAttribute("errorMessage", "Ressource introuvable");
+        model.addAttribute("errorDetails", "La ressource demandée n'existe pas.");
         return "error/404";
     }
 
