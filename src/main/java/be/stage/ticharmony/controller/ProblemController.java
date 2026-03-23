@@ -224,11 +224,6 @@ public class ProblemController {
             model.addAttribute("countUnassigned", countUnassigned);
             model.addAttribute("countUrgent",     countUrgent);
 
-            // Stats techniciens sur tous les tickets (pas juste filtrés)
-            List<TechnicianStatsDTO> allTechStats = service.getTechnicianStats(allList, currentUser);
-            long maxTechCount = allTechStats.stream().mapToLong(TechnicianStatsDTO::getTicketCount).max().orElse(1);
-            model.addAttribute("allTechStats",  allTechStats);
-            model.addAttribute("maxTechCount",  maxTechCount);
             model.addAttribute("technicianId",  technicianId);
         }
 
@@ -282,6 +277,25 @@ public class ProblemController {
                 })
                 .sorted(Comparator.comparing(Problem::getCreatedAt).reversed())
                 .collect(Collectors.toList());
+
+        // Stats techniciens adaptées aux filtres actifs
+        if (currentUser.getRole() != UserRole.CLIENT) {
+            // Si un technicien est sélectionné dans la sidebar, recalculer sans ce filtre
+            // pour que tous les techniciens restent visibles avec leurs compteurs relatifs
+            List<Problem> techStatsSource = filtered;
+            if (technicianId != null) {
+                techStatsSource = allList.stream()
+                        .filter(p -> statusFilter == null ? p.getStatus() != Status.CLOSED : p.getStatus() == statusFilter)
+                        .filter(p -> priorityFilter == null || p.getPriority() == priorityFilter)
+                        .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
+                        .filter(p -> monthFilter == null || p.getCreatedAt().getMonthValue() == monthFilter)
+                        .collect(Collectors.toList());
+            }
+            List<TechnicianStatsDTO> allTechStats = service.getTechnicianStats(techStatsSource, currentUser);
+            long maxTechCount = allTechStats.stream().mapToLong(TechnicianStatsDTO::getTicketCount).max().orElse(1);
+            model.addAttribute("allTechStats", allTechStats);
+            model.addAttribute("maxTechCount", maxTechCount);
+        }
 
         // 4. Pagination (page = 1-based pour l'utilisateur)
         int totalProblems = filtered.size();

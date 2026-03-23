@@ -113,6 +113,31 @@
             color: var(--text-2);
             cursor: default;
         }
+        .fc-input.invalid {
+            border-color: var(--red) !important;
+            background: #fff8f8 !important;
+            box-shadow: 0 0 0 3px rgba(220,38,38,.09) !important;
+        }
+        .field-error {
+            display: none;
+            font-size: .75rem;
+            color: var(--red);
+            font-weight: 600;
+            margin-top: .35rem;
+        }
+        .field-error.show { display: block; }
+        .cat-error-msg {
+            display: none;
+            font-size: .78rem;
+            color: var(--red);
+            font-weight: 600;
+            margin-top: .65rem;
+            padding: .5rem .85rem;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+        }
+        .cat-error-msg.show { display: block; }
         textarea.fc-input {
             resize: vertical;
             min-height: 140px;
@@ -265,12 +290,14 @@
                 <input type="text" id="title" th:field="*{title}" maxlength="120"
                        placeholder="Ex : Mon ordinateur ne s'allume plus"
                        class="fc-input" required/>
+                <p class="field-error" id="err-title">Veuillez décrire le problème en une phrase.</p>
             </div>
             <div>
                 <label for="description" class="fc-label">Décrivez ce qui se passe <span class="req">*</span></label>
                 <textarea id="description" th:field="*{description}"
                           placeholder="Expliquez-nous le problème avec vos propres mots. Depuis quand ? Y a-t-il un message à l'écran ? Qu'avez-vous essayé ?"
                           class="fc-input" required></textarea>
+                <p class="field-error" id="err-description">Veuillez décrire le problème en quelques mots.</p>
             </div>
         </div>
 
@@ -278,7 +305,7 @@
         <div class="step-card fu d3">
             <div class="step-question">Ça concerne quoi ? 🗂️</div>
             <p style="font-size:.88rem; color:var(--text-3); margin-bottom:.75rem;">Sélectionnez la case qui correspond à votre problème.</p>
-            <div class="cat-grid" id="catGrid">
+            <div class="cat-grid" id="catGrid" required>
                 <label class="cat-card" data-cat>
                     <input type="radio" th:field="*{category}" value="Réseau et connectivité" required>
                     <span class="cat-emoji">🌐</span>
@@ -305,6 +332,7 @@
                     <div><div class="cat-name">Autre</div><div class="cat-desc">Non listé ci-dessus</div></div>
                 </label>
             </div>
+            <p class="cat-error-msg" id="catError">Veuillez choisir une catégorie avant d'envoyer.</p>
         </div>
 
         <!-- 3. Vos informations de contact -->
@@ -325,11 +353,13 @@
                     <label for="ticketFirstName" class="fc-label">Prénom <span class="req">*</span></label>
                     <input type="text" id="ticketFirstName" th:field="*{ticketUserInfo.firstName}"
                            placeholder="Ex : Marie" class="fc-input" required/>
+                    <p class="field-error" id="err-firstName">Veuillez saisir un prénom.</p>
                 </div>
                 <div>
                     <label for="ticketLastName" class="fc-label">Nom <span class="req">*</span></label>
                     <input type="text" id="ticketLastName" th:field="*{ticketUserInfo.lastName}"
                            placeholder="Ex : Dupont" class="fc-input" required/>
+                    <p class="field-error" id="err-lastName">Veuillez saisir un nom.</p>
                 </div>
             </div>
 
@@ -338,11 +368,13 @@
                     <label for="ticketEmail" class="fc-label">E-mail <span class="req">*</span></label>
                     <input type="email" id="ticketEmail" th:field="*{ticketUserInfo.email}"
                            placeholder="vous@votreentreprise.be" class="fc-input" required/>
+                    <p class="field-error" id="err-email">Veuillez saisir une adresse e-mail valide.</p>
                 </div>
                 <div>
                     <label for="ticketPhone" class="fc-label">Téléphone <span class="req">*</span></label>
                     <input type="text" id="ticketPhone" th:field="*{ticketUserInfo.phone}"
                            placeholder="Ex : 0495 12 34 56" class="fc-input" required/>
+                    <p class="field-error" id="err-phone">Veuillez saisir un numéro de téléphone.</p>
                 </div>
             </div>
 
@@ -379,14 +411,63 @@
 <th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
+
+        /* ── Catégorie : sélection visuelle ── */
         document.querySelectorAll('[data-cat]').forEach(function(card) {
             var radio = card.querySelector('input[type=radio]');
             if (radio && radio.checked) card.classList.add('selected');
             card.addEventListener('click', function() {
                 document.querySelectorAll('[data-cat]').forEach(function(c) { c.classList.remove('selected'); });
                 card.classList.add('selected');
+                var catErr = document.getElementById('catError');
+                if (catErr) catErr.classList.remove('show');
             });
         });
+
+        /* ── Validation inline ── */
+        function validateInput(input) {
+            var errId = 'err-' + input.id;
+            var errEl = document.getElementById(errId);
+            var empty = !input.value.trim();
+            var invalid = input.type === 'email' && input.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+            if (empty || invalid) {
+                input.classList.add('invalid');
+                if (errEl) errEl.classList.add('show');
+            } else {
+                input.classList.remove('invalid');
+                if (errEl) errEl.classList.remove('show');
+            }
+            return !empty && !invalid;
+        }
+
+        document.querySelectorAll('.fc-input[required]:not([readonly])').forEach(function(input) {
+            input.addEventListener('blur', function() { validateInput(input); });
+            input.addEventListener('input', function() {
+                if (input.classList.contains('invalid')) validateInput(input);
+            });
+        });
+
+        /* ── Validation au submit ── */
+        document.querySelector('form').addEventListener('submit', function(e) {
+            var ok = true;
+
+            // Valider les champs texte requis
+            document.querySelectorAll('.fc-input[required]:not([readonly])').forEach(function(input) {
+                if (!validateInput(input)) ok = false;
+            });
+
+            // Valider la catégorie
+            var catSelected = document.querySelector('[data-cat].selected');
+            var catErr = document.getElementById('catError');
+            if (!catSelected) {
+                ok = false;
+                if (catErr) catErr.classList.add('show');
+                document.getElementById('catGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            if (!ok) e.preventDefault();
+        });
+
         /*]]>*/
     </script>
 </th:block>

@@ -131,10 +131,16 @@
         }
         .ticket-row:last-child { border-bottom: none; }
         .ticket-row:hover { background: var(--bg); }
-        .ticket-row.row-urgent { background: rgba(220,38,38,.03); }
-        .ticket-row.row-urgent:hover { background: rgba(220,38,38,.06); }
-        .ticket-row.row-high { background: rgba(234,88,12,.02); }
-        .ticket-row.row-high:hover { background: rgba(234,88,12,.05); }
+        .ticket-row.row-urgent {
+            background: rgba(220,38,38,.06);
+            border-left-width: 5px;
+        }
+        .ticket-row.row-urgent:hover { background: rgba(220,38,38,.1); }
+        .ticket-row.row-high {
+            background: rgba(234,88,12,.05);
+            border-left-width: 5px;
+        }
+        .ticket-row.row-high:hover { background: rgba(234,88,12,.09); }
 
         .ticket-id {
             font-size: .68rem; font-weight: 700; color: var(--text-3);
@@ -268,6 +274,11 @@
 
         <div th:if="${#lists.isEmpty(inProgressList)}" class="empty-state">
             Aucun ticket en cours de traitement
+            <div style="margin-top:.5rem;">
+                <a th:href="@{/problems(status='OPEN')}" style="font-size:.8rem;font-weight:700;color:var(--blue);text-decoration:none;">
+                    Voir les tickets disponibles →
+                </a>
+            </div>
         </div>
 
         <div th:if="${!#lists.isEmpty(inProgressList)}">
@@ -324,6 +335,11 @@
 
         <div th:if="${#lists.isEmpty(resolvedPendingList)}" class="empty-state">
             Aucune résolution en attente de confirmation
+            <div style="margin-top:.5rem;">
+                <a th:href="@{/problems}" style="font-size:.8rem;font-weight:700;color:var(--blue);text-decoration:none;">
+                    Voir tous les tickets →
+                </a>
+            </div>
         </div>
 
         <div th:if="${!#lists.isEmpty(resolvedPendingList)}">

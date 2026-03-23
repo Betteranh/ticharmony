@@ -329,7 +329,12 @@
                     Tout voir →
                 </a>
             </div>
-            <div th:if="${#lists.isEmpty(nonAssignedList)}" class="empty">Tous les tickets sont assignés</div>
+            <div th:if="${#lists.isEmpty(nonAssignedList)}" class="empty">
+                Tous les tickets sont assignés
+                <div style="margin-top:.5rem;">
+                    <a th:href="@{/problems}" style="font-size:.78rem;font-weight:700;color:var(--blue);text-decoration:none;">Voir tous les tickets →</a>
+                </div>
+            </div>
             <div th:if="${!#lists.isEmpty(nonAssignedList)}">
                 <a th:each="p : ${nonAssignedList}" th:href="@{'/problems/' + ${p.id}}"
                    class="ticket-row" style="--row-accent:#ea580c;">
@@ -351,7 +356,7 @@
         <div class="section-card">
             <div class="section-header">
                 <div>
-                    <div class="section-title">Résolus — à valider</div>
+                    <div class="section-title">À valider</div>
                     <div class="section-sub">Résolutions soumises par les techniciens</div>
                 </div>
                 <a th:href="@{/problems(status='RESOLVED')}" class="view-all"
@@ -359,7 +364,12 @@
                     Tout voir →
                 </a>
             </div>
-            <div th:if="${#lists.isEmpty(resolvedList)}" class="empty">Aucune résolution en attente</div>
+            <div th:if="${#lists.isEmpty(resolvedList)}" class="empty">
+                Aucune résolution en attente
+                <div style="margin-top:.5rem;">
+                    <a th:href="@{/problems(status='IN_PROGRESS')}" style="font-size:.78rem;font-weight:700;color:var(--blue);text-decoration:none;">Voir les tickets en cours →</a>
+                </div>
+            </div>
             <div th:if="${!#lists.isEmpty(resolvedList)}">
                 <a th:each="p : ${resolvedList}" th:href="@{'/problems/' + ${p.id}}"
                    class="ticket-row" style="--row-accent:#16a34a;">
@@ -382,8 +392,9 @@
     <!-- Lien tous les tickets -->
     <div style="text-align:center;margin-top:1.5rem;" class="fu d5">
         <a th:href="@{/problems}"
-           style="font-size:.88rem;font-weight:600;color:var(--text-3);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:color .15s;"
-           onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--text-3)'">
+           style="display:inline-flex;align-items:center;gap:7px;padding:.75rem 1.6rem;background:var(--white);border:1.5px solid var(--border);border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;color:var(--text-2);text-decoration:none;box-shadow:var(--sh);transition:background .15s,color .15s,border-color .15s,box-shadow .15s;"
+           onmouseover="this.style.background='var(--blue)';this.style.color='#fff';this.style.borderColor='var(--blue)'"
+           onmouseout="this.style.background='var(--white)';this.style.color='var(--text-2)';this.style.borderColor='var(--border)'">
             Voir tous les tickets
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
