@@ -25,6 +25,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("SELECT COUNT(n) FROM Notification n WHERE n.user = ?1 AND n.viewed = false")
     long countUnreadByUser(User user);
 
+    /** Vérifie si l'utilisateur a au moins une notification urgente non lue */
+    boolean existsByUserAndViewedFalseAndType(User user, NotificationType type);
+
     /** UPDATE en batch — une seule requête au lieu de N saves individuels */
     @Modifying
     @Query("UPDATE Notification n SET n.viewed = true WHERE n.user = ?1 AND n.viewed = false")

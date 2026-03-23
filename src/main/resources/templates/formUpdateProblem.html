@@ -350,7 +350,7 @@
                               th:style="${problem.status.name() == 'OPEN'}        ? 'background:#2563eb' :
                                         (${problem.status.name() == 'IN_PROGRESS'} ? 'background:#d97706' :
                                         (${problem.status.name() == 'RESOLVED'}    ? 'background:#16a34a' :
-                                        'background:#a8a29e'))"></span>
+                                        'background:#94a3b8'))"></span>
                         <span th:if="${problem.status.name() == 'OPEN'}">Ouvert</span>
                         <span th:if="${problem.status.name() == 'IN_PROGRESS'}">En cours</span>
                         <span th:if="${problem.status.name() == 'RESOLVED'}">Résolu</span>
@@ -365,8 +365,8 @@
                         <span class="sp-dot"
                               th:style="${problem.priority.name() == 'URGENT'} ? 'background:#dc2626' :
                                         (${problem.priority.name() == 'HIGH'}   ? 'background:#ea580c' :
-                                        (${problem.priority.name() == 'MEDIUM'} ? 'background:#7c3aed' :
-                                        'background:#a8a29e'))"></span>
+                                        (${problem.priority.name() == 'MEDIUM'} ? 'background:#2563eb' :
+                                        'background:#94a3b8'))"></span>
                         <span th:if="${problem.priority.name() == 'LOW'}">Faible</span>
                         <span th:if="${problem.priority.name() == 'MEDIUM'}">Normale</span>
                         <span th:if="${problem.priority.name() == 'HIGH'}">Élevée</span>

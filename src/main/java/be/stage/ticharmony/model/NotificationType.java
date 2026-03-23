@@ -8,7 +8,9 @@ public enum NotificationType {
     TICKET_IN_PROGRESS("Ticket pris en charge"),
     TICKET_CLOSED("Dossier clôturé"),
     TICKET_REASSIGNED("Ticket réassigné"),
-    TICKET_REOPENED("Ticket rouvert par le client");
+    TICKET_REOPENED("Ticket rouvert par le client"),
+    CLIENT_CONFIRMED_CLOSE("Client a confirmé la résolution"),
+    PRIORITY_URGENT("Priorité passée en urgente");
 
     private final String label;
 

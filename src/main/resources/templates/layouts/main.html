@@ -138,7 +138,7 @@
                     badge.className = 'nh-notif-badge';
                     btn.appendChild(badge);
                 }
-                badge.textContent = count;
+                badge.textContent = count > 99 ? '99+' : count;
                 badge.style.display = '';
             } else {
                 btn.classList.remove('has-notif');
@@ -147,7 +147,7 @@
         }
 
         /* ── 2. Toast ── */
-        function showToast(delta) {
+        function showToast(delta, isUrgent) {
             if (!toastWrap) {
                 toastWrap = document.createElement('div');
                 toastWrap.style.cssText = [
@@ -156,28 +156,63 @@
                 ].join(';') + ';';
                 document.body.appendChild(toastWrap);
             }
+            var bg       = isUrgent ? '#7f1d1d' : '#1e293b';
+            var bgHover  = isUrgent ? '#991b1b' : '#263548';
+            var accent   = isUrgent ? '#ef4444' : '#3b82f6';
+            var iconColor = isUrgent ? '#fca5a5' : '#60a5fa';
             var t = document.createElement('div');
             t.style.cssText = [
                 'display:flex', 'align-items:center', 'gap:.6rem',
-                'background:#1e293b', 'color:#f1f5f9',
+                'background:' + bg, 'color:#f1f5f9',
                 'padding:.7rem 1.1rem', 'border-radius:12px',
                 'box-shadow:0 8px 28px rgba(0,0,0,.22)',
                 'font-size:.84rem', 'font-weight:600',
-                'min-width:220px', 'border-left:3px solid #3b82f6',
+                'min-width:220px', 'border-left:3px solid ' + accent,
                 'opacity:0', 'transform:translateY(8px)',
-                'transition:opacity .22s ease,transform .22s ease'
+                'transition:opacity .22s ease,transform .22s ease,box-shadow .15s ease',
+                'pointer-events:auto', 'cursor:pointer'
             ].join(';') + ';';
-            var label = delta + ' nouvelle' + (delta > 1 ? 's' : '') + ' notification' + (delta > 1 ? 's' : '');
-            t.innerHTML = '<svg width="16" height="16" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg><span>' + label + '</span>';
+            var label = isUrgent
+                ? '⚠ Priorité urgente — voir maintenant'
+                : delta + ' nouvelle' + (delta > 1 ? 's' : '') + ' notification' + (delta > 1 ? 's' : '');
+            t.innerHTML = '<svg width="16" height="16" fill="none" stroke="' + iconColor + '" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg><span>' + label + '</span><svg style="margin-left:auto;opacity:.5" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>';
+            t.addEventListener('mouseenter', function () { t.style.boxShadow = '0 8px 28px rgba(0,0,0,.35)'; t.style.background = bgHover; });
+            t.addEventListener('mouseleave', function () { t.style.boxShadow = '0 8px 28px rgba(0,0,0,.22)'; t.style.background = bg; });
+            t.addEventListener('click', function () { openDrawer(); t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 300); });
             toastWrap.appendChild(t);
             requestAnimationFrame(function () { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
+            var duration = isUrgent ? 7000 : 4000;
             setTimeout(function () {
                 t.style.opacity = '0'; t.style.transform = 'translateY(8px)';
                 setTimeout(function () { t.remove(); }, 300);
-            }, 4000);
+            }, duration);
         }
 
-        /* ── 3. Rafraîchissement du panel ── */
+        /* ── 3. Horodatage relatif ── */
+        function relativeTime(dateStr) {
+            var now  = new Date();
+            var then = new Date(dateStr.replace(' ', 'T'));
+            var diff = Math.floor((now - then) / 1000);
+            if (diff < 60)    return 'À l\'instant';
+            if (diff < 3600)  return 'Il y a ' + Math.floor(diff / 60) + ' min';
+            if (diff < 86400) return 'Il y a ' + Math.floor(diff / 3600) + 'h';
+            var todayMid = new Date(now); todayMid.setHours(0, 0, 0, 0);
+            var yestMid  = new Date(todayMid); yestMid.setDate(yestMid.getDate() - 1);
+            if (then >= yestMid && then < todayMid) {
+                return 'Hier à ' + then.getHours().toString().padStart(2,'0') + 'h' + then.getMinutes().toString().padStart(2,'0');
+            }
+            return then.getDate().toString().padStart(2,'0') + '/' +
+                   (then.getMonth()+1).toString().padStart(2,'0') + ' à ' +
+                   then.getHours().toString().padStart(2,'0') + 'h' +
+                   then.getMinutes().toString().padStart(2,'0');
+        }
+        function updateRelativeTimes() {
+            document.querySelectorAll('.np-time[data-time]').forEach(function (el) {
+                el.textContent = relativeTime(el.getAttribute('data-time'));
+            });
+        }
+
+        /* ── 4. Rafraîchissement du panel ── */
         function refreshPanel(callback) {
             fetch('/notifications/panel', { credentials: 'same-origin' })
                 .then(function (r) { return r.ok ? r.text() : null; })
@@ -188,13 +223,13 @@
                     var tmp = document.createElement('div');
                     tmp.innerHTML = html;
                     var newPanel = tmp.firstElementChild;
-                    if (newPanel) { panel.replaceWith(newPanel); setupMarkAllRead(); }
+                    if (newPanel) { panel.replaceWith(newPanel); setupMarkAllRead(); updateRelativeTimes(); }
                     if (callback) callback();
                 })
                 .catch(function () {});
         }
 
-        /* ── 4. Mark-all-read en AJAX ── */
+        /* ── 5. Mark-all-read en AJAX ── */
         function setupMarkAllRead() {
             var form = document.querySelector('#notifPanel form[action*="mark-all-read"]');
             if (!form || form._ajaxBound) return;
@@ -207,7 +242,7 @@
             });
         }
 
-        /* ── 5. Ouverture / Fermeture drawer ── */
+        /* ── 6. Ouverture / Fermeture drawer ── */
         function openDrawer() {
             drawer.classList.remove('translate-x-full');
             drawer.classList.add('drawer-slide-in');
@@ -230,14 +265,15 @@
         if (overlay)  overlay.addEventListener('click', closeDrawer);
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
 
-        /* ── 6. Polling ── */
+        /* ── 7. Polling ── */
         function poll() {
             fetch('/notifications/count', { credentials: 'same-origin' })
                 .then(function (r) { return r.json(); })
                 .then(function (d) {
                     var count = d.count;
+                    var hasUrgent = !!d.hasUrgent;
                     if (prevCount !== -1 && count > prevCount) {
-                        showToast(count - prevCount);
+                        showToast(count - prevCount, hasUrgent);
                         if (drawerOpen) refreshPanel();
                     }
                     prevCount = count;
@@ -248,7 +284,9 @@
 
         setupMarkAllRead();
         poll();
+        updateRelativeTimes();
         setInterval(poll, 10000);
+        setInterval(updateRelativeTimes, 60000);
     });
     </script>
 </div>

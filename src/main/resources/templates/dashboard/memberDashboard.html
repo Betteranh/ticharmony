@@ -204,7 +204,7 @@
     <!-- Greeting -->
     <div class="fu d1">
         <h1 class="greet-name">Bonjour, <span th:text="${currentUser.firstname}">Technicien</span> 👋</h1>
-        <p class="greet-sub">Voici l'état de vos tickets assignés.</p>
+        <p class="greet-sub">Voici l'état de vos tickets assignés et les demandes non assignées à prendre en charge.</p>
     </div>
 
     <!-- ── Stat cards ── -->
@@ -242,20 +242,18 @@
             </div>
         </a>
 
-        <a th:href="@{/problems}" class="stat-card">
-            <div class="stat-icon" style="background:var(--blue-bg); border:1px solid var(--blue-br);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+        <a th:href="@{/problems(status='OPEN',unassigned=true)}" class="stat-card">
+            <div class="stat-icon" style="background:#f5f3ff; border:1px solid #c4b5fd;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed"
                      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
-                    <rect x="9" y="3" width="6" height="4" rx="2"/>
-                    <path d="M9 12h6M9 16h4"/>
+                    <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                 </svg>
             </div>
             <div class="stat-body">
                 <div class="stat-num"
-                     th:style="${totalTickets > 0} ? 'color:var(--blue)' : 'color:var(--text-3)'"
-                     th:text="${totalTickets}">0</div>
-                <div class="stat-lbl">Total actifs</div>
+                     th:style="${unassignedTotal > 0} ? 'color:#7c3aed' : 'color:var(--text-3)'"
+                     th:text="${unassignedTotal}">0</div>
+                <div class="stat-lbl">Non assignés</div>
             </div>
         </a>
 
@@ -347,6 +345,62 @@
                 <a th:href="@{'/problems/' + ${problem.id}}"
                    class="ticket-row"
                    style="--row-accent:#16a34a;">
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.22rem;">
+                            <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
+                            <span class="ticket-title" th:text="${problem.title}"></span>
+                        </div>
+                        <div class="ticket-meta">
+                            <span class="ticket-date"
+                                  th:attr="data-date=${#temporals.format(problem.createdAt, 'yyyy-MM-dd')}"
+                                  th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
+                            <span>·</span>
+                            <span th:text="${problem.user != null and problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user?.nomEntreprise}"></span>
+                            <th:block th:if="${problem.ticketUserInfo != null}">
+                                <span>·</span>
+                                <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">⚠ Critique</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">↑ Élevée</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
+                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
+                    </div>
+                    <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- ── Tickets disponibles (non assignés) ── -->
+    <div class="ticket-section fu d5">
+        <div class="ticket-section-header">
+            <div>
+                <div class="section-heading">Demandes non assignées</div>
+                <div class="section-sub">Tickets sans technicien — vous pouvez les prendre en charge</div>
+            </div>
+            <a th:if="${unassignedTotal > 0}" th:href="@{/problems(status='OPEN',unassigned=true)}" class="view-all-link"
+               th:text="${unassignedTotal > 5} ? 'Tout voir (' + ${unassignedTotal} + ') →' : 'Tout voir →'"></a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(unassignedList)}" class="empty-state">
+            Aucune demande non assignée pour le moment
+        </div>
+
+        <div th:if="${!#lists.isEmpty(unassignedList)}">
+            <th:block th:each="problem : ${unassignedList}">
+                <a th:href="@{'/problems/' + ${problem.id}}"
+                   th:classappend="${problem.priority != null and problem.priority.name() == 'URGENT'} ? 'row-urgent' :
+                                   (${problem.priority != null and problem.priority.name() == 'HIGH'} ? 'row-high' : '')"
+                   class="ticket-row"
+                   th:style="${problem.priority != null and problem.priority.name() == 'URGENT'} ? '--row-accent:#dc2626' :
+                             (${problem.priority != null and problem.priority.name() == 'HIGH'}   ? '--row-accent:#ea580c' :
+                             '--row-accent:#7c3aed')">
                     <div style="flex:1;min-width:0;">
                         <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.22rem;">
                             <span class="ticket-id">#<span th:text="${problem.id}"></span></span>

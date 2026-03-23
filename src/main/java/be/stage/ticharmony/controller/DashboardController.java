@@ -254,6 +254,15 @@ public class DashboardController {
         model.addAttribute("inProgressTotal",      (long) inProgressList.size());
         model.addAttribute("resolvedPendingList",  resolvedPendingList.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("resolvedPendingTotal", (long) resolvedPendingList.size());
+
+        List<Problem> unassignedList = StreamSupport
+                .stream(problemService.getProblems().spliterator(), false)
+                .filter(p -> p.getTechnician() == null && p.getStatus() == Status.OPEN)
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .collect(Collectors.toList());
+        model.addAttribute("unassignedList",  unassignedList.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("unassignedTotal", (long) unassignedList.size());
+
         model.addAttribute("module", "dashboard");
 
         return "dashboard/memberDashboard";

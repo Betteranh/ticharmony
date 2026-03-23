@@ -107,6 +107,10 @@ public class ProblemController {
             // 2) on marque la notif "ASSIGNED_TO_PROBLEM" comme lue
             notificationService.markAssignmentNotificationsRead(current, problem);
         }
+        // L'admin reste sur le détail pour pouvoir clôturer directement
+        if (current.getRole() == UserRole.ADMIN) {
+            return "redirect:/problems/" + id;
+        }
         return "redirect:/problems?status=IN_PROGRESS";
     }
 
@@ -148,6 +152,10 @@ public class ProblemController {
             // Notifier le client que son dossier est clôturé
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
                 notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_CLOSED);
+            }
+            // Notifier le technicien que son travail est officiellement validé
+            if (problem.getTechnician() != null) {
+                notificationService.notify(problem.getTechnician(), problem, NotificationType.TICKET_CLOSED);
             }
         }
         return "redirect:/problems?status=CLOSED";
@@ -475,6 +483,13 @@ public class ProblemController {
                             notificationService.notify(admin, formProblem, NotificationType.NEW_PROBLEM)
                     );
 
+            // Si pas de technicien assigné : notifier tous les members qu'une demande est disponible
+            if (formProblem.getTechnician() == null) {
+                userService.getUsersByRole(UserRole.MEMBER).forEach(member ->
+                        notificationService.notify(member, formProblem, NotificationType.NEW_PROBLEM)
+                );
+            }
+
             // Notifier le technicien s'il y en a un
             if (formProblem.getTechnician() != null) {
                 notificationService.notify(formProblem.getTechnician(), formProblem, NotificationType.ASSIGNED_TO_PROBLEM);
@@ -489,6 +504,7 @@ public class ProblemController {
             if (existing == null) {
                 return "redirect:/problems";
             }
+            Priority oldPriority = existing.getPriority();
             // Champs modifiables
             existing.setTitle(formProblem.getTitle());
             existing.setDescription(formProblem.getDescription());
@@ -525,6 +541,7 @@ public class ProblemController {
             } else if (technicianId != null && technicianId == 0) {
                 // Désassigner le technicien si "Aucun"
                 if (oldTech != null) {
+                    notificationService.notify(oldTech, existing, NotificationType.TICKET_REASSIGNED);
                     notificationService.markAssignmentNotificationsRead(oldTech, existing);
                 }
                 existing.setTechnician(null);
@@ -537,6 +554,13 @@ public class ProblemController {
 
             // Mise à jour du ticket
             service.updateProblem(existing);
+
+            // Notifier le tech si la priorité vient de passer à URGENT
+            if (formProblem.getPriority() == Priority.URGENT
+                    && oldPriority != Priority.URGENT
+                    && existing.getTechnician() != null) {
+                notificationService.notify(existing.getTechnician(), existing, NotificationType.PRIORITY_URGENT);
+            }
         }
         return "redirect:/problems/" + formProblem.getId();
     }
@@ -561,9 +585,9 @@ public class ProblemController {
             notificationService.deleteNotificationsForProblem(problem, NotificationType.NEW_PROBLEM);
             notificationService.deleteNotificationsForProblem(problem, NotificationType.PROBLEM_CLOSED);
 
-            // Notifier les admins que le client a confirmé et que le ticket est clos
+            // Notifier les admins que le client a confirmé
             userService.getUsersByRole(UserRole.ADMIN).forEach(admin ->
-                    notificationService.notify(admin, problem, NotificationType.TICKET_CLOSED)
+                    notificationService.notify(admin, problem, NotificationType.CLIENT_CONFIRMED_CLOSE)
             );
         }
         return "redirect:/problems/" + id;

@@ -56,11 +56,12 @@ public class NotificationController {
      */
     @GetMapping("/count")
     @ResponseBody
-    public Map<String, Long> countUnread(Principal principal) {
-        if (principal == null) return Map.of("count", 0L);
+    public Map<String, Object> countUnread(Principal principal) {
+        if (principal == null) return Map.of("count", 0L, "hasUrgent", false);
         User user = userRepository.findByLogin(principal.getName());
         long count = user != null ? notificationService.countUnreadForUser(user) : 0L;
-        return Map.of("count", count);
+        boolean hasUrgent = user != null && notificationService.hasUnreadUrgentForUser(user);
+        return Map.of("count", count, "hasUrgent", hasUrgent);
     }
 
     /**

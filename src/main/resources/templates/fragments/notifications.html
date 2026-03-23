@@ -147,6 +147,18 @@
   }
   .np-card:hover .np-arrow { opacity: 1; transform: translateX(0); }
 
+  /* Urgent card — fond teinté + glow pulsant */
+  .np-card--urgent {
+    background: #fff5f5;
+    border-color: #fecaca;
+    animation: npFadeUp .32s ease forwards, npUrgentPulse 2.4s ease-in-out 1s infinite;
+  }
+  .np-card--urgent .np-stripe { width: 5px; }
+  @keyframes npUrgentPulse {
+    0%,  100% { box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    50%        { box-shadow: 0 0 0 3px rgba(220,38,38,.15), 0 1px 3px rgba(0,0,0,.05); }
+  }
+
   /* Stagger */
   .np-card:nth-child(1)  { animation-delay: .04s; }
   .np-card:nth-child(2)  { animation-delay: .09s; }
@@ -156,6 +168,10 @@
   .np-card:nth-child(6)  { animation-delay: .29s; }
   .np-card:nth-child(7)  { animation-delay: .34s; }
   .np-card:nth-child(8)  { animation-delay: .39s; }
+  .np-card:nth-child(9)  { animation-delay: .44s; }
+  .np-card:nth-child(10) { animation-delay: .49s; }
+  .np-card:nth-child(11) { animation-delay: .54s; }
+  .np-card:nth-child(12) { animation-delay: .59s; }
 
   @keyframes npFadeUp {
     from { opacity: 0; transform: translateY(6px); }
@@ -171,11 +187,14 @@
   .np-stripe--new      { background: linear-gradient(180deg, #3b82f6, #93c5fd); }
   .np-stripe--closed   { background: linear-gradient(180deg, #10b981, #6ee7b7); }
   .np-stripe--assign   { background: linear-gradient(180deg, #8b5cf6, #c4b5fd); }
-  .np-stripe--comment  { background: linear-gradient(180deg, #f59e0b, #fcd34d); }
+  .np-stripe--comment  { background: linear-gradient(180deg, #3b82f6, #93c5fd); }
   .np-stripe--progress { background: linear-gradient(180deg, #d97706, #fde68a); }
   .np-stripe--done     { background: linear-gradient(180deg, #16a34a, #86efac); }
-  .np-stripe--reassign { background: linear-gradient(180deg, #dc2626, #fca5a5); }
-  .np-stripe--other    { background: #e5e7eb; }
+  .np-stripe--reassign { background: linear-gradient(180deg, #f97316, #fdba74); }
+  .np-stripe--reopened  { background: linear-gradient(180deg, #f97316, #fdba74); }
+  .np-stripe--confirmed { background: linear-gradient(180deg, #10b981, #6ee7b7); }
+  .np-stripe--urgent    { background: linear-gradient(180deg, #dc2626, #f87171); }
+  .np-stripe--other     { background: #e5e7eb; }
 
   /* Card inner layout */
   .np-card-inner {
@@ -197,11 +216,14 @@
   .np-icon--new      { background: #eff6ff; }
   .np-icon--closed   { background: #ecfdf5; }
   .np-icon--assign   { background: #f5f3ff; }
-  .np-icon--comment  { background: #fffbeb; }
+  .np-icon--comment  { background: #eff6ff; }
   .np-icon--progress { background: #fffbeb; }
   .np-icon--done     { background: #f0fdf4; }
-  .np-icon--reassign { background: #fef2f2; }
-  .np-icon--other    { background: #f9fafb; }
+  .np-icon--reassign { background: #fff7ed; }
+  .np-icon--reopened  { background: #fff7ed; }
+  .np-icon--confirmed { background: #ecfdf5; }
+  .np-icon--urgent    { background: #fef2f2; }
+  .np-icon--other     { background: #f9fafb; }
 
   .np-body { flex: 1; min-width: 0; }
 
@@ -217,11 +239,14 @@
   .np-label--new      { color: #2563eb; }
   .np-label--closed   { color: #059669; }
   .np-label--assign   { color: #7c3aed; }
-  .np-label--comment  { color: #d97706; }
+  .np-label--comment  { color: #2563eb; }
   .np-label--progress { color: #d97706; }
   .np-label--done     { color: #16a34a; }
-  .np-label--reassign { color: #dc2626; }
-  .np-label--other    { color: #6b7280; }
+  .np-label--reassign { color: #ea580c; }
+  .np-label--reopened  { color: #ea580c; }
+  .np-label--confirmed { color: #059669; }
+  .np-label--urgent    { color: #dc2626; }
+  .np-label--other     { color: #6b7280; }
 
   .np-ticket {
     font-family: 'DM Sans', sans-serif;
@@ -356,7 +381,8 @@
   <!-- Notifications — click marque comme lu + redirige vers le ticket -->
   <a th:each="n : ${notifications}"
      th:href="@{'/notifications/' + ${n.id} + '/read?redirect=/problems/' + ${n.problem.id}}"
-     class="np-card">
+     class="np-card"
+     th:classappend="${n.type.name() == 'PRIORITY_URGENT'} ? 'np-card--urgent' : ''">
 
     <th:block th:switch="${n.type.name()}">
 
@@ -371,7 +397,7 @@
           <div class="np-body">
             <span class="np-label np-label--new">Nouveau ticket</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -388,7 +414,7 @@
           <div class="np-body">
             <span class="np-label np-label--closed">Ticket résolu</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -405,7 +431,7 @@
           <div class="np-body">
             <span class="np-label np-label--assign">Ticket assigné</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -415,14 +441,14 @@
         <span class="np-stripe np-stripe--comment"></span>
         <div class="np-card-inner">
           <span class="np-icon np-icon--comment">
-            <svg width="15" height="15" fill="none" stroke="#d97706" stroke-width="2" viewBox="0 0 24 24">
+            <svg width="15" height="15" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
             </svg>
           </span>
           <div class="np-body">
             <span class="np-label np-label--comment">Nouveau message</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -439,7 +465,7 @@
           <div class="np-body">
             <span class="np-label np-label--progress">Pris en charge</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -456,7 +482,7 @@
           <div class="np-body">
             <span class="np-label np-label--done">Dossier clôturé</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -466,31 +492,65 @@
         <span class="np-stripe np-stripe--reassign"></span>
         <div class="np-card-inner">
           <span class="np-icon np-icon--reassign">
-            <svg width="15" height="15" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+            <svg width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"/>
             </svg>
           </span>
           <div class="np-body">
             <span class="np-label np-label--reassign">Ticket réassigné</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
       </th:block>
 
       <th:block th:case="'TICKET_REOPENED'">
-        <span class="np-stripe np-stripe--reassign"></span>
+        <span class="np-stripe np-stripe--reopened"></span>
         <div class="np-card-inner">
-          <span class="np-icon np-icon--reassign">
-            <svg width="15" height="15" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+          <span class="np-icon np-icon--reopened">
+            <svg width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/>
             </svg>
           </span>
           <div class="np-body">
-            <span class="np-label np-label--reassign">Ticket rouvert</span>
+            <span class="np-label np-label--reopened">Ticket rouvert</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+          </div>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
+        </div>
+      </th:block>
+
+      <th:block th:case="'CLIENT_CONFIRMED_CLOSE'">
+        <span class="np-stripe np-stripe--confirmed"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--confirmed">
+            <svg width="15" height="15" fill="none" stroke="#059669" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--confirmed">Client a confirmé</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+          </div>
+          <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
+        </div>
+      </th:block>
+
+      <th:block th:case="'PRIORITY_URGENT'">
+        <span class="np-stripe np-stripe--urgent"></span>
+        <div class="np-card-inner">
+          <span class="np-icon np-icon--urgent">
+            <svg width="15" height="15" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+            </svg>
+          </span>
+          <div class="np-body">
+            <span class="np-label np-label--urgent">Priorité urgente</span>
+            <span class="np-ticket" th:text="${n.problem.title}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -505,7 +565,7 @@
           <div class="np-body">
             <span class="np-label np-label--other">Notification</span>
             <span class="np-ticket" th:text="${n.problem.title}"></span>
-            <span class="np-time" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
+            <span class="np-time" th:attr="data-time=${#temporals.format(n.createdAt,'yyyy-MM-dd HH:mm:ss')}" th:text="${#temporals.format(n.createdAt,'dd/MM HH:mm')}"></span>
           </div>
           <span class="np-arrow"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg></span>
         </div>
@@ -533,7 +593,8 @@
 <!-- ── FOOTER ── -->
 <div class="np-footer">
   <a th:href="@{/problems}" class="np-footer-link">
-    Voir tous les tickets
+    <span sec:authorize="hasRole('CLIENT')">Voir toutes mes demandes</span>
+    <span sec:authorize="!hasRole('CLIENT')">Voir tous les tickets</span>
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
     </svg>

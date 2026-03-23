@@ -39,6 +39,11 @@ public class NotificationService {
         return repo.countUnreadByUser(user);
     }
 
+    /** Vérifie si l'utilisateur a une notification PRIORITY_URGENT non lue */
+    public boolean hasUnreadUrgentForUser(User user) {
+        return repo.existsByUserAndViewedFalseAndType(user, NotificationType.PRIORITY_URGENT);
+    }
+
     /** Une seule requête UPDATE pour un ticket précis */
     @Transactional
     public void markAllReadForProblem(User user, Problem problem) {
