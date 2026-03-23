@@ -448,10 +448,61 @@
         .modal-desc  { font-size: .85rem; color: #64748b; margin-bottom: 1.4rem; line-height: 1.6; font-weight: 500; }
         .modal-btns  { display: flex; gap: .5rem; justify-content: center; }
 
+        /* ── Print summary (hidden on screen) ── */
+        .print-summary { display: none; }
+
         @media print {
-            .topbar .pdf-btn, .action-btn, .confirm-grid, .cf, .modal-bg { display: none !important; }
-            .doc, .sb-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
-            .sidebar { position: static; }
+            /* Masquer toute la page normale */
+            .screen-only, .topbar, .page-grid, .modal-bg, .cf, .confirm-grid { display: none !important; }
+
+            /* Afficher uniquement le résumé condensé */
+            .print-summary { display: block !important; }
+
+            /* Reset print */
+            body { background: #fff !important; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; color: #0f172a; font-size: 10pt; }
+
+            .ps-page { max-width: 100%; padding: 1.5cm 1.8cm; }
+
+            .ps-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #2563eb; padding-bottom: .6cm; margin-bottom: .7cm; }
+            .ps-logo { font-size: 15pt; font-weight: 900; color: #2563eb; letter-spacing: -.03em; }
+            .ps-logo span { color: #0f172a; }
+            .ps-meta { text-align: right; font-size: 8pt; color: #64748b; line-height: 1.6; }
+            .ps-meta strong { color: #0f172a; font-size: 10pt; }
+
+            .ps-title { font-size: 16pt; font-weight: 800; color: #0f172a; margin: 0 0 .35cm; line-height: 1.25; }
+            .ps-badges { display: flex; gap: .25cm; flex-wrap: wrap; margin-bottom: .5cm; }
+            .ps-badge { display: inline-block; padding: 2pt 8pt; border-radius: 99pt; font-size: 8pt; font-weight: 700; border: 1pt solid; }
+            .ps-badge-open     { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+            .ps-badge-progress { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+            .ps-badge-resolved { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+            .ps-badge-closed   { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+            .ps-badge-urgent   { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+            .ps-badge-high     { background: #fff7ed; color: #ea580c; border-color: #fed7aa; }
+            .ps-badge-medium   { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+            .ps-badge-low      { background: #f8fafc; color: #94a3b8; border-color: #e2e8f0; }
+            .ps-badge-cat      { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+
+            .ps-section { margin-bottom: .55cm; }
+            .ps-section-title { font-size: 7pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #94a3b8; margin-bottom: .2cm; border-bottom: 1pt solid #f1f5f9; padding-bottom: .1cm; }
+
+            .ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .15cm .5cm; }
+            .ps-field { display: flex; flex-direction: column; gap: 1pt; }
+            .ps-field-label { font-size: 7.5pt; font-weight: 700; color: #94a3b8; }
+            .ps-field-value { font-size: 9.5pt; font-weight: 600; color: #0f172a; }
+
+            .ps-text { font-size: 9.5pt; color: #334155; line-height: 1.6; white-space: pre-wrap; }
+
+            .ps-resolution { background: #f0fdf4; border: 1pt solid #bbf7d0; border-radius: 6pt; padding: .3cm .4cm; }
+            .ps-resolution .ps-text { color: #166534; }
+            .ps-resolution-date { font-size: 8pt; color: #16a34a; font-weight: 600; margin-top: .15cm; }
+
+            .ps-comment { padding: .2cm 0; border-bottom: 1pt solid #f1f5f9; }
+            .ps-comment:last-child { border-bottom: none; }
+            .ps-comment-meta { font-size: 7.5pt; color: #94a3b8; margin-bottom: .1cm; }
+            .ps-comment-meta strong { color: #475569; }
+            .ps-comment-text { font-size: 9pt; color: #334155; line-height: 1.5; }
+
+            .ps-footer { margin-top: .8cm; padding-top: .4cm; border-top: 1pt solid #e2e8f0; display: flex; justify-content: space-between; font-size: 7.5pt; color: #94a3b8; }
         }
     </style>
 </head>
@@ -461,9 +512,114 @@
     <input type="hidden" id="ticketStatus" th:value="${problem.status.name()}" sec:authorize="hasRole('CLIENT')"/>
 
     <!-- ══════════════════════════
+         RÉSUMÉ PDF (print-only)
+    ══════════════════════════ -->
+    <div class="print-summary">
+        <div class="ps-page">
+
+            <!-- En-tête -->
+            <div class="ps-header">
+                <div class="ps-logo">Tic<span>Harmony</span></div>
+                <div class="ps-meta">
+                    <strong th:text="'Ticket #' + ${problem.id}"></strong><br/>
+                    <span th:text="${#temporals.format(problem.createdAt, 'dd MMMM yyyy')}"></span><br/>
+                    <span th:if="${problem.user != null}" th:text="${problem.user.nomEntreprise}"></span>
+                </div>
+            </div>
+
+            <!-- Titre + badges -->
+            <div class="ps-title" th:text="${problem.title}"></div>
+            <div class="ps-badges">
+                <span class="ps-badge ps-badge-open"     th:if="${problem.status.name() == 'OPEN'}">En attente</span>
+                <span class="ps-badge ps-badge-progress" th:if="${problem.status.name() == 'IN_PROGRESS'}">En cours</span>
+                <span class="ps-badge ps-badge-resolved" th:if="${problem.status.name() == 'RESOLVED'}">Résolu</span>
+                <span class="ps-badge ps-badge-closed"   th:if="${problem.status.name() == 'CLOSED'}">Archivé</span>
+                <span class="ps-badge ps-badge-urgent"   th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}">Critique</span>
+                <span class="ps-badge ps-badge-high"     th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}">Priorité élevée</span>
+                <span class="ps-badge ps-badge-medium"   th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}">Priorité normale</span>
+                <span class="ps-badge ps-badge-low"      th:if="${problem.priority != null and problem.priority.name() == 'LOW'}">Priorité faible</span>
+                <span class="ps-badge ps-badge-cat"      th:if="${problem.category != null}" th:text="${problem.category}"></span>
+            </div>
+
+            <!-- Informations clés -->
+            <div class="ps-section">
+                <div class="ps-section-title">Informations</div>
+                <div class="ps-grid">
+                    <div class="ps-field">
+                        <span class="ps-field-label">Demandeur</span>
+                        <span class="ps-field-value"
+                              th:text="${problem.ticketUserInfo != null ?
+                                         problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName :
+                                         (problem.user != null ? problem.user.firstname + ' ' + problem.user.lastname : '—')}"></span>
+                    </div>
+                    <div class="ps-field">
+                        <span class="ps-field-label">Entreprise</span>
+                        <span class="ps-field-value" th:text="${problem.user != null ? problem.user.nomEntreprise : '—'}"></span>
+                    </div>
+                    <div class="ps-field">
+                        <span class="ps-field-label">Date de création</span>
+                        <span class="ps-field-value" th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy à HH:mm')}"></span>
+                    </div>
+                    <div class="ps-field">
+                        <span class="ps-field-label">Technicien</span>
+                        <span class="ps-field-value"
+                              th:text="${problem.technician != null ?
+                                         problem.technician.firstname + ' ' + problem.technician.lastname :
+                                         'Non assigné'}"></span>
+                    </div>
+                    <div class="ps-field" th:if="${problem.solvedAt != null or (problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED')}">
+                        <span class="ps-field-label">Date de résolution</span>
+                        <span class="ps-field-value"
+                              th:text="${problem.solvedAt != null ?
+                                         #temporals.format(problem.solvedAt, 'dd/MM/yyyy à HH:mm') :
+                                         #temporals.format(problem.updatedAt, 'dd/MM/yyyy à HH:mm')}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="ps-section">
+                <div class="ps-section-title">Description du problème</div>
+                <div class="ps-text" th:text="${problem.description}"></div>
+            </div>
+
+            <!-- Résolution -->
+            <div class="ps-section"
+                 th:if="${problem.status.name() == 'RESOLVED' or problem.status.name() == 'CLOSED'}">
+                <div class="ps-section-title">Résolution</div>
+                <div class="ps-resolution">
+                    <div class="ps-text" th:text="${problem.resolution}"></div>
+                    <div class="ps-resolution-date"
+                         th:text="'Résolu le ' + ${#temporals.format(problem.solvedAt != null ? problem.solvedAt : problem.updatedAt, 'dd MMMM yyyy')}"></div>
+                </div>
+            </div>
+
+            <!-- Commentaires -->
+            <div class="ps-section" th:if="${not #lists.isEmpty(comments)}">
+                <div class="ps-section-title">Échanges (<span th:text="${#lists.size(comments)}"></span>)</div>
+                <div th:each="c : ${comments}" class="ps-comment">
+                    <div class="ps-comment-meta">
+                        <strong th:text="${c.author.firstname + ' ' + c.author.lastname}"></strong>
+                        · <span th:text="${c.author.role.name() == 'ADMIN' ? 'Admin' : 'Technicien'}"></span>
+                        · <span th:text="${#temporals.format(c.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                    </div>
+                    <div class="ps-comment-text" th:text="${c.content}"></div>
+                </div>
+            </div>
+
+            <!-- Pied de page -->
+            <div class="ps-footer">
+                <span>TIC Harmony · Document généré automatiquement</span>
+                <span th:text="'Imprimé le ' + ${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════════════════════
          VUE CLIENT
     ══════════════════════════ -->
-    <div sec:authorize="hasRole('CLIENT')">
+    <div sec:authorize="hasRole('CLIENT')" class="screen-only">
 
         <div class="topbar fade">
             <a th:href="@{/problems}" class="back">
@@ -682,7 +838,7 @@
     <!-- ══════════════════════════
          VUE ADMIN / MEMBRE
     ══════════════════════════ -->
-    <div sec:authorize="hasAnyRole('ADMIN','MEMBER')">
+    <div sec:authorize="hasAnyRole('ADMIN','MEMBER')" class="screen-only">
 
         <div class="topbar fade">
             <a th:href="@{/problems}" class="back">

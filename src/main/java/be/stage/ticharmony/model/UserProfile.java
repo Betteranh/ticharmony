@@ -36,6 +36,9 @@ public class UserProfile {
     @Column(nullable = false)
     private boolean active = true;
 
+    @Column(name = "password_hash")
+    private String passwordHash;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 }

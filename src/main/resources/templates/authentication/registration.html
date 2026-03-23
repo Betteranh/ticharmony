@@ -288,6 +288,20 @@
                            placeholder="contact@entreprise.be" class="fc-input"/>
                 </div>
 
+                <!-- Mot de passe de gestion des profils -->
+                <div class="field" style="margin-bottom:1.5rem;">
+                    <label for="profileManagementPassword" class="fc-label">
+                        Mot de passe de gestion des profils <span class="req">*</span>
+                    </label>
+                    <div class="pw-wrap">
+                        <input type="password" id="profileManagementPassword"
+                               th:field="*{profileManagementPassword}"
+                               minlength="4" required
+                               placeholder="••••••••" class="fc-input"/>
+                    </div>
+                    <div class="fc-hint">Protège l'accès à la gestion des profils employés (création, modification, désactivation).</div>
+                </div>
+
                 <!-- Entreprise -->
                 <div class="section-label">Entreprise</div>
                 <div class="field-row">

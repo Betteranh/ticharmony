@@ -346,7 +346,7 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label for="password" class="fc-label">Nouveau mot de passe</label>
+                    <label for="password" class="fc-label">Nouveau mot de passe de connexion</label>
                     <div class="pw-wrap">
                         <input type="password" id="password" th:field="*{password}"
                                autocomplete="new-password"
@@ -359,6 +359,14 @@
                             </svg>
                         </button>
                     </div>
+                </div>
+                <div class="field" style="margin-top:.5rem;">
+                    <label for="profileManagementPassword" class="fc-label">Nouveau mot de passe de gestion des profils</label>
+                    <input type="password" id="profileManagementPassword"
+                           name="profileManagementPassword"
+                           autocomplete="new-password"
+                           placeholder="••••••••" class="fc-input"/>
+                    <div class="fc-hint">Protège l'accès à la gestion des profils. Laissez vide pour conserver le mot de passe actuel.</div>
                 </div>
 
                 <!-- Buttons -->

@@ -67,6 +67,10 @@ public class PartnerController {
             existing.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
 
+        if (updatedUser.getProfileManagementPassword() != null && !updatedUser.getProfileManagementPassword().isBlank()) {
+            existing.setProfileManagementPassword(passwordEncoder.encode(updatedUser.getProfileManagementPassword()));
+        }
+
         userService.updateUser(existing);
         return "redirect:/partners";
     }

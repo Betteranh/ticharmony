@@ -4,6 +4,7 @@ import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.model.UserProfile;
 import be.stage.ticharmony.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class UserProfileService {
 
     private final UserProfileRepository repo;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /** Profils actifs du compte entreprise (affichés sur l'écran de sélection) */
     public List<UserProfile> getActiveProfiles(User user) {
@@ -54,5 +56,29 @@ public class UserProfileService {
 
     public UserProfile save(UserProfile profile) {
         return repo.save(profile);
+    }
+
+    public boolean hasPassword(UserProfile profile) {
+        return profile.getPasswordHash() != null;
+    }
+
+    public boolean verifyPassword(UserProfile profile, String rawPassword) {
+        if (profile.getPasswordHash() == null) return true;
+        if (rawPassword == null || rawPassword.isBlank()) return false;
+        return passwordEncoder.matches(rawPassword, profile.getPasswordHash());
+    }
+
+    public void setPassword(Long profileId, String rawPassword) {
+        repo.findById(profileId).ifPresent(p -> {
+            p.setPasswordHash(passwordEncoder.encode(rawPassword));
+            repo.save(p);
+        });
+    }
+
+    public void removePassword(Long profileId) {
+        repo.findById(profileId).ifPresent(p -> {
+            p.setPasswordHash(null);
+            repo.save(p);
+        });
     }
 }

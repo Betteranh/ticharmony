@@ -66,6 +66,9 @@ public class User {
     @Column(name = "support_to")
     private LocalDate supportTo;
 
+    @Column(name = "profile_management_password")
+    private String profileManagementPassword;
+
     @Override
     public String toString() {
         return login + "(" + firstname + " " + lastname + " - " + role + ")";

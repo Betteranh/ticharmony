@@ -493,6 +493,7 @@
 
             <!-- Tickets (tous) -->
             <a sec:authorize="isAuthenticated()"
+               th:if="${!#authorization.expression('hasRole(''CLIENT'')') or session['ACTIVE_PROFILE_ID'] != null}"
                th:href="@{/problems}"
                class="nh-link"
                th:classappend="${currentUri != null and currentUri.startsWith('/problems') and !currentUri.startsWith('/problems/create')} ? ' nh-link--active' : ''">
@@ -504,6 +505,7 @@
 
             <!-- Nouveau ticket (ADMIN + CLIENT) -->
             <a sec:authorize="hasRole('ADMIN') or hasRole('CLIENT')"
+               th:if="${!#authorization.expression('hasRole(''CLIENT'')') or session['ACTIVE_PROFILE_ID'] != null}"
                th:href="@{/problems/create}"
                class="nh-link"
                th:classappend="${currentUri != null and currentUri.startsWith('/problems/create')} ? ' nh-link--active' : ''">
@@ -673,7 +675,9 @@
     </a>
 
     <!-- Tickets -->
-    <a sec:authorize="isAuthenticated()" th:href="@{/problems}" class="nh-mob-link"
+    <a sec:authorize="isAuthenticated()"
+       th:if="${!#authorization.expression('hasRole(''CLIENT'')') or session['ACTIVE_PROFILE_ID'] != null}"
+       th:href="@{/problems}" class="nh-mob-link"
        th:classappend="${currentUri != null and currentUri.startsWith('/problems') and !currentUri.startsWith('/problems/create')} ? ' nh-mob-link--active' : ''">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/>
@@ -682,7 +686,9 @@
     </a>
 
     <!-- Nouveau ticket -->
-    <a sec:authorize="hasRole('ADMIN') or hasRole('CLIENT')" th:href="@{/problems/create}" class="nh-mob-link"
+    <a sec:authorize="hasRole('ADMIN') or hasRole('CLIENT')"
+       th:if="${!#authorization.expression('hasRole(''CLIENT'')') or session['ACTIVE_PROFILE_ID'] != null}"
+       th:href="@{/problems/create}" class="nh-mob-link"
        th:classappend="${currentUri != null and currentUri.startsWith('/problems/create')} ? ' nh-mob-link--active' : ''">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>

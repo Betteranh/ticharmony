@@ -723,38 +723,40 @@
             <p class="lp-sub">Retrouvez ici tous vos signalements et leur état d'avancement.</p>
         </div>
 
+        <div id="resultsZone">
+
         <!-- Onglets de statut -->
         <div class="status-tabs fu d2">
-            <a th:href="@{/problems}"
+            <button type="button" data-status=""
                th:classappend="${selectedStatus == null} ? ' active' : ''"
                class="status-tab">
                 Toutes mes demandes
                 <span class="tab-count" th:text="${totalProblems}">0</span>
-            </a>
-            <a th:href="@{/problems(status='OPEN')}"
+            </button>
+            <button type="button" data-status="OPEN"
                th:classappend="${selectedStatus != null and selectedStatus.name() == 'OPEN'} ? ' active' : ''"
                class="status-tab">
                 <span class="tab-dot" style="background:#2563eb;"></span>
                 En attente
-            </a>
-            <a th:href="@{/problems(status='IN_PROGRESS')}"
+            </button>
+            <button type="button" data-status="IN_PROGRESS"
                th:classappend="${selectedStatus != null and selectedStatus.name() == 'IN_PROGRESS'} ? ' active' : ''"
                class="status-tab">
                 <span class="tab-dot" style="background:#d97706;"></span>
                 En cours de traitement
-            </a>
-            <a th:href="@{/problems(status='RESOLVED')}"
+            </button>
+            <button type="button" data-status="RESOLVED"
                th:classappend="${selectedStatus != null and selectedStatus.name() == 'RESOLVED'} ? ' active' : ''"
                class="status-tab">
                 <span class="tab-dot" style="background:#16a34a;"></span>
                 Résolus
-            </a>
-            <a th:href="@{/problems(status='CLOSED')}"
+            </button>
+            <button type="button" data-status="CLOSED"
                th:classappend="${selectedStatus != null and selectedStatus.name() == 'CLOSED'} ? ' active' : ''"
                class="status-tab">
                 <span class="tab-dot" style="background:#9aa3b8;"></span>
                 Archivés
-            </a>
+            </button>
         </div>
 
         <!-- Recherche -->
@@ -855,13 +857,14 @@
         <!-- Pagination client -->
         <div id="pagination-bottom" class="flex justify-center gap-1.5 mt-5 flex-wrap fu d3" th:if="${totalPages > 1}">
             <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-               th:href="@{/problems(page=${i},size=8,status=${selectedStatus})} + '#pagination-bottom'"
+               th:href="@{/problems(page=${i},size=8,status=${selectedStatus})}"
                th:classappend="${currentPage == i} ? ' active' : ''"
                class="pag-btn">
                 <span th:text="${i}"></span>
             </a>
         </div>
 
+        </div><!-- /resultsZone -->
     </div>
 
 
@@ -884,10 +887,12 @@
             </a>
         </div>
 
+        <div id="resultsZone">
+
         <!-- Stats cards -->
         <div class="admin-stats fu d2">
 
-            <a th:href="@{/problems(unassigned=true)}" class="astat-card"
+            <a th:href="@{/problems(unassigned=true)}" data-stat-unassigned="true" class="astat-card"
                th:classappend="${countUnassigned > 0} ? ' astat-warn' : ' astat-neutral'">
                 <div class="astat-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -901,7 +906,7 @@
                 <div th:if="${countUnassigned > 0}" class="astat-hint" style="color:var(--amber);">Action requise</div>
             </a>
 
-            <a th:href="@{/problems(status='RESOLVED')}" class="astat-card"
+            <a th:href="@{/problems(status='RESOLVED')}" data-stat-status="RESOLVED" class="astat-card"
                th:classappend="${countResolved > 0} ? ' astat-success' : ' astat-neutral'">
                 <div class="astat-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -915,7 +920,7 @@
                 <div th:if="${countResolved > 0}" class="astat-hint" style="color:var(--green);">En attente de clôture</div>
             </a>
 
-            <a th:href="@{/problems(status='IN_PROGRESS')}" class="astat-card astat-neutral">
+            <a th:href="@{/problems(status='IN_PROGRESS')}" data-stat-status="IN_PROGRESS" class="astat-card astat-neutral">
                 <div class="astat-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -926,7 +931,7 @@
                 <div class="astat-num" th:text="${countInProgress}">0</div>
             </a>
 
-            <a th:href="@{/problems(priority='URGENT')}" class="astat-card"
+            <a th:href="@{/problems(priority='URGENT')}" data-stat-priority="URGENT" class="astat-card"
                th:classappend="${countUrgent > 0} ? ' astat-danger' : ' astat-neutral'">
                 <div class="astat-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -953,7 +958,7 @@
                 <form method="get" class="filter-bar-h">
                     <div class="fbar-field">
                         <label class="fbar-label">Statut</label>
-                        <select name="status" id="statusFilter" onchange="this.form.submit()" class="fbar-select">
+                        <select name="status" id="statusFilter" class="fbar-select">
                             <option value="" th:selected="${selectedStatus == null}">Tous</option>
                             <option th:each="s : ${allStatuses}"
                                     th:value="${s}"
@@ -967,7 +972,7 @@
                     </div>
                     <div class="fbar-field">
                         <label class="fbar-label">Priorité</label>
-                        <select name="priority" id="priorityFilter" onchange="this.form.submit()" class="fbar-select">
+                        <select name="priority" id="priorityFilter" class="fbar-select">
                             <option value="" th:selected="${selectedPriority == null}">Toutes</option>
                             <option value="LOW"    th:selected="${selectedPriority != null and selectedPriority.name() == 'LOW'}">Faible</option>
                             <option value="MEDIUM" th:selected="${selectedPriority != null and selectedPriority.name() == 'MEDIUM'}">Moyenne</option>
@@ -1012,14 +1017,14 @@
                          th:classappend="${selectedYear != null or selectedMonth != null} ? ' open' : ''">
                         <div class="fbar-field">
                             <label class="fbar-label">Année</label>
-                            <select name="year" id="yearFilter" onchange="this.form.submit()" class="fbar-select">
+                            <select name="year" id="yearFilter" class="fbar-select">
                                 <option value="" th:selected="${selectedYear == null}">Toutes</option>
                                 <option th:each="y : ${allYears}" th:value="${y}" th:text="${y}" th:selected="${y == selectedYear}"></option>
                             </select>
                         </div>
                         <div class="fbar-field">
                             <label class="fbar-label">Mois</label>
-                            <select name="month" id="monthFilter" onchange="this.form.submit()" class="fbar-select"
+                            <select name="month" id="monthFilter" class="fbar-select"
                                     th:disabled="${#lists.isEmpty(allMonths)}">
                                 <option value="" th:selected="${selectedMonth == null}">Tous</option>
                                 <option th:each="m : ${allMonths}"
@@ -1184,6 +1189,7 @@
 
                     <div th:if="${allTechStats != null and !#lists.isEmpty(allTechStats)}" style="display:flex;flex-direction:column;gap:.4rem;">
                         <a th:href="@{/problems(status=${selectedStatus},year=${selectedYear},month=${selectedMonth},search=${search})}"
+                           data-tech-id=""
                            class="tech-chip"
                            th:classappend="${technicianId == null} ? ' tech-chip--active' : ''">
                             <span class="tech-avatar" style="background:var(--blue-bg);color:var(--blue);">
@@ -1197,6 +1203,7 @@
 
                         <a th:each="ts : ${allTechStats}"
                            th:href="@{/problems(technicianId=${ts.technicianId},status=${selectedStatus},year=${selectedYear},month=${selectedMonth},search=${search})}"
+                           th:attr="data-tech-id=${ts.technicianId}"
                            class="tech-chip"
                            th:classappend="${technicianId != null and technicianId == ts.technicianId} ? ' tech-chip--active' : ''">
                             <span class="tech-avatar" th:text="${#strings.substring(ts.technicianName, 0, 1)}">T</span>
@@ -1216,6 +1223,8 @@
             </div>
 
         </div>
+
+        </div><!-- /resultsZone -->
     </div>
 
 </div>
@@ -1246,16 +1255,18 @@
     <script>
         /*<![CDATA[*/
 
-        /* ── Client search ── */
+        /* ── Client search (client-side filtering) ── */
         function filterClientCards() {
-            var q     = document.getElementById('clientSearch').value.trim().toLowerCase();
+            var input = document.getElementById('clientSearch');
+            if (!input) return;
+            var q     = input.value.trim().toLowerCase();
             var cards = document.querySelectorAll('#clientCards .tc-card');
             cards.forEach(function(card) {
                 card.style.display = card.innerText.toLowerCase().includes(q) ? '' : 'none';
             });
         }
 
-        /* ── Advanced filters toggle ── */
+        /* ── Advanced filters toggle (ADMIN) ── */
         function toggleAdvFilters() {
             var btn   = document.getElementById('advToggle');
             var panel = document.getElementById('advFilters');
@@ -1264,73 +1275,163 @@
             btn.classList.toggle('open', open);
         }
 
-        /* ── Reset filters ── */
-        function resetFilters() {
-            var sf = document.getElementById('statusFilter');
-            var pf = document.getElementById('priorityFilter');
-            var yf = document.getElementById('yearFilter');
-            var mf = document.getElementById('monthFilter');
-            var ts = document.getElementById('ticketSearch');
-            if (sf) sf.value = '';
-            if (pf) pf.value = '';
-            if (yf) yf.value = '';
-            if (mf) mf.value = '';
-            if (ts) ts.value = '';
-            var form = sf ? sf.closest('form') : (ts ? ts.closest('form') : null);
-            if (form) form.submit();
-        }
-
-        function resetTicketSearch() {
-            var el = document.getElementById('ticketSearch');
-            if (el) { el.value = ''; el.closest('form').submit(); }
-        }
-
-        /* ── Search debounce ── */
+        /* ── Live filters — no-reload fetch ── */
         (function() {
-            var input    = document.getElementById('ticketSearch');
-            var resetBtn = document.getElementById('resetSearch');
-            if (!input) return;
-            var timer;
-            input.addEventListener('input', function() {
-                var q = input.value.trim();
-                if (resetBtn) resetBtn.classList.toggle('hidden', q === '');
-                clearTimeout(timer);
-                timer = setTimeout(function() { input.closest('form').submit(); }, 400);
+            var qs = new URLSearchParams(location.search);
+            var state = {
+                status:       qs.get('status')       || '',
+                priority:     qs.get('priority')     || '',
+                year:         qs.get('year')         || '',
+                month:        qs.get('month')        || '',
+                search:       qs.get('search')       || '',
+                unassigned:   qs.get('unassigned')   || '',
+                technicianId: qs.get('technicianId') || '',
+                page:         '1'
+            };
+            var searchTimer = null;
+
+            function initAgeBadges() {
+                document.querySelectorAll('.age-badge[data-ts]').forEach(function(el) {
+                    var d    = new Date(el.getAttribute('data-ts'));
+                    var diff = Date.now() - d.getTime();
+                    var days = Math.floor(diff / 86400000);
+                    var hrs  = Math.floor(diff / 3600000);
+                    if (days >= 7)      { el.textContent = days + 'j'; el.classList.add('age-crit'); }
+                    else if (days >= 3) { el.textContent = days + 'j'; el.classList.add('age-warn'); }
+                    else if (days >= 1) { el.textContent = days + 'j'; }
+                    else if (hrs >= 1)  { el.textContent = hrs + 'h'; }
+                    else                { el.textContent = '< 1h'; }
+                });
+            }
+
+            async function loadResults(updates, keepPage) {
+                if (updates) Object.assign(state, updates);
+                if (!keepPage) state.page = '1';
+
+                var params = new URLSearchParams();
+                Object.entries(state).forEach(function(kv) { if (kv[1]) params.set(kv[0], kv[1]); });
+
+                var zone = document.getElementById('resultsZone');
+                if (zone) zone.style.opacity = '0.5';
+
+                try {
+                    var resp = await fetch('/problems?' + params.toString());
+                    if (!resp.ok) { if (zone) zone.style.opacity = '1'; return; }
+                    var html = await resp.text();
+                    var parser  = new DOMParser();
+                    var doc     = parser.parseFromString(html, 'text/html');
+                    var newZone = doc.getElementById('resultsZone');
+                    if (newZone) {
+                        var savedQ = (document.getElementById('clientSearch') || {}).value || '';
+                        document.getElementById('resultsZone').replaceWith(newZone);
+                        newZone.style.opacity = '1';
+                        initAgeBadges();
+                        var cs = document.getElementById('clientSearch');
+                        if (cs && savedQ) { cs.value = savedQ; filterClientCards(); }
+                    }
+                } catch(e) { var z = document.getElementById('resultsZone'); if (z) z.style.opacity = '1'; }
+
+                history.replaceState(null, '', '/problems' + (params.toString() ? '?' + params : ''));
+            }
+
+            /* ── Event delegation ── */
+            document.addEventListener('click', function(e) {
+                // Pagination
+                var pag = e.target.closest('.pag-btn');
+                if (pag) {
+                    e.preventDefault();
+                    var p = new URLSearchParams((pag.getAttribute('href') || '').split('?')[1] || '');
+                    loadResults({ page: p.get('page') || '1' }, true);
+                    return;
+                }
+                // CLIENT status tab
+                var tab = e.target.closest('button[data-status]');
+                if (tab) {
+                    loadResults({ status: tab.dataset.status, unassigned: '', technicianId: '' });
+                    return;
+                }
+                // ADMIN stats cards
+                var stat = e.target.closest('[data-stat-status],[data-stat-priority],[data-stat-unassigned]');
+                if (stat) {
+                    e.preventDefault();
+                    loadResults({
+                        status:      stat.dataset.statStatus      || '',
+                        priority:    stat.dataset.statPriority    || '',
+                        unassigned:  stat.dataset.statUnassigned  || '',
+                        technicianId: ''
+                    });
+                    return;
+                }
+                // ADMIN tech chips
+                var chip = e.target.closest('[data-tech-id]');
+                if (chip) {
+                    e.preventDefault();
+                    loadResults({ technicianId: chip.dataset.techId || '' });
+                    return;
+                }
             });
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') { e.preventDefault(); clearTimeout(timer); input.closest('form').submit(); }
+
+            /* ── ADMIN selects ── */
+            document.addEventListener('change', function(e) {
+                var map = { statusFilter:'status', priorityFilter:'priority', yearFilter:'year', monthFilter:'month' };
+                var key = map[e.target.id];
+                if (key !== undefined) loadResults({ [key]: e.target.value });
             });
-            if (resetBtn && input.value.trim() !== '') resetBtn.classList.remove('hidden');
+
+            /* ── ADMIN search debounce ── */
+            document.addEventListener('input', function(e) {
+                if (e.target.id !== 'ticketSearch') return;
+                var resetBtn = document.getElementById('resetSearch');
+                if (resetBtn) resetBtn.classList.toggle('hidden', e.target.value.trim() === '');
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(function() { loadResults({ search: e.target.value.trim() }); }, 350);
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.target.id === 'ticketSearch' && e.key === 'Enter') {
+                    e.preventDefault();
+                    clearTimeout(searchTimer);
+                    loadResults({ search: e.target.value.trim() });
+                }
+            });
+
+            /* ── Reset buttons ── */
+            window.resetFilters = function() {
+                ['statusFilter','priorityFilter','yearFilter','monthFilter','ticketSearch'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                var resetBtn = document.getElementById('resetSearch');
+                if (resetBtn) resetBtn.classList.add('hidden');
+                loadResults({ status:'', priority:'', year:'', month:'', search:'', unassigned:'', technicianId:'' });
+            };
+            window.resetTicketSearch = function() {
+                var el = document.getElementById('ticketSearch');
+                if (el) el.value = '';
+                var resetBtn = document.getElementById('resetSearch');
+                if (resetBtn) resetBtn.classList.add('hidden');
+                loadResults({ search: '' });
+            };
+
+            // Init search clear button visibility
+            var ts = document.getElementById('ticketSearch');
+            var rb = document.getElementById('resetSearch');
+            if (ts && rb && ts.value.trim() !== '') rb.classList.remove('hidden');
         })();
 
-        /* ── Ticket age badges ── */
-        document.querySelectorAll('.age-badge[data-ts]').forEach(function(el) {
-            var d    = new Date(el.getAttribute('data-ts'));
-            var diff = Date.now() - d.getTime();
-            var days = Math.floor(diff / 86400000);
-            var hrs  = Math.floor(diff / 3600000);
-            if (days >= 7) {
-                el.textContent = days + 'j';
-                el.classList.add('age-crit');
-            } else if (days >= 3) {
-                el.textContent = days + 'j';
-                el.classList.add('age-warn');
-            } else if (days >= 1) {
-                el.textContent = days + 'j';
-            } else if (hrs >= 1) {
-                el.textContent = hrs + 'h';
-            } else {
-                el.textContent = '< 1h';
-            }
-        });
-
-        /* ── Pagination scroll ── */
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.location.hash === '#pagination-bottom') {
-                var pag = document.getElementById('pagination-bottom');
-                if (pag) pag.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
+        /* ── Init age badges on page load ── */
+        (function() {
+            document.querySelectorAll('.age-badge[data-ts]').forEach(function(el) {
+                var d    = new Date(el.getAttribute('data-ts'));
+                var diff = Date.now() - d.getTime();
+                var days = Math.floor(diff / 86400000);
+                var hrs  = Math.floor(diff / 3600000);
+                if (days >= 7)      { el.textContent = days + 'j'; el.classList.add('age-crit'); }
+                else if (days >= 3) { el.textContent = days + 'j'; el.classList.add('age-warn'); }
+                else if (days >= 1) { el.textContent = days + 'j'; }
+                else if (hrs >= 1)  { el.textContent = hrs + 'h'; }
+                else                { el.textContent = '< 1h'; }
+            });
+        })();
 
         /* ── Confirmation modal ── */
         var pendingForm     = null;

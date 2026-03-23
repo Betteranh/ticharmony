@@ -63,6 +63,9 @@ public class RegistrationController {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getProfileManagementPassword() != null && !user.getProfileManagementPassword().isBlank()) {
+            user.setProfileManagementPassword(passwordEncoder.encode(user.getProfileManagementPassword()));
+        }
         user.setCreated_at(LocalDateTime.now());
         user.setActiveFrom(LocalDate.now());
         user.setRole(UserRole.CLIENT);
