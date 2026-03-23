@@ -453,7 +453,7 @@
 
         @media print {
             /* Masquer toute la page normale */
-            .screen-only, .topbar, .page-grid, .modal-bg, .cf, .confirm-grid { display: none !important; }
+            header, footer, .screen-only, .topbar, .page-grid, .modal-bg, .cf, .confirm-grid { display: none !important; }
 
             /* Afficher uniquement le résumé condensé */
             .print-summary { display: block !important; }
@@ -520,11 +520,6 @@
             <!-- En-tête -->
             <div class="ps-header">
                 <div class="ps-logo">Tic<span>Harmony</span></div>
-                <div class="ps-meta">
-                    <strong th:text="'Ticket #' + ${problem.id}"></strong><br/>
-                    <span th:text="${#temporals.format(problem.createdAt, 'dd MMMM yyyy')}"></span><br/>
-                    <span th:if="${problem.user != null}" th:text="${problem.user.nomEntreprise}"></span>
-                </div>
             </div>
 
             <!-- Titre + badges -->
@@ -607,11 +602,6 @@
                 </div>
             </div>
 
-            <!-- Pied de page -->
-            <div class="ps-footer">
-                <span>TIC Harmony · Document généré automatiquement</span>
-                <span th:text="'Imprimé le ' + ${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span>
-            </div>
 
         </div>
     </div>
@@ -626,7 +616,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 Retour à mes demandes
             </a>
-            <button class="pdf-btn" onclick="window.print()">
+            <button class="pdf-btn" onclick="printSummary()">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                 PDF
             </button>
@@ -845,7 +835,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 Retour à la liste
             </a>
-            <button class="pdf-btn" onclick="window.print()">
+            <button class="pdf-btn" onclick="printSummary()">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                 PDF
             </button>
@@ -1154,6 +1144,54 @@
 <th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
+
+        /* ── Print summary ── */
+        function printSummary() {
+            var content = document.querySelector('.print-summary');
+            if (!content) { window.print(); return; }
+
+            var win = window.open('', '_blank', 'width=900,height=700');
+            win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ticket</title><style>' +
+                '@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Nunito:wght@400;500;600;700&display=swap");' +
+                'body{margin:0;padding:0;font-family:"Nunito",Arial,sans-serif;color:#0f172a;font-size:10pt;background:#fff}' +
+                '.ps-page{max-width:100%;padding:1.5cm 1.8cm}' +
+                '.ps-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2pt solid #2563eb;padding-bottom:.6cm;margin-bottom:.7cm}' +
+                '.ps-logo{font-size:15pt;font-weight:900;color:#2563eb;letter-spacing:-.03em;font-family:"Plus Jakarta Sans",sans-serif}' +
+                '.ps-logo span{color:#0f172a}' +
+                '.ps-title{font-size:16pt;font-weight:800;color:#0f172a;margin:0 0 .35cm;line-height:1.25;font-family:"Plus Jakarta Sans",sans-serif}' +
+                '.ps-badges{display:flex;gap:.25cm;flex-wrap:wrap;margin-bottom:.5cm}' +
+                '.ps-badge{display:inline-block;padding:2pt 8pt;border-radius:99pt;font-size:8pt;font-weight:700;border:1pt solid}' +
+                '.ps-badge-open{background:#eff6ff;color:#2563eb;border-color:#bfdbfe}' +
+                '.ps-badge-progress{background:#fffbeb;color:#d97706;border-color:#fde68a}' +
+                '.ps-badge-resolved{background:#f0fdf4;color:#16a34a;border-color:#bbf7d0}' +
+                '.ps-badge-closed{background:#f8fafc;color:#64748b;border-color:#e2e8f0}' +
+                '.ps-badge-urgent{background:#fef2f2;color:#dc2626;border-color:#fecaca}' +
+                '.ps-badge-high{background:#fff7ed;color:#ea580c;border-color:#fed7aa}' +
+                '.ps-badge-medium{background:#eff6ff;color:#2563eb;border-color:#bfdbfe}' +
+                '.ps-badge-low{background:#f8fafc;color:#94a3b8;border-color:#e2e8f0}' +
+                '.ps-badge-cat{background:#f1f5f9;color:#475569;border-color:#e2e8f0}' +
+                '.ps-section{margin-bottom:.55cm}' +
+                '.ps-section-title{font-size:7pt;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:.2cm;border-bottom:1pt solid #f1f5f9;padding-bottom:.1cm}' +
+                '.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:.15cm .5cm}' +
+                '.ps-field{display:flex;flex-direction:column;gap:1pt}' +
+                '.ps-field-label{font-size:7.5pt;font-weight:700;color:#94a3b8}' +
+                '.ps-field-value{font-size:9.5pt;font-weight:600;color:#0f172a}' +
+                '.ps-text{font-size:9.5pt;color:#334155;line-height:1.6;white-space:pre-wrap}' +
+                '.ps-resolution{background:#f0fdf4;border:1pt solid #bbf7d0;border-radius:6pt;padding:.3cm .4cm}' +
+                '.ps-resolution .ps-text{color:#166534}' +
+                '.ps-resolution-date{font-size:8pt;color:#16a34a;font-weight:600;margin-top:.15cm}' +
+                '.ps-comment{padding:.2cm 0;border-bottom:1pt solid #f1f5f9}' +
+                '.ps-comment:last-child{border-bottom:none}' +
+                '.ps-comment-meta{font-size:7.5pt;color:#94a3b8;margin-bottom:.1cm}' +
+                '.ps-comment-meta strong{color:#475569}' +
+                '.ps-comment-text{font-size:9pt;color:#334155;line-height:1.5}' +
+                '</style></head><body>' +
+                content.innerHTML +
+                '</body></html>');
+            win.document.close();
+            win.focus();
+            setTimeout(function() { win.print(); win.close(); }, 400);
+        }
 
         /* ── Modal ── */
         function openModal()  { document.getElementById('closeModal').classList.add('open'); }
