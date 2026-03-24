@@ -19,6 +19,11 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Profil client concerné (null pour ADMIN/MEMBER)
+    @ManyToOne
+    @JoinColumn(name = "user_profile_id")
+    private UserProfile userProfile;
+
     // Sur quel ticket
     @ManyToOne
     @JoinColumn(name = "problem_id")

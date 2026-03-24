@@ -4,6 +4,7 @@ import be.stage.ticharmony.controller.ProfileController;
 import be.stage.ticharmony.model.Notification;
 import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.model.UserProfile;
+import be.stage.ticharmony.model.UserRole;
 import be.stage.ticharmony.service.NotificationService;
 import be.stage.ticharmony.service.UserProfileService;
 import be.stage.ticharmony.service.UserService;
@@ -58,7 +59,7 @@ public class NotificationAdvice {
     }
 
     @ModelAttribute("notifications")
-    public List<Notification> populateNotifications(Authentication authentication) {
+    public List<Notification> populateNotifications(Authentication authentication, HttpSession session) {
         if (authentication == null
                 || authentication instanceof AnonymousAuthenticationToken
                 || !authentication.isAuthenticated()) {
@@ -71,6 +72,13 @@ public class NotificationAdvice {
         User user = userService.findByLogin(username);
         if (user == null) {
             return List.of();
+        }
+        if (user.getRole() == UserRole.CLIENT) {
+            Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+            if (profileId == null) return List.of();
+            return userProfileService.findById(profileId)
+                    .map(notificationService::getUnreadForProfile)
+                    .orElse(List.of());
         }
         return notificationService.getUnreadForUser(user);
     }

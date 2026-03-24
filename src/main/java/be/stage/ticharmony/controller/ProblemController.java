@@ -2,6 +2,7 @@ package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.repository.ProblemSpecification;
+import be.stage.ticharmony.controller.ProfileController;
 import be.stage.ticharmony.service.CommentService;
 import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.NotificationService;
@@ -72,7 +73,7 @@ public class ProblemController {
                     notificationService.notify(admin, problem, NotificationType.ASSIGNED_TO_PROBLEM));
             // Notifier le client
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_IN_PROGRESS);
                 mailService.sendTicketInProgressEmail(problem);
             }
             return "redirect:/problems/" + id;
@@ -83,7 +84,7 @@ public class ProblemController {
             problem.setStatus(Status.IN_PROGRESS);
             service.updateProblem(problem);
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_IN_PROGRESS);
                 mailService.sendTicketInProgressEmail(problem);
             }
         }
@@ -166,7 +167,7 @@ public class ProblemController {
 
             // Notifier le client que son dossier est clôturé
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_CLOSED);
+                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_CLOSED);
                 mailService.sendTicketClosedEmail(problem);
             }
             // Notifier le technicien que son travail est officiellement validé
@@ -671,7 +672,8 @@ public class ProblemController {
     @GetMapping("/{id}")
     public String showDetails(@PathVariable Long id,
                               Model model,
-                              Authentication auth) {
+                              Authentication auth,
+                              HttpSession session) {
         Problem problem = service.getProblem(id);
         if (problem == null) return "redirect:/problems";
 
@@ -681,8 +683,16 @@ public class ProblemController {
         List<Comment> comments = commentService.getCommentsByProblem(problem);
         model.addAttribute("comments", comments);
 
-        // Marquer toutes les notifications de cet utilisateur pour ce ticket comme lues
-        notificationService.markAllReadForProblem(current, problem);
+        // Marquer toutes les notifications pour ce ticket comme lues
+        if (current.getRole() == UserRole.CLIENT) {
+            Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+            if (profileId != null) {
+                userProfileService.findById(profileId).ifPresent(
+                        profile -> notificationService.markAllReadForProblem(profile, problem));
+            }
+        } else {
+            notificationService.markAllReadForProblem(current, problem);
+        }
 
         model.addAttribute("problem", problem);
         model.addAttribute("currentUser", current);
@@ -757,7 +767,7 @@ public class ProblemController {
 
             // 6) notifier le client que son ticket est pris en charge
             if (wasOpen && problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_IN_PROGRESS);
                 mailService.sendTicketInProgressEmail(problem);
             }
         }

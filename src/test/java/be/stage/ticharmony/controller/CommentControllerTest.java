@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -227,7 +228,7 @@ class CommentControllerTest {
                         .param("content", "Mise à jour pour le client"))
                 .andExpect(status().is3xxRedirection());
 
-        verify(notificationService).notifyOnce(clientUser, problem, NotificationType.NEW_COMMENT);
+        verify(notificationService).notifyOnce(eq(clientUser), isNull(), eq(problem), eq(NotificationType.NEW_COMMENT));
         verify(mailService).sendNewCommentEmail(problem, savedComment);
     }
 
@@ -246,7 +247,7 @@ class CommentControllerTest {
                 .andExpect(status().is3xxRedirection());
 
         // Pas de notification ni email pour soi-même
-        verify(notificationService, never()).notifyOnce(eq(clientUser), any(), eq(NotificationType.NEW_COMMENT));
+        verify(notificationService, never()).notifyOnce(eq(clientUser), any(), eq(problem), eq(NotificationType.NEW_COMMENT));
         verify(mailService, never()).sendNewCommentEmail(any(), any());
     }
 }

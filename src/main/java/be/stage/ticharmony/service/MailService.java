@@ -42,8 +42,7 @@ public class MailService {
                 "Un nouveau ticket vient d'être ouvert et est en attente de prise en charge.",
                 new String[][]{
                         {"Ticket", "#" + problem.getId() + " — " + escape(problem.getTitle())},
-                        {"Catégorie", escape(problem.getCategory())},
-                        {"Priorité", formatPriority(problem.getPriority().name())}
+                        {"Catégorie", escape(problem.getCategory())}
                 },
                 ticketUrl,
                 "Voir le ticket",

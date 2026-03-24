@@ -4,6 +4,7 @@ import be.stage.ticharmony.model.Notification;
 import be.stage.ticharmony.model.NotificationType;
 import be.stage.ticharmony.model.Problem;
 import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.model.UserProfile;
 import be.stage.ticharmony.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -78,5 +79,42 @@ public class NotificationService {
     @Transactional
     public void deleteNotificationsForProblem(Problem problem, NotificationType type) {
         repo.deleteByProblemAndType(problem, type);
+    }
+
+    // ─── Méthodes par profil (CLIENT) ─────────────────────────────────────────
+
+    /** Crée une notification liée à un profil client spécifique. */
+    public void notify(User user, UserProfile profile, Problem problem, NotificationType type) {
+        Notification n = new Notification();
+        n.setUser(user);
+        n.setUserProfile(profile);
+        n.setProblem(problem);
+        n.setType(type);
+        repo.save(n);
+    }
+
+    public List<Notification> getUnreadForProfile(UserProfile profile) {
+        return repo.findByUserProfileAndViewedFalseOrderByCreatedAtDesc(profile);
+    }
+
+    public long countUnreadForProfile(UserProfile profile) {
+        return repo.countUnreadByUserProfile(profile);
+    }
+
+    /** Évite les doublons — vérifie par profil avant de créer. */
+    public void notifyOnce(User user, UserProfile profile, Problem problem, NotificationType type) {
+        if (repo.findByUserProfileAndProblemAndTypeAndViewedFalse(profile, problem, type).isEmpty()) {
+            notify(user, profile, problem, type);
+        }
+    }
+
+    @Transactional
+    public void markAllRead(UserProfile profile) {
+        repo.markAllReadByUserProfile(profile);
+    }
+
+    @Transactional
+    public void markAllReadForProblem(UserProfile profile, Problem problem) {
+        repo.markAllReadByUserProfileAndProblem(profile, problem);
     }
 }

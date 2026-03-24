@@ -43,7 +43,7 @@ public class ProfileController {
     @GetMapping("/select-profile")
     public String showSelectProfile(Model model, Principal principal, HttpSession session,
                                     @RequestParam(required = false) Long lock,
-                                    @RequestParam(required = false) String error,
+                                    @RequestParam(required = false) String pwError,
                                     @RequestParam(required = false) String manageError,
                                     @RequestParam(required = false) String openManage,
                                     @RequestParam(required = false) String setup) {
@@ -64,7 +64,7 @@ public class ProfileController {
         model.addAttribute("availableColors", AVAILABLE_COLORS);
         model.addAttribute("companyName", user.getNomEntreprise());
         model.addAttribute("lockProfileId", lock);
-        model.addAttribute("passwordError", "1".equals(error));
+        model.addAttribute("passwordError", "1".equals(pwError));
         model.addAttribute("managementUnlocked", managementUnlocked);
         model.addAttribute("managementError", "1".equals(manageError));
         model.addAttribute("openManage", "1".equals(openManage));
@@ -97,7 +97,7 @@ public class ProfileController {
         }
 
         if (!profileService.verifyPassword(profile, password)) {
-            String errorParam = (password != null && !password.isBlank()) ? "&error=1" : "";
+            String errorParam = (password != null && !password.isBlank()) ? "&pwError=1" : "";
             return "redirect:/select-profile?lock=" + id + errorParam;
         }
 

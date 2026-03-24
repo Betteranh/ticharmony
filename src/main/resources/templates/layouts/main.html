@@ -285,11 +285,14 @@
                 .catch(function () {});
         }
 
-        setupMarkAllRead();
-        poll();
-        updateRelativeTimes();
-        setInterval(poll, 10000);
-        setInterval(updateRelativeTimes, 60000);
+        // Ne démarrer le polling que si la cloche est présente (absente sur les pages hideNotifications)
+        if (btn) {
+            setupMarkAllRead();
+            poll();
+            updateRelativeTimes();
+            setInterval(poll, 10000);
+            setInterval(updateRelativeTimes, 60000);
+        }
     });
     </script>
 </div>

@@ -55,7 +55,7 @@ public class CommentController {
         }
         if (client != null && client.getRole() == UserRole.CLIENT
                 && !client.getId().equals(author.getId())) {
-            notificationService.notifyOnce(client, problem, NotificationType.NEW_COMMENT);
+            notificationService.notifyOnce(client, problem.getUserProfile(), problem, NotificationType.NEW_COMMENT);
             mailService.sendNewCommentEmail(problem, comment);
         }
 
