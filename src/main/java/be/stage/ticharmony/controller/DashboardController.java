@@ -78,9 +78,7 @@ public class DashboardController {
         User currentUser = userService.findByLogin(auth.getName());
 
         // Récupérer tous les tickets
-        List<Problem> all = StreamSupport
-                .stream(problemService.getProblems().spliterator(), false)
-                .collect(Collectors.toList());
+        List<Problem> all = problemService.getProblems();
 
         // Filtrer selon le statut (Tous = "sauf Closed")
         List<Problem> filteredProblems;
@@ -180,10 +178,9 @@ public class DashboardController {
         ObjectMapper mapper = new ObjectMapper();
         User currentUser = userService.findByLogin(auth.getName());
 
-        // On récupère UNIQUEMENT les tickets assignés à ce technicien !
+        // On récupère UNIQUEMENT les tickets assignés à ce technicien via requête directe
         List<Problem> all = StreamSupport
-                .stream(problemService.getProblems().spliterator(), false)
-                .filter(p -> p.getTechnician() != null && p.getTechnician().getId().equals(currentUser.getId()))
+                .stream(problemService.getProblemsByTechnician(currentUser).spliterator(), false)
                 .collect(Collectors.toList());
 
         // Filtre par statut comme pour admin

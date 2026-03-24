@@ -10,10 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Data
@@ -128,48 +125,16 @@ public class ProblemService {
         return repository.findByUserProfile(userProfile);
     }
 
-    // === NOUVEAU : Filtrage combiné avancé ===
-    public List<Problem> filterProblems(
-            Iterable<Problem> all,
-            Status status,
-            Priority priority,
-            Integer year,
-            Integer month,
-            String search
-    ) {
-        return StreamSupport.stream(all.spliterator(), false)
-                .filter(p -> status == null || p.getStatus() == status)
-                .filter(p -> priority == null || p.getPriority() == priority)
-                .filter(p -> year == null || (p.getCreatedAt() != null && p.getCreatedAt().getYear() == year))
-                .filter(p -> month == null || (p.getCreatedAt() != null && p.getCreatedAt().getMonthValue() == month))
-                .filter(p -> search == null || search.isBlank() || (
-                        p.getTitle() != null && p.getTitle().toLowerCase().contains(search.toLowerCase())
-                        // Tu peux aussi inclure la description ou autre champ si tu veux
-                ))
-                .sorted(Comparator.comparing(Problem::getCreatedAt).reversed())
-                .collect(Collectors.toList());
+    public Map<Long, Long> countOpenTicketsByTechnicians(List<User> technicians) {
+        List<Object[]> rows = repository.countOpenTicketsByTechnicians(technicians, Status.CLOSED);
+        Map<Long, Long> map = new HashMap<>();
+        for (Object[] row : rows) {
+            map.put((Long) row[0], (Long) row[1]);
+        }
+        return map;
     }
 
-    // === NOUVEAU : Liste des années disponibles ===
-    public Set<Integer> getDistinctYears(Iterable<Problem> all) {
-        return StreamSupport.stream(all.spliterator(), false)
-                .map(Problem::getCreatedAt)
-                .filter(Objects::nonNull)
-                .map(LocalDateTime::getYear)
-                .collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    // === NOUVEAU : Liste des mois disponibles pour une année donnée ===
-    public Set<Integer> getDistinctMonths(Iterable<Problem> all, Integer year) {
-        return StreamSupport.stream(all.spliterator(), false)
-                .map(Problem::getCreatedAt)
-                .filter(Objects::nonNull)
-                .filter(dt -> year == null || dt.getYear() == year)
-                .map(LocalDateTime::getMonthValue)
-                .collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    // === NOUVEAU : Statistiques par technicien pour diagramme ===
+    // === Statistiques par technicien pour diagramme ===
     public List<TechnicianStatsDTO> getTechnicianStats(
             List<Problem> problems,
             User currentUser

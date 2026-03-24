@@ -27,4 +27,8 @@ public interface ProblemRepository extends JpaRepository<Problem, Long>, JpaSpec
     /** Tickets visibles par un membre : les siens + non assignés */
     @Query("SELECT p FROM Problem p WHERE p.technician IS NULL OR p.technician = ?1")
     List<Problem> findByTechnicianNullOrTechnician(User technician);
+
+    /** Nombre de tickets (hors statut exclu) par technicien — une seule requête SQL */
+    @Query("SELECT p.technician.id, COUNT(p) FROM Problem p WHERE p.technician IN ?1 AND p.status <> ?2 GROUP BY p.technician.id")
+    List<Object[]> countOpenTicketsByTechnicians(List<User> technicians, Status excludedStatus);
 }

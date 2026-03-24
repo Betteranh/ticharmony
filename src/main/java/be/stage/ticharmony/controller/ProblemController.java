@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Controller
 @RequestMapping("/problems")
@@ -702,13 +701,8 @@ public class ProblemController {
             List<User> technicians = new java.util.ArrayList<>(userService.getUsersByRole(UserRole.MEMBER));
             technicians.add(current); // l'admin peut s'assigner lui-même
 
-            // Map<Long, Long> techId → nombre de tickets (hors CLOSED)
-            java.util.Map<Long, Long> techTicketCounts = technicians.stream().collect(Collectors.toMap(
-                    User::getId,
-                    tech -> StreamSupport.stream(service.getProblemsByTechnician(tech).spliterator(), false)
-                            .filter(p -> p.getStatus() != Status.CLOSED)
-                            .count()
-            ));
+            // Map<Long, Long> techId → nombre de tickets (hors CLOSED) — une seule requête SQL
+            java.util.Map<Long, Long> techTicketCounts = service.countOpenTicketsByTechnicians(technicians);
 
             model.addAttribute("technicians", technicians);
             model.addAttribute("techTicketCounts", techTicketCounts);
