@@ -343,6 +343,75 @@ class ProblemControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    // ─── POST /problems/{id}/assignTechnician ──────────────────────────────────
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void assignTechnician_asAdmin_validTechnician_redirectsToDetails() throws Exception {
+        Problem p = new Problem();
+        p.setId(1L);
+        p.setStatus(Status.OPEN);
+        p.setUser(adminUser); // rôle ADMIN → pas de notification client
+        User tech = new User();
+        tech.setId(2L);
+        tech.setRole(UserRole.MEMBER);
+        tech.setFirstname("Tech");
+        tech.setLastname("Test");
+
+        when(userService.findByLogin("admin")).thenReturn(adminUser);
+        when(problemService.getProblem(1L)).thenReturn(p);
+        when(userService.getUser(2L)).thenReturn(tech);
+
+        mockMvc.perform(post("/problems/1/assignTechnician").with(csrf())
+                        .param("technicianId", "2")
+                        .param("priority", "MEDIUM"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/problems/1"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void assignTechnician_asAdmin_unassignWithZero_setsStatusOpenAndRedirects() throws Exception {
+        Problem p = new Problem();
+        p.setId(1L);
+        p.setStatus(Status.IN_PROGRESS);
+        p.setTechnician(memberUser);
+
+        when(userService.findByLogin("admin")).thenReturn(adminUser);
+        when(problemService.getProblem(1L)).thenReturn(p);
+
+        mockMvc.perform(post("/problems/1/assignTechnician").with(csrf())
+                        .param("technicianId", "0")
+                        .param("priority", "MEDIUM"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/problems/1"));
+
+        // Vérifie que le problème est bien repassé en OPEN
+        org.mockito.Mockito.verify(problemService).updateProblem(
+                org.mockito.ArgumentMatchers.argThat(prob ->
+                        prob.getStatus() == Status.OPEN && prob.getTechnician() == null));
+    }
+
+    @Test
+    @WithMockUser(username = "member", roles = "MEMBER")
+    void assignTechnician_asMember_returns403() throws Exception {
+        mockMvc.perform(post("/problems/1/assignTechnician").with(csrf())
+                        .param("technicianId", "2")
+                        .param("priority", "MEDIUM"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "client", roles = "CLIENT")
+    void assignTechnician_asClient_redirectedByInterceptorToSelectProfile() throws Exception {
+        // Le ProfileRequiredInterceptor redirige les CLIENT sans profil avant @PreAuthorize
+        mockMvc.perform(post("/problems/1/assignTechnician").with(csrf())
+                        .param("technicianId", "2")
+                        .param("priority", "MEDIUM"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/select-profile"));
+    }
+
     // ─── GET /problems/{id}/take ───────────────────────────────────────────────
 
     @Test

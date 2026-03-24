@@ -6,25 +6,29 @@
 <head>
     <title>Modifier la demande</title>
     <style>
-        body { background: #faf9f7 !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+        body { background: #eef2f8 !important; }
 
         :root {
             --white:    #ffffff;
-            --cream:    #faf9f7;
-            --cream-d:  #ede9e3;
-            --text:     #1c1917;
-            --text-2:   #78716c;
-            --text-3:   #a8a29e;
-            --violet:   #7c3aed;
-            --violet-bg:#f5f3ff;
-            --violet-br:#ddd6fe;
+            --bg:       #eef2f8;
+            --bg-d:     #dde4ef;
+            --border:   #d1d9e8;
+            --text:     #1a2035;
+            --text-2:   #5a6480;
+            --text-3:   #9aa3b8;
+            --blue:     #2563eb;
+            --blue-bg:  #eff6ff;
+            --blue-br:  #bfdbfe;
             --red:      #dc2626;
             --amber:    #d97706;
-            --sh:       0 2px 12px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+            --sh:       0 2px 10px rgba(37,99,235,.06), 0 1px 4px rgba(0,0,0,.04);
+            --radius:   14px;
         }
 
         .fu-root {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2.5rem 0 6rem;
             max-width: 860px;
@@ -34,16 +38,16 @@
         /* ── Back link ── */
         .back-link {
             display: inline-flex; align-items: center; gap: 6px;
-            font-size: .85rem; font-weight: 600; color: var(--text-3);
+            font-size: .85rem; font-weight: 700; color: var(--text-3);
             text-decoration: none; margin-bottom: 1.75rem; transition: color .15s;
         }
-        .back-link:hover { color: var(--violet); }
+        .back-link:hover { color: var(--blue); }
         .back-link svg { transition: transform .15s; }
         .back-link:hover svg { transform: translateX(-3px); }
 
         /* ── Page title ── */
         .page-title {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.7rem; font-weight: 800;
             color: var(--text); letter-spacing: -.03em;
             margin-bottom: .3rem;
@@ -53,7 +57,8 @@
         /* ── Cards ── */
         .form-card {
             background: var(--white);
-            border-radius: 18px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             box-shadow: var(--sh);
             padding: 1.75rem;
             margin-bottom: 1rem;
@@ -61,51 +66,51 @@
 
         /* ── Section label ── */
         .section-label {
-            font-family: 'Sora', sans-serif;
-            font-size: .72rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .7rem; font-weight: 700;
             letter-spacing: .08em; text-transform: uppercase;
             color: var(--text-3);
             padding-bottom: .65rem;
-            border-bottom: 1px solid var(--cream-d);
+            border-bottom: 1px solid var(--bg-d);
             margin-bottom: 1.25rem;
         }
 
         /* ── Labels & inputs ── */
         .fc-label {
             display: block;
-            font-size: .82rem; font-weight: 600;
+            font-size: .83rem; font-weight: 700;
             color: var(--text-2); margin-bottom: .4rem;
         }
         .fc-label .req { color: var(--red); }
 
         .fc-input {
             width: 100%; padding: .75rem 1rem;
-            background: var(--cream); border: 1px solid var(--cream-d);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: 10px; color: var(--text);
-            font-family: 'DM Sans', sans-serif; font-size: .95rem;
+            font-family: 'Nunito', sans-serif; font-size: .95rem;
             outline: none;
             transition: border-color .2s, box-shadow .2s, background .2s;
         }
         .fc-input::placeholder { color: var(--text-3); }
         .fc-input:focus {
-            border-color: var(--violet); background: var(--white);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            border-color: var(--blue); background: var(--white);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
         textarea.fc-input { resize: vertical; min-height: 130px; line-height: 1.65; }
 
         .fc-select {
             width: 100%; padding: .75rem 2.5rem .75rem 1rem;
-            background: var(--cream); border: 1px solid var(--cream-d);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: 10px; color: var(--text);
-            font-family: 'DM Sans', sans-serif; font-size: .95rem;
+            font-family: 'Nunito', sans-serif; font-size: .95rem;
             appearance: none; outline: none; cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right .75rem center;
             transition: border-color .2s, box-shadow .2s, background .2s;
         }
         .fc-select:focus {
-            border-color: var(--violet); background-color: var(--white);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+            border-color: var(--blue); background-color: var(--white);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
 
         /* ── 2-col grid ── */
@@ -118,13 +123,17 @@
 
         /* ── Technician section highlight ── */
         .tech-wrap {
-            background: var(--violet-bg);
-            border: 1px solid var(--violet-br);
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-br);
             border-radius: 12px;
             padding: 1rem 1.1rem;
         }
-        .tech-wrap .fc-label { color: var(--violet); }
-        .tech-wrap .fc-select:focus { border-color: var(--violet); }
+        .tech-wrap .fc-label { color: var(--blue); }
+        .tech-wrap .fc-select {
+            background-color: var(--white);
+            border-color: var(--blue-br);
+        }
+        .tech-wrap .fc-select:focus { border-color: var(--blue); }
 
         /* ── Warning banner ── */
         .warn-banner {
@@ -136,26 +145,27 @@
         .warn-banner-text {
             font-size: .88rem; line-height: 1.6; color: var(--amber);
         }
-        .warn-banner-text strong { font-weight: 700; }
+        .warn-banner-text strong { font-weight: 800; }
 
         /* ── Sidebar panel ── */
         .sidebar-panel {
             background: var(--white);
-            border-radius: 18px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             box-shadow: var(--sh);
             overflow: hidden;
         }
         .sp-section {
             padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--cream-d);
+            border-bottom: 1px solid var(--bg-d);
         }
         .sp-section:last-child { border-bottom: none; }
         .sp-label {
-            font-family: 'Sora', sans-serif; font-size: .68rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .67rem; font-weight: 700;
             letter-spacing: .08em; text-transform: uppercase; color: var(--text-3);
             margin-bottom: .4rem;
         }
-        .sp-value { font-size: .92rem; font-weight: 600; color: var(--text); }
+        .sp-value { font-size: .92rem; font-weight: 700; color: var(--text); }
         .sp-value-muted { font-size: .88rem; color: var(--text-3); }
 
         /* Status/priority dot */
@@ -166,22 +176,22 @@
         .btn-submit {
             flex: 1; min-width: 200px;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            background: var(--violet); color: #fff;
+            background: var(--blue); color: #fff;
             border: none; padding: .9rem 1.5rem; border-radius: 12px;
-            font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700;
-            cursor: pointer; box-shadow: 0 4px 14px rgba(124,58,237,.25);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .92rem; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,.25);
             transition: background .15s, transform .15s;
         }
-        .btn-submit:hover { background: #6d28d9; transform: translateY(-1px); }
+        .btn-submit:hover { background: #1d4ed8; transform: translateY(-1px); }
         .btn-cancel {
             display: inline-flex; align-items: center; gap: 6px;
             padding: .9rem 1.5rem; border-radius: 12px;
-            background: var(--white); border: 1px solid var(--cream-d);
-            color: var(--text-2); font-family: 'Sora', sans-serif;
-            font-size: .9rem; font-weight: 600;
+            background: var(--white); border: 1px solid var(--border);
+            color: var(--text-2); font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .88rem; font-weight: 700;
             text-decoration: none; transition: background .15s, color .15s;
         }
-        .btn-cancel:hover { background: var(--cream-d); color: var(--text); }
+        .btn-cancel:hover { background: var(--bg-d); color: var(--text); }
 
         /* ── Animations ── */
         @keyframes fadeUp {
@@ -209,7 +219,7 @@
 
     <!-- Page title -->
     <div class="fu d1">
-        <h1 class="page-title">Modifier la demande <span th:text="'#' + ${problem.id}" style="color:var(--violet);"></span></h1>
+        <h1 class="page-title">Modifier la demande <span th:text="'#' + ${problem.id}" style="color:var(--blue);"></span></h1>
         <p class="page-sub" th:text="${problem.title}"></p>
     </div>
 
@@ -222,7 +232,7 @@
         </svg>
         <div class="warn-banner-text">
             Les modifications sont <strong>immédiatement visibles</strong> par le client et l'équipe.
-            Si vous changez le technicien assigné, le ticket repassera en statut <strong>En cours</strong>.
+            Choisir <strong>Non assigné</strong> repassera le ticket en statut <strong>Ouvert</strong>.
         </div>
     </div>
 
@@ -310,7 +320,7 @@
                             <option value="0" th:selected="${problem.technician == null}">— Non assigné —</option>
                             <option th:each="tech : ${technicians}"
                                     th:value="${tech.id}"
-                                    th:text="${tech.firstname + ' ' + tech.lastname}"
+                                    th:text="${(adminId != null and tech.id == adminId ? '(Moi) ' : '') + tech.firstname + ' ' + tech.lastname}"
                                     th:selected="${problem.technician != null and problem.technician.id == tech.id}">
                             </option>
                         </select>
@@ -397,22 +407,28 @@
                 </div>
 
                 <!-- Conseils -->
-                <div class="sp-section" style="background:var(--cream);">
-                    <div class="sp-label" style="margin-bottom:.6rem;">À savoir</div>
-                    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;">
-                        <li style="font-size:.8rem;color:var(--text-2);display:flex;gap:.5rem;align-items:flex-start;">
-                            <span style="color:#2563eb;flex-shrink:0;font-weight:700;">→</span>
-                            Changer de technicien repasse le ticket en <strong>En cours</strong>.
-                        </li>
-                        <li style="font-size:.8rem;color:var(--text-2);display:flex;gap:.5rem;align-items:flex-start;">
-                            <span style="color:#dc2626;flex-shrink:0;font-weight:700;">→</span>
-                            <strong>Critique</strong> = panne bloquant l'activité.
-                        </li>
-                        <li style="font-size:.8rem;color:var(--text-2);display:flex;gap:.5rem;align-items:flex-start;">
-                            <span style="color:#16a34a;flex-shrink:0;font-weight:700;">→</span>
-                            Un ticket <strong>Résolu</strong> doit être validé par l'admin avant clôture.
-                        </li>
-                    </ul>
+                <div class="sp-section" style="background:var(--bg);">
+                    <div class="sp-label" style="margin-bottom:.75rem;">À savoir</div>
+                    <div style="display:flex;flex-direction:column;gap:.6rem;">
+                        <div style="display:flex;align-items:flex-start;gap:.6rem;">
+                            <span style="flex-shrink:0;width:20px;height:20px;border-radius:6px;background:var(--blue-bg);border:1px solid var(--blue-br);display:flex;align-items:center;justify-content:center;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </span>
+                            <span style="font-size:.8rem;color:var(--text-2);line-height:1.5;padding-top:2px;"><strong style="color:var(--text);">Non assigné</strong> repasse le ticket en <strong style="color:var(--text);">Ouvert</strong>.</span>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:.6rem;">
+                            <span style="flex-shrink:0;width:20px;height:20px;border-radius:6px;background:#fef2f2;border:1px solid #fecaca;display:flex;align-items:center;justify-content:center;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </span>
+                            <span style="font-size:.8rem;color:var(--text-2);line-height:1.5;padding-top:2px;"><strong style="color:var(--text);">Critique</strong> = panne bloquant l'activité.</span>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:.6rem;">
+                            <span style="flex-shrink:0;width:20px;height:20px;border-radius:6px;background:#f0fdf4;border:1px solid #bbf7d0;display:flex;align-items:center;justify-content:center;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </span>
+                            <span style="font-size:.8rem;color:var(--text-2);line-height:1.5;padding-top:2px;">Un ticket <strong style="color:var(--text);">Résolu</strong> doit être validé avant clôture.</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>

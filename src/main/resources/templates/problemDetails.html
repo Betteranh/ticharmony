@@ -1027,8 +1027,8 @@
                                 <span th:if="${problem.technician == null}">Assigner un technicien</span>
                                 <span th:if="${problem.technician != null}">Changer de technicien</span>
                             </label>
-                            <select name="technicianId" required class="form-select">
-                                <option value="" disabled th:selected="${problem.technician == null}">Sélectionner…</option>
+                            <select name="technicianId" class="form-select">
+                                <option value="0" th:selected="${problem.technician == null}">— Non assigné —</option>
                                 <option th:each="tech : ${technicians}"
                                         th:value="${tech.id}"
                                         th:selected="${problem.technician != null and problem.technician.id == tech.id}"

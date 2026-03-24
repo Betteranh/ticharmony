@@ -37,12 +37,23 @@ public class MailService {
     public void sendNewProblemEmail(User recipient, Problem problem) {
         String ticketUrl = baseUrl + "/problems/" + problem.getId();
         String subject = "Nouveau ticket #" + problem.getId() + " — " + problem.getTitle();
+
+        String entreprise = problem.getUser() != null ? escape(problem.getUser().getNomEntreprise()) : "";
+        String demandeur = "";
+        if (problem.getUserProfile() != null) {
+            demandeur = escape(problem.getUserProfile().getDisplayName());
+        } else if (problem.getTicketUserInfo() != null) {
+            demandeur = escape(problem.getTicketUserInfo().getFirstName() + " " + problem.getTicketUserInfo().getLastName()).trim();
+        }
+
         String html = buildLayout(
                 "Nouveau ticket créé",
                 "Un nouveau ticket vient d'être ouvert et est en attente de prise en charge.",
                 new String[][]{
                         {"Ticket", "#" + problem.getId() + " — " + escape(problem.getTitle())},
-                        {"Catégorie", escape(problem.getCategory())}
+                        {"Catégorie", escape(problem.getCategory())},
+                        {"Entreprise", entreprise},
+                        {"Demandeur", demandeur}
                 },
                 ticketUrl,
                 "Voir le ticket",
@@ -75,13 +86,24 @@ public class MailService {
     public void sendAssignedEmail(User recipient, Problem problem) {
         String ticketUrl = baseUrl + "/problems/" + problem.getId();
         String subject = "Ticket #" + problem.getId() + " assigné — " + problem.getTitle();
+
+        String entreprise = problem.getUser() != null ? escape(problem.getUser().getNomEntreprise()) : "";
+        String demandeur = "";
+        if (problem.getUserProfile() != null) {
+            demandeur = escape(problem.getUserProfile().getDisplayName());
+        } else if (problem.getTicketUserInfo() != null) {
+            demandeur = escape(problem.getTicketUserInfo().getFirstName() + " " + problem.getTicketUserInfo().getLastName()).trim();
+        }
+
         String html = buildLayout(
                 "Un ticket vous a été assigné",
                 "Un ticket vous a été attribué et est en attente de traitement.",
                 new String[][]{
                         {"Ticket", "#" + problem.getId() + " — " + escape(problem.getTitle())},
                         {"Catégorie", escape(problem.getCategory())},
-                        {"Priorité", formatPriority(problem.getPriority().name())}
+                        {"Priorité", formatPriority(problem.getPriority().name())},
+                        {"Entreprise", entreprise},
+                        {"Demandeur", demandeur}
                 },
                 ticketUrl,
                 "Voir le ticket",

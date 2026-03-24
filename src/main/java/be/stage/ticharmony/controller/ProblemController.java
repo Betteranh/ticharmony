@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Controller
 @RequestMapping("/problems")
@@ -72,7 +71,7 @@ public class ProblemController {
                     notificationService.notify(admin, problem, NotificationType.ASSIGNED_TO_PROBLEM));
             // Notifier le client
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_IN_PROGRESS);
+                notificationService.notify(problem.getUser(), safeProfile(problem), problem, NotificationType.TICKET_IN_PROGRESS);
                 mailService.sendTicketInProgressEmail(problem);
             }
             return "redirect:/problems/" + id;
@@ -83,7 +82,7 @@ public class ProblemController {
             problem.setStatus(Status.IN_PROGRESS);
             service.updateProblem(problem);
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_IN_PROGRESS);
+                notificationService.notify(problem.getUser(), safeProfile(problem), problem, NotificationType.TICKET_IN_PROGRESS);
                 mailService.sendTicketInProgressEmail(problem);
             }
         }
@@ -166,7 +165,7 @@ public class ProblemController {
 
             // Notifier le client que son dossier est clôturé
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_CLOSED);
+                notificationService.notify(problem.getUser(), safeProfile(problem), problem, NotificationType.TICKET_CLOSED);
                 mailService.sendTicketClosedEmail(problem);
             }
             // Notifier le technicien que son travail est officiellement validé
@@ -404,11 +403,13 @@ public class ProblemController {
         }
         model.addAttribute("problem", problem);
 
-        // Ajoute les techniciens pour l'admin
+        // Ajoute les techniciens (membres + admin lui-même) pour l'admin
         User current = userService.findByLogin(authentication.getName());
         if (current.getRole() == UserRole.ADMIN) {
-            List<User> technicians = userService.getUsersByRole(UserRole.MEMBER);
+            List<User> technicians = new java.util.ArrayList<>(userService.getUsersByRole(UserRole.MEMBER));
+            technicians.add(current);
             model.addAttribute("technicians", technicians);
+            model.addAttribute("adminId", current.getId());
         }
         return "formUpdateProblem";
     }
@@ -541,9 +542,9 @@ public class ProblemController {
                 existing.setTechnician(null);
             }
 
-            // Si le technicien a été changé, passer en IN_PROGRESS directement
+            // Nouveau technicien → IN_PROGRESS ; désassignation → OPEN
             if (techChanged) {
-                existing.setStatus(Status.IN_PROGRESS);
+                existing.setStatus(newTech != null ? Status.IN_PROGRESS : Status.OPEN);
             }
 
             // Mise à jour du ticket
@@ -703,6 +704,8 @@ public class ProblemController {
 
             // Map<Long, Long> techId → nombre de tickets (hors CLOSED) — une seule requête SQL
             java.util.Map<Long, Long> techTicketCounts = service.countOpenTicketsByTechnicians(technicians);
+            // Garantir une entrée à 0 pour les techniciens sans ticket (GROUP BY les exclut sinon → NPE OGNL)
+            technicians.forEach(t -> techTicketCounts.putIfAbsent(t.getId(), 0L));
 
             model.addAttribute("technicians", technicians);
             model.addAttribute("techTicketCounts", techTicketCounts);
@@ -729,6 +732,19 @@ public class ProblemController {
 
             // 1) supprimer les notifications "nouveau ticket"
             notificationService.deleteNotificationsForProblem(problem, NotificationType.NEW_PROBLEM);
+
+            // Cas désassignation (technicianId = 0) : retirer le technicien et repasser en OPEN
+            if (technicianId == 0) {
+                if (oldTech != null) {
+                    notificationService.notify(oldTech, problem, NotificationType.TICKET_REASSIGNED);
+                    notificationService.markAssignmentNotificationsRead(oldTech, problem);
+                    mailService.sendReassignedEmail(oldTech, problem);
+                }
+                problem.setTechnician(null);
+                problem.setStatus(Status.OPEN);
+                service.updateProblem(problem);
+                return "redirect:/problems/" + id;
+            }
 
             // 2) notifier l'ancien technicien qu'il est réassigné (s'il existe et change)
             User newTech = userService.getUser(technicianId);
@@ -761,10 +777,19 @@ public class ProblemController {
 
             // 6) notifier le client que son ticket est pris en charge
             if (wasOpen && problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
-                notificationService.notify(problem.getUser(), problem.getUserProfile(), problem, NotificationType.TICKET_IN_PROGRESS);
+                notificationService.notify(problem.getUser(), safeProfile(problem), problem, NotificationType.TICKET_IN_PROGRESS);
                 mailService.sendTicketInProgressEmail(problem);
             }
         }
         return "redirect:/problems/" + id;
+    }
+
+    /**
+     * Recharge le UserProfile depuis la DB pour éviter un proxy Hibernate orphelin
+     * qui causerait une violation de FK lors du save d'une notification.
+     */
+    private UserProfile safeProfile(Problem problem) {
+        if (problem.getUserProfile() == null) return null;
+        return userProfileService.findById(problem.getUserProfile().getId()).orElse(null);
     }
 }

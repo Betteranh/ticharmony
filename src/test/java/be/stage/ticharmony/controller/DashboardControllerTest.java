@@ -281,7 +281,8 @@ class DashboardControllerTest {
         otherTicket.setCreatedAt(java.time.LocalDateTime.now());
 
         when(userService.findByLogin("member")).thenReturn(memberUser);
-        when(problemService.getProblems()).thenReturn(new ArrayList<>(List.of(ownTicket, otherTicket)));
+        // Le dashboard membre utilise getProblemsByTechnician, pas getProblems()
+        when(problemService.getProblemsByTechnician(memberUser)).thenReturn(List.of(ownTicket));
         when(problemService.getProblems(any(org.springframework.data.jpa.domain.Specification.class)))
                 .thenReturn(new ArrayList<>());
 

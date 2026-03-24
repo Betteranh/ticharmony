@@ -6,6 +6,7 @@ import be.stage.ticharmony.model.Problem;
 import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.model.UserProfile;
 import be.stage.ticharmony.repository.NotificationRepository;
+import be.stage.ticharmony.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
     private final NotificationRepository repo;
+    private final UserProfileRepository userProfileRepo;
 
     public void notify(User user, Problem problem, NotificationType type) {
         Notification n = new Notification();
@@ -87,9 +89,13 @@ public class NotificationService {
     public void notify(User user, UserProfile profile, Problem problem, NotificationType type) {
         Notification n = new Notification();
         n.setUser(user);
-        n.setUserProfile(profile);
         n.setProblem(problem);
         n.setType(type);
+        // Vérifie l'existence en base (SELECT COUNT) pour éviter une violation FK
+        // si profile est un proxy Hibernate orphelin (user_profile supprimé mais référencé dans problems)
+        if (profile != null && userProfileRepo.existsById(profile.getId())) {
+            n.setUserProfile(profile);
+        }
         repo.save(n);
     }
 

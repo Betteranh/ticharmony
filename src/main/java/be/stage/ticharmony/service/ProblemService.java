@@ -126,10 +126,12 @@ public class ProblemService {
     }
 
     public Map<Long, Long> countOpenTicketsByTechnicians(List<User> technicians) {
+        if (technicians == null || technicians.isEmpty()) return new HashMap<>();
         List<Object[]> rows = repository.countOpenTicketsByTechnicians(technicians, Status.CLOSED);
         Map<Long, Long> map = new HashMap<>();
         for (Object[] row : rows) {
-            map.put((Long) row[0], (Long) row[1]);
+            // Hibernate peut retourner Integer ou Long selon le driver — Number évite le ClassCastException
+            map.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
         }
         return map;
     }

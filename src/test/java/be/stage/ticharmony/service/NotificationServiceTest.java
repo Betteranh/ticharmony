@@ -2,6 +2,7 @@ package be.stage.ticharmony.service;
 
 import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.repository.NotificationRepository;
+import be.stage.ticharmony.repository.UserProfileRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -20,6 +21,9 @@ class NotificationServiceTest {
 
     @Mock
     NotificationRepository repo;
+
+    @Mock
+    UserProfileRepository userProfileRepo;
 
     @InjectMocks
     NotificationService service;
@@ -151,5 +155,52 @@ class NotificationServiceTest {
         service.markAllReadForProblem(user, problem);
 
         verify(repo).markAllReadByUserAndProblem(user, problem);
+    }
+
+    // ─── notify(User, UserProfile, Problem, NotificationType) ────────────────
+
+    @Test
+    void notifyWithProfile_existingProfile_setsProfileOnNotification() {
+        User user = makeUser(1L);
+        Problem problem = makeProblem(10L);
+        UserProfile profile = new UserProfile();
+        profile.setId(5L);
+        when(userProfileRepo.existsById(5L)).thenReturn(true);
+
+        service.notify(user, profile, problem, NotificationType.TICKET_IN_PROGRESS);
+
+        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+        verify(repo).save(captor.capture());
+        assertThat(captor.getValue().getUserProfile()).isEqualTo(profile);
+        assertThat(captor.getValue().getUser()).isEqualTo(user);
+        assertThat(captor.getValue().getType()).isEqualTo(NotificationType.TICKET_IN_PROGRESS);
+    }
+
+    @Test
+    void notifyWithProfile_nullProfile_savesWithoutProfile() {
+        User user = makeUser(1L);
+        Problem problem = makeProblem(10L);
+
+        service.notify(user, null, problem, NotificationType.TICKET_IN_PROGRESS);
+
+        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+        verify(repo).save(captor.capture());
+        assertThat(captor.getValue().getUserProfile()).isNull();
+        verify(userProfileRepo, never()).existsById(any());
+    }
+
+    @Test
+    void notifyWithProfile_orphanedProfile_savesWithNullProfile() {
+        User user = makeUser(1L);
+        Problem problem = makeProblem(10L);
+        UserProfile orphan = new UserProfile();
+        orphan.setId(99L);
+        when(userProfileRepo.existsById(99L)).thenReturn(false); // profil supprimé en base
+
+        service.notify(user, orphan, problem, NotificationType.TICKET_CLOSED);
+
+        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+        verify(repo).save(captor.capture());
+        assertThat(captor.getValue().getUserProfile()).isNull();
     }
 }

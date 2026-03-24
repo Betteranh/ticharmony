@@ -1,11 +1,10 @@
 package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.*;
-import be.stage.ticharmony.repository.ProblemRepository;
-import be.stage.ticharmony.repository.UserRepository;
 import be.stage.ticharmony.service.CommentService;
 import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.NotificationService;
+import be.stage.ticharmony.service.ProblemService;
 import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,11 +18,9 @@ import java.security.Principal;
 @Controller
 public class CommentController {
     @Autowired
-    private ProblemRepository problemRepository;
+    private ProblemService problemService;
     @Autowired
     private CommentService commentService;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private UserService userService;
     @Autowired
@@ -38,8 +35,11 @@ public class CommentController {
         if (content == null || content.isBlank() || content.length() > 5000) {
             return "redirect:/problems/" + problemId;
         }
-        Problem problem = problemRepository.findById(problemId).orElseThrow();
-        User author = userRepository.findByLogin(principal.getName());
+        Problem problem = problemService.getProblem(problemId);
+        if (problem == null) {
+            return "redirect:/problems";
+        }
+        User author = userService.findByLogin(principal.getName());
         if (author == null) {
             throw new UsernameNotFoundException("Identifiants invalides");
         }

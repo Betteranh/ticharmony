@@ -2,8 +2,6 @@ package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.config.ThymeleafConfiguration;
 import be.stage.ticharmony.model.*;
-import be.stage.ticharmony.repository.ProblemRepository;
-import be.stage.ticharmony.repository.UserRepository;
 import be.stage.ticharmony.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,6 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -56,8 +53,7 @@ class CommentControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean ProblemRepository problemRepository;
-    @MockBean UserRepository userRepository;
+    @MockBean ProblemService problemService;
     @MockBean CommentService commentService;
     @MockBean NotificationService notificationService;
     @MockBean MailService mailService;
@@ -98,7 +94,7 @@ class CommentControllerTest {
         savedComment.setAuthor(memberUser);
         savedComment.setProblem(problem);
 
-        // Stubs par défaut pour NotificationAdvice
+        // Stub par défaut pour NotificationAdvice
         when(notificationService.getUnreadForUser(any())).thenReturn(List.of());
     }
 
@@ -148,13 +144,28 @@ class CommentControllerTest {
         verify(commentService, never()).addComment(any(), any(), any());
     }
 
+    // ─── Problème introuvable ─────────────────────────────────────────────────
+
+    @Test
+    @WithMockUser(username = "member", roles = "MEMBER")
+    void addComment_unknownProblem_redirectsToList() throws Exception {
+        when(problemService.getProblem(42L)).thenReturn(null);
+
+        mockMvc.perform(post("/problems/42/comments").with(csrf())
+                        .param("content", "Commentaire"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/problems"));
+
+        verify(commentService, never()).addComment(any(), any(), any());
+    }
+
     // ─── Ajout valide ─────────────────────────────────────────────────────────
 
     @Test
     @WithMockUser(username = "member", roles = "MEMBER")
     void addComment_validContent_savesAndRedirectsToProblem() throws Exception {
-        when(problemRepository.findById(42L)).thenReturn(Optional.of(problem));
-        when(userRepository.findByLogin("member")).thenReturn(memberUser);
+        when(problemService.getProblem(42L)).thenReturn(problem);
+        when(userService.findByLogin("member")).thenReturn(memberUser);
         when(commentService.addComment(eq(problem), eq(memberUser), any())).thenReturn(savedComment);
 
         mockMvc.perform(post("/problems/42/comments").with(csrf())
@@ -168,8 +179,8 @@ class CommentControllerTest {
     @Test
     @WithMockUser(username = "member", roles = "MEMBER")
     void addComment_contentIsTrimmedBeforeSave() throws Exception {
-        when(problemRepository.findById(42L)).thenReturn(Optional.of(problem));
-        when(userRepository.findByLogin("member")).thenReturn(memberUser);
+        when(problemService.getProblem(42L)).thenReturn(problem);
+        when(userService.findByLogin("member")).thenReturn(memberUser);
         when(commentService.addComment(any(), any(), any())).thenReturn(savedComment);
 
         mockMvc.perform(post("/problems/42/comments").with(csrf())
@@ -186,10 +197,10 @@ class CommentControllerTest {
     void addComment_notifiesTechnician_whenTechnicianIsNotAuthor() throws Exception {
         User technician = new User();
         technician.setId(10L);
-        problem.setTechnician(technician); // technician différent du member (id=2)
+        problem.setTechnician(technician); // technicien différent du member (id=2)
 
-        when(problemRepository.findById(42L)).thenReturn(Optional.of(problem));
-        when(userRepository.findByLogin("member")).thenReturn(memberUser);
+        when(problemService.getProblem(42L)).thenReturn(problem);
+        when(userService.findByLogin("member")).thenReturn(memberUser);
         when(commentService.addComment(any(), any(), any())).thenReturn(savedComment);
 
         mockMvc.perform(post("/problems/42/comments").with(csrf())
@@ -204,8 +215,8 @@ class CommentControllerTest {
     void addComment_doesNotNotifyTechnician_whenAuthorIsTheTechnician() throws Exception {
         problem.setTechnician(memberUser); // le member est lui-même le technicien
 
-        when(problemRepository.findById(42L)).thenReturn(Optional.of(problem));
-        when(userRepository.findByLogin("member")).thenReturn(memberUser);
+        when(problemService.getProblem(42L)).thenReturn(problem);
+        when(userService.findByLogin("member")).thenReturn(memberUser);
         when(commentService.addComment(any(), any(), any())).thenReturn(savedComment);
 
         mockMvc.perform(post("/problems/42/comments").with(csrf())
@@ -220,8 +231,8 @@ class CommentControllerTest {
     void addComment_notifiesClientAndSendsEmail_whenClientIsNotAuthor() throws Exception {
         problem.setUser(clientUser); // le client du ticket est différent de l'auteur (member)
 
-        when(problemRepository.findById(42L)).thenReturn(Optional.of(problem));
-        when(userRepository.findByLogin("member")).thenReturn(memberUser);
+        when(problemService.getProblem(42L)).thenReturn(problem);
+        when(userService.findByLogin("member")).thenReturn(memberUser);
         when(commentService.addComment(any(), any(), any())).thenReturn(savedComment);
 
         mockMvc.perform(post("/problems/42/comments").with(csrf())
@@ -237,8 +248,8 @@ class CommentControllerTest {
     void addComment_byClient_doesNotSendEmailToSelf() throws Exception {
         problem.setUser(clientUser); // le client commente son propre ticket
 
-        when(problemRepository.findById(42L)).thenReturn(Optional.of(problem));
-        when(userRepository.findByLogin("client")).thenReturn(clientUser);
+        when(problemService.getProblem(42L)).thenReturn(problem);
+        when(userService.findByLogin("client")).thenReturn(clientUser);
         when(commentService.addComment(any(), any(), any())).thenReturn(savedComment);
 
         mockMvc.perform(post("/problems/42/comments").with(csrf())
