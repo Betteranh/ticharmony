@@ -15,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import be.stage.ticharmony.repository.ProblemSpecification;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -94,28 +97,43 @@ public class DashboardController {
         // Trier du plus récent au plus ancien
         filteredProblems.sort((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
 
-        // Statistiques globales (non filtrées)
-        long totalTickets = all.stream()
-                .filter(p -> p.getStatus() != Status.CLOSED)
-                .count();
-        long newTickets = all.stream().filter(p -> p.getStatus() == Status.OPEN).count();
-        long inProgressTickets = all.stream().filter(p -> p.getStatus() == Status.IN_PROGRESS).count();
-        long resolvedTickets = all.stream().filter(p -> p.getStatus() == Status.RESOLVED).count();
+        // Statistiques globales + listes sectorielles — un seul passage sur all
+        long totalTickets = 0, newTickets = 0, inProgressTickets = 0, resolvedTickets = 0, closedTickets = 0;
+        long pLow = 0, pMedium = 0, pHigh = 0, pUrgent = 0;
+        List<Problem> nonAssignedAll = new ArrayList<>();
+        List<Problem> resolvedAll    = new ArrayList<>();
+        List<Problem> urgentList     = new ArrayList<>();
 
-        long[] ticketsByStatus = {
-                newTickets,
-                inProgressTickets,
-                resolvedTickets,
-                all.stream().filter(p -> p.getStatus() == Status.CLOSED).count()
-        };
-        long[] ticketsByPriority = {
-                all.stream().filter(p -> p.getPriority() == Priority.LOW && p.getStatus() != Status.CLOSED).count(),
-                all.stream().filter(p -> p.getPriority() == Priority.MEDIUM && p.getStatus() != Status.CLOSED).count(),
-                all.stream().filter(p -> p.getPriority() == Priority.HIGH && p.getStatus() != Status.CLOSED).count(),
-                all.stream().filter(p -> p.getPriority() == Priority.URGENT && p.getStatus() != Status.CLOSED).count()
-        };
+        for (Problem p : all) {
+            Status s = p.getStatus();
+            boolean notClosed = s != Status.CLOSED;
+            if (notClosed) {
+                totalTickets++;
+                if (s == Status.OPEN)        newTickets++;
+                if (s == Status.IN_PROGRESS) inProgressTickets++;
+                if (s == Status.RESOLVED)    resolvedTickets++;
+                if (p.getPriority() == Priority.LOW)    pLow++;
+                if (p.getPriority() == Priority.MEDIUM) pMedium++;
+                if (p.getPriority() == Priority.HIGH)   pHigh++;
+                if (p.getPriority() == Priority.URGENT) pUrgent++;
+                if (p.getTechnician() == null)           nonAssignedAll.add(p);
+                if (s == Status.RESOLVED)                resolvedAll.add(p);
+                if (p.getPriority() == Priority.URGENT && p.getTechnician() == null && s != Status.RESOLVED)
+                    urgentList.add(p);
+            } else {
+                closedTickets++;
+            }
+        }
 
-        List<Long> ticketsByStatusList = Arrays.stream(ticketsByStatus).boxed().toList();
+        Comparator<Problem> byDateDesc = (p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt());
+        nonAssignedAll.sort(byDateDesc);
+        resolvedAll.sort(byDateDesc);
+        urgentList.sort(byDateDesc);
+
+        long[] ticketsByStatus   = { newTickets, inProgressTickets, resolvedTickets, closedTickets };
+        long[] ticketsByPriority = { pLow, pMedium, pHigh, pUrgent };
+
+        List<Long> ticketsByStatusList   = Arrays.stream(ticketsByStatus).boxed().toList();
         List<Long> ticketsByPriorityList = Arrays.stream(ticketsByPriority).boxed().toList();
 
         model.addAttribute("currentUser", currentUser);
@@ -135,24 +153,6 @@ public class DashboardController {
         // Pour le filtre (menu déroulant)
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
-
-        List<Problem> nonAssignedAll = all.stream()
-                .filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED)
-                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
-                .collect(Collectors.toList());
-
-        List<Problem> resolvedAll = all.stream()
-                .filter(p -> p.getStatus() == Status.RESOLVED)
-                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
-                .collect(Collectors.toList());
-
-        List<Problem> urgentList = all.stream()
-                .filter(p -> p.getPriority() == Priority.URGENT
-                        && p.getTechnician() == null
-                        && p.getStatus() != Status.CLOSED
-                        && p.getStatus() != Status.RESOLVED)
-                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
-                .collect(Collectors.toList());
 
         model.addAttribute("nonAssignedList",  nonAssignedAll.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("nonAssignedTotal", (long) nonAssignedAll.size());
@@ -199,27 +199,44 @@ public class DashboardController {
         }
         filteredProblems.sort((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
 
-        // Statistiques globales (uniquement sur SES tickets)
-        long totalTickets = all.stream().filter(p -> p.getStatus() != Status.CLOSED).count();
-        long newTickets = all.stream().filter(p -> p.getStatus() == Status.OPEN).count();
-        long inProgressTickets = all.stream().filter(p -> p.getStatus() == Status.IN_PROGRESS).count();
-        long resolvedTickets = all.stream().filter(p -> p.getStatus() == Status.RESOLVED).count();
+        // Statistiques + listes — un seul passage sur all (SES tickets)
+        long totalTickets = 0, newTickets = 0, inProgressTickets = 0, resolvedTickets = 0, closedTickets = 0;
+        long pLow = 0, pMedium = 0, pHigh = 0, pUrgent = 0;
+        List<Problem> inProgressList      = new ArrayList<>();
+        List<Problem> resolvedPendingList = new ArrayList<>();
 
-        long[] ticketsByStatus = {
-                newTickets,
-                inProgressTickets,
-                resolvedTickets,
-                all.stream().filter(p -> p.getStatus() == Status.CLOSED).count()
-        };
-        // Diagramme priorité : on ignore les tickets CLOSED
-        long[] ticketsByPriority = {
-                all.stream().filter(p -> p.getPriority() == Priority.LOW && p.getStatus() != Status.CLOSED).count(),
-                all.stream().filter(p -> p.getPriority() == Priority.MEDIUM && p.getStatus() != Status.CLOSED).count(),
-                all.stream().filter(p -> p.getPriority() == Priority.HIGH && p.getStatus() != Status.CLOSED).count(),
-                all.stream().filter(p -> p.getPriority() == Priority.URGENT && p.getStatus() != Status.CLOSED).count()
-        };
+        for (Problem p : all) {
+            Status s = p.getStatus();
+            boolean notClosed = s != Status.CLOSED;
+            if (notClosed) {
+                totalTickets++;
+                if (s == Status.OPEN)        newTickets++;
+                if (s == Status.IN_PROGRESS) { inProgressTickets++; inProgressList.add(p); }
+                if (s == Status.RESOLVED)    { resolvedTickets++;    resolvedPendingList.add(p); }
+                if (p.getPriority() == Priority.LOW)    pLow++;
+                if (p.getPriority() == Priority.MEDIUM) pMedium++;
+                if (p.getPriority() == Priority.HIGH)   pHigh++;
+                if (p.getPriority() == Priority.URGENT) pUrgent++;
+            } else {
+                closedTickets++;
+            }
+        }
 
-        List<Long> ticketsByStatusList = Arrays.stream(ticketsByStatus).boxed().toList();
+        Comparator<Problem> byDateDesc = (p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt());
+        inProgressList.sort(byDateDesc);
+        resolvedPendingList.sort(byDateDesc);
+
+        // Tickets non assignés — requête SQL directe, pas de chargement total
+        List<Problem> unassignedList = problemService.getProblems(
+                Specification.where(ProblemSpecification.unassigned())
+                             .and(ProblemSpecification.withStatus(Status.OPEN))
+        );
+        unassignedList.sort(byDateDesc);
+
+        long[] ticketsByStatus   = { newTickets, inProgressTickets, resolvedTickets, closedTickets };
+        long[] ticketsByPriority = { pLow, pMedium, pHigh, pUrgent };
+
+        List<Long> ticketsByStatusList   = Arrays.stream(ticketsByStatus).boxed().toList();
         List<Long> ticketsByPriorityList = Arrays.stream(ticketsByPriority).boxed().toList();
 
         model.addAttribute("currentUser", currentUser);
@@ -240,28 +257,12 @@ public class DashboardController {
         model.addAttribute("allStatuses", Arrays.asList(Status.values()));
         model.addAttribute("selectedStatus", selectedStatus);
 
-        List<Problem> inProgressList = all.stream()
-                .filter(p -> p.getStatus() == Status.IN_PROGRESS)
-                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
-                .collect(Collectors.toList());
-
-        List<Problem> resolvedPendingList = all.stream()
-                .filter(p -> p.getStatus() == Status.RESOLVED)
-                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
-                .collect(Collectors.toList());
-
         model.addAttribute("inProgressList",       inProgressList.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("inProgressTotal",      (long) inProgressList.size());
         model.addAttribute("resolvedPendingList",  resolvedPendingList.stream().limit(5).collect(Collectors.toList()));
         model.addAttribute("resolvedPendingTotal", (long) resolvedPendingList.size());
-
-        List<Problem> unassignedList = StreamSupport
-                .stream(problemService.getProblems().spliterator(), false)
-                .filter(p -> p.getTechnician() == null && p.getStatus() == Status.OPEN)
-                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
-                .collect(Collectors.toList());
-        model.addAttribute("unassignedList",  unassignedList.stream().limit(5).collect(Collectors.toList()));
-        model.addAttribute("unassignedTotal", (long) unassignedList.size());
+        model.addAttribute("unassignedList",       unassignedList.stream().limit(5).collect(Collectors.toList()));
+        model.addAttribute("unassignedTotal",      (long) unassignedList.size());
 
         model.addAttribute("module", "dashboard");
 

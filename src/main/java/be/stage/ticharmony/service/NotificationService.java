@@ -50,20 +50,14 @@ public class NotificationService {
         repo.markAllReadByUserAndProblem(user, problem);
     }
 
+    @Transactional
     public void markAssignmentNotificationsRead(User user, Problem problem) {
-        repo.findByUserAndProblemAndTypeAndViewedFalse(user, problem, NotificationType.ASSIGNED_TO_PROBLEM)
-                .forEach(n -> {
-                    n.setViewed(true);
-                    repo.save(n);
-                });
+        repo.markReadByUserAndProblemAndType(user, problem, NotificationType.ASSIGNED_TO_PROBLEM);
     }
 
+    @Transactional
     public void markReadForProblem(User user, Problem problem, NotificationType type) {
-        repo.findByUserAndProblemAndTypeAndViewedFalse(user, problem, type)
-                .forEach(n -> {
-                    n.setViewed(true);
-                    repo.save(n);
-                });
+        repo.markReadByUserAndProblemAndType(user, problem, type);
     }
 
     public void notifyOnce(User user, Problem problem, NotificationType type) {

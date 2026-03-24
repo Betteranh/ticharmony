@@ -558,6 +558,7 @@
                 <button id="notifToggle"
                         class="nh-notif-btn"
                         th:classappend="${notifications != null and notifications.size() > 0} ? ' has-notif' : ''"
+                        th:unless="${hideNotifications}"
                         type="button"
                         title="Notifications">
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

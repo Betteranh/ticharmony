@@ -4,6 +4,7 @@ import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.repository.ProblemRepository;
 import be.stage.ticharmony.repository.UserRepository;
 import be.stage.ticharmony.service.CommentService;
+import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.NotificationService;
 import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class CommentController {
     private UserService userService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private MailService mailService;
 
     @PostMapping("/problems/{problemId}/comments")
     public String addComment(@PathVariable Long problemId,
@@ -41,7 +44,7 @@ public class CommentController {
             throw new UsernameNotFoundException("Identifiants invalides");
         }
 
-        commentService.addComment(problem, author, content.trim());
+        Comment comment = commentService.addComment(problem, author, content.trim());
 
         // Notifications NEW_COMMENT : uniquement le technicien assigné et le client du ticket
         User technician = problem.getTechnician();
@@ -53,6 +56,7 @@ public class CommentController {
         if (client != null && client.getRole() == UserRole.CLIENT
                 && !client.getId().equals(author.getId())) {
             notificationService.notifyOnce(client, problem, NotificationType.NEW_COMMENT);
+            mailService.sendNewCommentEmail(problem, comment);
         }
 
         return "redirect:/problems/" + problemId;

@@ -221,6 +221,65 @@
         .status-active   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
         .status-inactive { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br); }
 
+        /* ── Modal ── */
+        .modal-backdrop {
+            display: none; position: fixed; inset: 0;
+            background: rgba(15,23,42,.45); backdrop-filter: blur(3px);
+            z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-backdrop.open { display: flex; }
+        .modal {
+            background: var(--white); border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(15,23,42,.2);
+            padding: 2rem; width: 100%; max-width: 440px; margin: 1rem;
+            animation: fadeUp .25s ease;
+        }
+        .modal-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem; font-weight: 800; color: var(--text);
+            margin-bottom: .35rem;
+        }
+        .modal-sub { font-size: .82rem; color: var(--text-2); margin-bottom: 1.5rem; line-height: 1.5; }
+        .modal-footer { display: flex; gap: .75rem; margin-top: 1.5rem; }
+        .modal-cancel {
+            flex: 1; padding: .8rem; border-radius: 10px;
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--text-2); font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .88rem; font-weight: 600; cursor: pointer;
+            transition: background .15s;
+        }
+        .modal-cancel:hover { background: var(--border); }
+        .modal-submit {
+            flex: 2; padding: .8rem; border-radius: 10px;
+            background: var(--blue); border: none; color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .88rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 14px rgba(37,99,235,.25);
+            transition: background .15s;
+        }
+        .modal-submit:hover { background: var(--blue-dk); }
+
+        /* ── Send credentials button ── */
+        .btn-send-creds {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: .7rem 1.2rem; border-radius: 10px;
+            background: var(--green-bg); border: 1px solid var(--green-br);
+            color: var(--green); font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .85rem; font-weight: 700; cursor: pointer;
+            transition: background .15s; width: 100%; justify-content: center;
+            margin-top: .75rem;
+        }
+        .btn-send-creds:hover { background: #dcfce7; }
+
+        /* ── Success banner ── */
+        .success-banner {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--green-bg); border: 1px solid var(--green-br);
+            border-radius: 10px; padding: .85rem 1rem;
+            font-size: .85rem; color: var(--green); font-weight: 600;
+            margin-top: .75rem;
+        }
+
         /* ── Animations ── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(12px); }
@@ -333,41 +392,22 @@
                     <input type="hidden" th:field="*{login}"/>
                 </div>
 
-                <!-- Sécurité -->
-                <div class="section-label" style="margin-top:1.5rem;">Sécurité</div>
-                <div class="info-banner">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706"
-                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                <!-- Envoyer identifiants -->
+                <div th:if="${credentialsSent}" class="success-banner" style="margin-bottom:1rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
                     </svg>
-                    <div class="info-banner-text">
-                        <strong>Mot de passe optionnel</strong> — laissez vide pour conserver le mot de passe actuel.
-                    </div>
+                    Identifiants envoyés avec succès.
                 </div>
-                <div class="field">
-                    <label for="password" class="fc-label">Nouveau mot de passe de connexion</label>
-                    <div class="pw-wrap">
-                        <input type="password" id="password" th:field="*{password}"
-                               autocomplete="new-password"
-                               placeholder="••••••••" class="fc-input"/>
-                        <button type="button" class="pw-toggle" onclick="togglePw()">
-                            <svg id="eyeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="field" style="margin-top:.5rem;">
-                    <label for="profileManagementPassword" class="fc-label">Nouveau mot de passe de gestion des profils</label>
-                    <input type="password" id="profileManagementPassword"
-                           name="profileManagementPassword"
-                           autocomplete="new-password"
-                           placeholder="••••••••" class="fc-input"/>
-                    <div class="fc-hint">Protège l'accès à la gestion des profils. Laissez vide pour conserver le mot de passe actuel.</div>
-                </div>
+                <button type="button" class="btn-send-creds" onclick="openModal()" style="margin-bottom:1rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    Envoyer les identifiants par email
+                </button>
 
                 <!-- Buttons -->
                 <div class="btn-row">
@@ -499,21 +539,90 @@
 
     </div>
 
+    <!-- ── Modal identifiants ── -->
+    <div class="modal-backdrop" id="credsModal" onclick="closeOnBackdrop(event)">
+        <div class="modal">
+            <div class="modal-title">Envoyer les identifiants</div>
+            <div class="modal-sub">
+                Définissez les mots de passe à envoyer au client. Au moins un des deux champs doit être rempli.
+            </div>
+            <form th:action="@{'/partners/' + ${user.id} + '/send-credentials'}" method="post"
+                  onsubmit="return validateCredsForm()">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div id="modalError" style="display:none;font-size:.82rem;color:#dc2626;margin-bottom:.75rem;font-weight:600;">
+                    Veuillez renseigner au moins un mot de passe.
+                </div>
+                <div class="field">
+                    <label class="fc-label">Mot de passe de connexion</label>
+                    <div class="pw-wrap">
+                        <input type="password" name="newPassword" id="modalPw"
+                               placeholder="••••••••" class="fc-input"
+                               autocomplete="new-password"/>
+                        <button type="button" class="pw-toggle" onclick="toggleModalPw()">
+                            <svg id="modalEyeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="fc-label">Mot de passe de gestion des profils</label>
+                    <div class="pw-wrap">
+                        <input type="password" name="newProfilePassword" id="modalProfilePw"
+                               placeholder="••••••••" class="fc-input"
+                               autocomplete="new-password"/>
+                        <button type="button" class="pw-toggle" onclick="toggleModalProfilePw()">
+                            <svg id="modalProfileEyeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="fc-hint">Protège l'accès à la gestion des profils employés.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-cancel" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="modal-submit">Envoyer l'email</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 
 <th:block layout:fragment="scripts">
 <script>
 /*<![CDATA[*/
-function togglePw() {
-    var input = document.getElementById('password');
-    var icon  = document.getElementById('eyeIcon');
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-    } else {
-        input.type = 'password';
-        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+function openModal()  { document.getElementById('credsModal').classList.add('open'); }
+function closeModal() { document.getElementById('credsModal').classList.remove('open'); }
+function closeOnBackdrop(e) { if (e.target === document.getElementById('credsModal')) closeModal(); }
+function validateCredsForm() {
+    var pw  = document.getElementById('modalPw').value.trim();
+    var ppw = document.getElementById('modalProfilePw').value.trim();
+    if (!pw && !ppw) {
+        document.getElementById('modalError').style.display = 'block';
+        return false;
     }
+    return true;
+}
+function toggleModalPw() {
+    var i = document.getElementById('modalPw');
+    var icon = document.getElementById('modalEyeIcon');
+    i.type = i.type === 'password' ? 'text' : 'password';
+    icon.innerHTML = i.type === 'text'
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+        : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+function toggleModalProfilePw() {
+    var i = document.getElementById('modalProfilePw');
+    var icon = document.getElementById('modalProfileEyeIcon');
+    i.type = i.type === 'password' ? 'text' : 'password';
+    icon.innerHTML = i.type === 'text'
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+        : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
 }
 /*]]>*/
 </script>

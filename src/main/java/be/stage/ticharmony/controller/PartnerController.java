@@ -2,6 +2,7 @@ package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.model.UserRole;
+import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,11 +19,13 @@ public class PartnerController {
 
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Autowired
-    public PartnerController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    public PartnerController(UserService userService, BCryptPasswordEncoder passwordEncoder, MailService mailService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     @GetMapping
@@ -36,12 +39,14 @@ public class PartnerController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editPartnerForm(@PathVariable Long id, Model model) {
+    public String editPartnerForm(@PathVariable Long id, Model model,
+                                  @RequestParam(defaultValue = "false") boolean credentialsSent) {
         User partner = userService.getUser(id);
         if (partner == null) {
             return "redirect:/partners";
         }
         model.addAttribute("user", partner);
+        model.addAttribute("credentialsSent", credentialsSent);
         return "formEditPartner";
     }
 
@@ -73,6 +78,26 @@ public class PartnerController {
 
         userService.updateUser(existing);
         return "redirect:/partners";
+    }
+
+    @PostMapping("/{id}/send-credentials")
+    public String sendCredentials(@PathVariable Long id,
+                                  @RequestParam(required = false) String newPassword,
+                                  @RequestParam(required = false) String newProfilePassword) {
+        User user = userService.getUser(id);
+        if (user == null) return "redirect:/partners";
+
+        if (newPassword != null && !newPassword.isBlank()) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
+        if (newProfilePassword != null && !newProfilePassword.isBlank()) {
+            user.setProfileManagementPassword(passwordEncoder.encode(newProfilePassword));
+        }
+        userService.updateUser(user);
+
+        mailService.sendWelcomeCredentialsEmail(user, newPassword, newProfilePassword);
+
+        return "redirect:/partners/edit/" + id + "?credentialsSent=true";
     }
 
     @PostMapping("/{id}/toggle")

@@ -264,11 +264,11 @@
         ════════════════════════════════════════ */
         .admin-stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: .7rem;
             margin-bottom: 1.5rem;
         }
-        @media (max-width: 900px) { .admin-stats { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .admin-stats { grid-template-columns: repeat(2, 1fr); } }
 
         .astat-card {
             background: var(--white);
@@ -906,7 +906,8 @@
                 <div th:if="${countUnassigned > 0}" class="astat-hint" style="color:var(--amber);">Action requise</div>
             </a>
 
-            <a th:href="@{/problems(status='RESOLVED')}" data-stat-status="RESOLVED" class="astat-card"
+            <a th:if="${currentUser.role.name() == 'ADMIN'}"
+               th:href="@{/problems(status='RESOLVED')}" data-stat-status="RESOLVED" class="astat-card"
                th:classappend="${countResolved > 0} ? ' astat-success' : ' astat-neutral'">
                 <div class="astat-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"

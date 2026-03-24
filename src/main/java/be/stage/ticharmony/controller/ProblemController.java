@@ -1,13 +1,19 @@
 package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.*;
+import be.stage.ticharmony.repository.ProblemSpecification;
 import be.stage.ticharmony.service.CommentService;
+import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.NotificationService;
 import be.stage.ticharmony.service.ProblemService;
 import be.stage.ticharmony.service.UserProfileService;
 import be.stage.ticharmony.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,6 +49,9 @@ public class ProblemController {
     @Autowired
     private UserProfileService userProfileService;
 
+    @Autowired
+    private MailService mailService;
+
     /**
      * Prise en charge → IN_PROGRESS puis affiche le formulaire
      */
@@ -64,6 +73,7 @@ public class ProblemController {
             // Notifier le client
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
                 notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+                mailService.sendTicketInProgressEmail(problem);
             }
             return "redirect:/problems/" + id;
         }
@@ -74,6 +84,7 @@ public class ProblemController {
             service.updateProblem(problem);
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
                 notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+                mailService.sendTicketInProgressEmail(problem);
             }
         }
 
@@ -97,15 +108,19 @@ public class ProblemController {
             problem.setStatus(Status.RESOLVED);
             service.updateProblem(problem);
 
+            List<User> admins = userService.getUsersByRole(UserRole.ADMIN);
+
             // 1) on notifie tous les ADMIN
-            userService.getUsersByRole(UserRole.ADMIN).forEach(admin ->
-                    notificationService.notify(admin,
-                            problem,
-                            NotificationType.PROBLEM_CLOSED)
-            );
+            admins.forEach(admin -> notificationService.notify(admin, problem, NotificationType.PROBLEM_CLOSED));
 
             // 2) on marque la notif "ASSIGNED_TO_PROBLEM" comme lue
             notificationService.markAssignmentNotificationsRead(current, problem);
+
+            // 3) email au client + admins pour validation
+            if (problem.getUser() != null) {
+                mailService.sendTicketResolvedEmail(problem.getUser(), problem);
+            }
+            admins.forEach(admin -> mailService.sendTicketResolvedEmail(admin, problem));
         }
         // L'admin reste sur le détail pour pouvoir clôturer directement
         if (current.getRole() == UserRole.ADMIN) {
@@ -152,6 +167,7 @@ public class ProblemController {
             // Notifier le client que son dossier est clôturé
             if (problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
                 notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_CLOSED);
+                mailService.sendTicketClosedEmail(problem);
             }
             // Notifier le technicien que son travail est officiellement validé
             if (problem.getTechnician() != null) {
@@ -192,156 +208,127 @@ public class ProblemController {
     ) {
         User currentUser = userService.findByLogin(authentication.getName());
 
-        // 1. Récupérer tous les tickets selon le rôle
-        Iterable<Problem> allProblems;
+        // 1. Spec de base selon le rôle
+        Specification<Problem> baseSpec;
         if (currentUser.getRole() == UserRole.CLIENT) {
             Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
-            if (profileId != null) {
-                UserProfile activeProfile = userProfileService.findById(profileId).orElse(null);
-                if (activeProfile != null && activeProfile.getUser().getId().equals(currentUser.getId())) {
-                    allProblems = service.getProblemsByUserProfile(activeProfile);
-                    model.addAttribute("activeProfile", activeProfile);
-                } else {
-                    allProblems = service.getProblemsByUser(currentUser);
-                }
+            UserProfile activeProfile = profileId != null ? userProfileService.findById(profileId).orElse(null) : null;
+            if (activeProfile != null && activeProfile.getUser().getId().equals(currentUser.getId())) {
+                baseSpec = ProblemSpecification.forProfile(activeProfile);
+                model.addAttribute("activeProfile", activeProfile);
             } else {
-                allProblems = service.getProblemsByUser(currentUser);
+                baseSpec = ProblemSpecification.forUser(currentUser);
             }
         } else if (currentUser.getRole() == UserRole.MEMBER) {
-            // MEMBER voit ses tickets assignés + les tickets non assignés
-            allProblems = StreamSupport.stream(service.getProblems().spliterator(), false)
-                    .filter(p -> p.getTechnician() == null
-                            || p.getTechnician().getId().equals(currentUser.getId()))
-                    .collect(Collectors.toList());
+            baseSpec = ProblemSpecification.forMember(currentUser);
         } else {
-            // ADMIN voit tous les tickets
-            allProblems = service.getProblems();
+            baseSpec = Specification.where(null); // ADMIN : tous les tickets
         }
 
-        // 2b. Stats globales (admin/membre uniquement)
-        List<Problem> allList = StreamSupport.stream(allProblems.spliterator(), false).collect(Collectors.toList());
+        // 2. Stats via COUNT queries — aucun objet chargé
         if (currentUser.getRole() != UserRole.CLIENT) {
-            long countActive     = allList.stream().filter(p -> p.getStatus() != Status.CLOSED).count();
-            long countInProgress = allList.stream().filter(p -> p.getStatus() == Status.IN_PROGRESS).count();
-            long countResolved   = allList.stream().filter(p -> p.getStatus() == Status.RESOLVED).count();
-            long countUnassigned = allList.stream().filter(p -> p.getTechnician() == null && p.getStatus() != Status.CLOSED).count();
-            long countUrgent     = allList.stream().filter(p -> p.getPriority() == Priority.URGENT && p.getStatus() != Status.CLOSED).count();
+            long countActive     = service.countProblems(Specification.where(baseSpec).and(ProblemSpecification.notClosed()));
+            long countInProgress = service.countProblems(Specification.where(baseSpec).and(ProblemSpecification.withStatus(Status.IN_PROGRESS)));
+            long countResolved   = service.countProblems(Specification.where(baseSpec).and(ProblemSpecification.withStatus(Status.RESOLVED)));
+            long countUnassigned = service.countProblems(Specification.where(baseSpec).and(ProblemSpecification.notClosed()).and(ProblemSpecification.unassigned()));
+            long countUrgent     = service.countProblems(Specification.where(baseSpec).and(ProblemSpecification.withPriority(Priority.URGENT)).and(ProblemSpecification.notClosed()).and(ProblemSpecification.notResolved()));
             model.addAttribute("countActive",     countActive);
             model.addAttribute("countInProgress", countInProgress);
             model.addAttribute("countResolved",   countResolved);
             model.addAttribute("countUnassigned", countUnassigned);
             model.addAttribute("countUrgent",     countUrgent);
-
-            model.addAttribute("technicianId",  technicianId);
+            model.addAttribute("technicianId",    technicianId);
         }
 
-        // 2. Années/mois disponibles (pour les filtres dropdown)
-        List<Integer> allYears = StreamSupport.stream(allProblems.spliterator(), false)
-                .map(p -> p.getCreatedAt().getYear())
-                .distinct()
-                .sorted(Comparator.reverseOrder())
-                .collect(Collectors.toList());
+        // 3. Spec des filtres actifs (sans technicianId pour les stats technicien)
+        Specification<Problem> filterSpecNoTech = buildFilterSpec(baseSpec, statusFilter, priorityFilter, yearFilter, monthFilter, search, unassigned, null);
+        Specification<Problem> filterSpec       = buildFilterSpec(baseSpec, statusFilter, priorityFilter, yearFilter, monthFilter, search, unassigned, technicianId);
 
-        List<Integer> allMonths;
-        if (yearFilter != null) {
-            allMonths = StreamSupport.stream(allProblems.spliterator(), false)
-                    .filter(p -> p.getCreatedAt().getYear() == yearFilter)
-                    .map(p -> p.getCreatedAt().getMonthValue())
-                    .distinct()
-                    .sorted()
-                    .collect(Collectors.toList());
-        } else {
-            allMonths = StreamSupport.stream(allProblems.spliterator(), false)
-                    .map(p -> p.getCreatedAt().getMonthValue())
-                    .distinct()
-                    .sorted()
-                    .collect(Collectors.toList());
-        }
-
-        // 3. Appliquer les filtres avancés (statut, priorité, année, mois, search)
-        List<Problem> filtered = StreamSupport.stream(allProblems.spliterator(), false)
-                .filter(p -> {
-                    if (statusFilter == null) {
-                        return p.getStatus() != Status.CLOSED;
-                    } else {
-                        return p.getStatus() == statusFilter;
-                    }
-                })
-                .filter(p -> priorityFilter == null || p.getPriority() == priorityFilter)
-                .filter(p -> unassigned == null || !unassigned || p.getTechnician() == null)
-                .filter(p -> technicianId == null || (p.getTechnician() != null && p.getTechnician().getId().equals(technicianId)))
-                .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
-                .filter(p -> monthFilter == null || p.getCreatedAt().getMonthValue() == monthFilter)
-                .filter(p -> {
-                    if (search == null || search.trim().isEmpty()) return true;
-                    String lc = search.toLowerCase();
-                    return (p.getTitle() != null && p.getTitle().toLowerCase().contains(lc))
-                            || (p.getCategory() != null && p.getCategory().toLowerCase().contains(lc))
-                            || (p.getTicketUserInfo() != null && (
-                            (p.getTicketUserInfo().getFirstName() + " " + p.getTicketUserInfo().getLastName()).toLowerCase().contains(lc)
-                                    || (p.getTicketUserInfo().getEmail() != null && p.getTicketUserInfo().getEmail().toLowerCase().contains(lc))
-                    ))
-                            || (p.getUser() != null && p.getUser().getNomEntreprise() != null && p.getUser().getNomEntreprise().toLowerCase().contains(lc));
-                })
-                .sorted(Comparator.comparing(Problem::getCreatedAt).reversed())
-                .collect(Collectors.toList());
-
-        // Stats techniciens adaptées aux filtres actifs
+        // 4. Stats techniciens + années/mois : liste filtrée sans filtre technicien
         if (currentUser.getRole() != UserRole.CLIENT) {
-            // Si un technicien est sélectionné dans la sidebar, recalculer sans ce filtre
-            // pour que tous les techniciens restent visibles avec leurs compteurs relatifs
-            List<Problem> techStatsSource = filtered;
-            if (technicianId != null) {
-                techStatsSource = allList.stream()
-                        .filter(p -> statusFilter == null ? p.getStatus() != Status.CLOSED : p.getStatus() == statusFilter)
-                        .filter(p -> priorityFilter == null || p.getPriority() == priorityFilter)
-                        .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
-                        .filter(p -> monthFilter == null || p.getCreatedAt().getMonthValue() == monthFilter)
-                        .collect(Collectors.toList());
-            }
-            List<TechnicianStatsDTO> allTechStats = service.getTechnicianStats(techStatsSource, currentUser);
+            List<Problem> techStatsList = service.getProblems(filterSpecNoTech);
+            List<TechnicianStatsDTO> allTechStats = service.getTechnicianStats(techStatsList, currentUser);
             long maxTechCount = allTechStats.stream().mapToLong(TechnicianStatsDTO::getTicketCount).max().orElse(1);
             model.addAttribute("allTechStats", allTechStats);
             model.addAttribute("maxTechCount", maxTechCount);
+
+            List<Integer> allYears = techStatsList.stream()
+                    .map(p -> p.getCreatedAt().getYear()).distinct()
+                    .sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+            List<Integer> allMonths = techStatsList.stream()
+                    .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
+                    .map(p -> p.getCreatedAt().getMonthValue()).distinct()
+                    .sorted().collect(Collectors.toList());
+            model.addAttribute("allYears", allYears);
+            model.addAttribute("allMonths", allMonths);
+        } else {
+            List<Problem> clientList = service.getProblems(baseSpec);
+            List<Integer> allYears = clientList.stream()
+                    .map(p -> p.getCreatedAt().getYear()).distinct()
+                    .sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+            List<Integer> allMonths = clientList.stream()
+                    .filter(p -> yearFilter == null || p.getCreatedAt().getYear() == yearFilter)
+                    .map(p -> p.getCreatedAt().getMonthValue()).distinct()
+                    .sorted().collect(Collectors.toList());
+            model.addAttribute("allYears", allYears);
+            model.addAttribute("allMonths", allMonths);
         }
 
-        // 4. Pagination (page = 1-based pour l'utilisateur)
-        int totalProblems = filtered.size();
-        int totalPages = (int) Math.ceil((double) totalProblems / size);
-        int currentPage = Math.max(1, Math.min(page, totalPages == 0 ? 1 : totalPages));
-        int start = (currentPage - 1) * size;
-        int end = Math.min(start + size, totalProblems);
-        List<Problem> pageList = filtered.subList(start, end);
+        // 5. Pagination SQL — seulement {size} enregistrements chargés
+        int currentPage = Math.max(1, page);
+        PageRequest pageable = PageRequest.of(currentPage - 1, size, Sort.by("createdAt").descending());
+        Page<Problem> pageResult = service.getProblems(filterSpec, pageable);
 
-        // 5. Affichage "1-10 sur XX"
-        model.addAttribute("pageStart", totalProblems == 0 ? 0 : start + 1);
-        model.addAttribute("pageEnd", end);
-        model.addAttribute("currentPage", currentPage);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("totalProblems", totalProblems);
+        int totalProblems = (int) pageResult.getTotalElements();
+        int totalPages    = pageResult.getTotalPages() == 0 ? 1 : pageResult.getTotalPages();
+        currentPage       = Math.min(currentPage, totalPages);
+        int pageStart     = totalProblems == 0 ? 0 : (currentPage - 1) * size + 1;
+        int pageEnd       = Math.min(currentPage * size, totalProblems);
 
-        // 7. Attributs pour la vue
-        model.addAttribute("problems", pageList);
-        model.addAttribute("allStatuses", Status.values());
-        model.addAttribute("selectedStatus", statusFilter);
-        model.addAttribute("allPriorities", Priority.values());
+        model.addAttribute("pageStart",    pageStart);
+        model.addAttribute("pageEnd",      pageEnd);
+        model.addAttribute("currentPage",  currentPage);
+        model.addAttribute("totalPages",   totalPages);
+        model.addAttribute("totalProblems",totalProblems);
+        model.addAttribute("problems",     pageResult.getContent());
+        model.addAttribute("allStatuses",  Status.values());
+        model.addAttribute("selectedStatus",   statusFilter);
+        model.addAttribute("allPriorities",    Priority.values());
         model.addAttribute("selectedPriority", priorityFilter);
-        model.addAttribute("allYears", allYears);
-        model.addAttribute("selectedYear", yearFilter);
-        model.addAttribute("allMonths", allMonths);
+        model.addAttribute("selectedYear",  yearFilter);
         model.addAttribute("selectedMonth", monthFilter);
-        model.addAttribute("search", search);
-        model.addAttribute("unassigned", unassigned);
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("module", "problems");
-
-        model.addAttribute("nextPage", Math.min(currentPage + 1, totalPages)); // protection débordement
-        model.addAttribute("prevPage", Math.max(currentPage - 1, 1)); // protection
+        model.addAttribute("search",        search);
+        model.addAttribute("unassigned",    unassigned);
+        model.addAttribute("currentUser",   currentUser);
+        model.addAttribute("module",        "problems");
+        model.addAttribute("nextPage", Math.min(currentPage + 1, totalPages));
+        model.addAttribute("prevPage", Math.max(currentPage - 1, 1));
 
 
         return "listProblems";
     }
 
+
+    private Specification<Problem> buildFilterSpec(
+            Specification<Problem> base,
+            Status statusFilter, Priority priorityFilter,
+            Integer yearFilter, Integer monthFilter,
+            String search, Boolean unassigned, Long technicianId) {
+
+        Specification<Problem> spec = Specification.where(base);
+        if (statusFilter != null) {
+            spec = spec.and(ProblemSpecification.withStatus(statusFilter));
+        } else {
+            spec = spec.and(ProblemSpecification.notClosed());
+        }
+        if (priorityFilter != null)                    spec = spec.and(ProblemSpecification.withPriority(priorityFilter));
+        if (Boolean.TRUE.equals(unassigned))           spec = spec.and(ProblemSpecification.unassigned());
+        if (technicianId != null)                      spec = spec.and(ProblemSpecification.byTechnician(technicianId));
+        if (yearFilter != null && monthFilter != null) spec = spec.and(ProblemSpecification.inMonth(yearFilter, monthFilter));
+        else if (yearFilter != null)                   spec = spec.and(ProblemSpecification.inYear(yearFilter));
+        if (search != null && !search.trim().isEmpty()) spec = spec.and(ProblemSpecification.matchesSearch(search));
+        return spec;
+    }
 
     private int priorityOrder(Priority p) {
         return switch (p) {
@@ -477,22 +464,24 @@ public class ProblemController {
             }
 
             // notification NEW_PROBLEM pour tous les admins
-            userService.getAllUsers().stream()
-                    .filter(u -> u.getRole() == UserRole.ADMIN)
-                    .forEach(admin ->
-                            notificationService.notify(admin, formProblem, NotificationType.NEW_PROBLEM)
-                    );
+            List<User> adminsForNotif = userService.getUsersByRole(UserRole.ADMIN);
+            adminsForNotif.forEach(admin -> {
+                notificationService.notify(admin, formProblem, NotificationType.NEW_PROBLEM);
+                mailService.sendNewProblemEmail(admin, formProblem);
+            });
 
             // Si pas de technicien assigné : notifier tous les members qu'une demande est disponible
             if (formProblem.getTechnician() == null) {
-                userService.getUsersByRole(UserRole.MEMBER).forEach(member ->
-                        notificationService.notify(member, formProblem, NotificationType.NEW_PROBLEM)
-                );
+                userService.getUsersByRole(UserRole.MEMBER).forEach(member -> {
+                    notificationService.notify(member, formProblem, NotificationType.NEW_PROBLEM);
+                    mailService.sendNewProblemEmail(member, formProblem);
+                });
             }
 
             // Notifier le technicien s'il y en a un
             if (formProblem.getTechnician() != null) {
                 notificationService.notify(formProblem.getTechnician(), formProblem, NotificationType.ASSIGNED_TO_PROBLEM);
+                mailService.sendAssignedEmail(formProblem.getTechnician(), formProblem);
             }
 
             // Rediriger vers la page de confirmation pour les nouveaux tickets
@@ -527,13 +516,17 @@ public class ProblemController {
 
                 techChanged = true;
 
-                // 1. Marquer l'ancienne notif comme lue
+                // 1. Marquer l'ancienne notif comme lue + email réassignation
                 if (oldTech != null) {
                     notificationService.markAssignmentNotificationsRead(oldTech, existing);
+                    if (newTech != null) {
+                        mailService.sendReassignedEmail(oldTech, existing);
+                    }
                 }
-                // 2. Notifier le nouveau technicien
+                // 2. Notifier le nouveau technicien + email assignation
                 if (newTech != null) {
                     notificationService.notify(newTech, existing, NotificationType.ASSIGNED_TO_PROBLEM);
+                    mailService.sendAssignedEmail(newTech, existing);
                 }
                 // 3. Changer le technicien assigné
                 existing.setTechnician(newTech);
@@ -543,6 +536,7 @@ public class ProblemController {
                 if (oldTech != null) {
                     notificationService.notify(oldTech, existing, NotificationType.TICKET_REASSIGNED);
                     notificationService.markAssignmentNotificationsRead(oldTech, existing);
+                    mailService.sendReassignedEmail(oldTech, existing);
                 }
                 existing.setTechnician(null);
             }
@@ -740,6 +734,7 @@ public class ProblemController {
             if (oldTech != null && !oldTech.getId().equals(newTech.getId())) {
                 notificationService.notify(oldTech, problem, NotificationType.TICKET_REASSIGNED);
                 notificationService.markAssignmentNotificationsRead(oldTech, problem);
+                mailService.sendReassignedEmail(oldTech, problem);
             }
 
             // 3) assigner le nouveau technicien + priorité
@@ -757,11 +752,13 @@ public class ProblemController {
             // 5) notifier le nouveau technicien (sauf si c'est l'admin lui-même)
             if (!newTech.getId().equals(admin.getId())) {
                 notificationService.notify(newTech, problem, NotificationType.ASSIGNED_TO_PROBLEM);
+                mailService.sendAssignedEmail(newTech, problem);
             }
 
             // 6) notifier le client que son ticket est pris en charge
             if (wasOpen && problem.getUser() != null && problem.getUser().getRole() == UserRole.CLIENT) {
                 notificationService.notify(problem.getUser(), problem, NotificationType.TICKET_IN_PROGRESS);
+                mailService.sendTicketInProgressEmail(problem);
             }
         }
         return "redirect:/problems/" + id;

@@ -5,6 +5,9 @@ import be.stage.ticharmony.repository.ProblemRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,10 +33,24 @@ public class ProblemService {
      * @return Un Iterable contenant tous les problèmes
      * en cas de problème régler le toute seule
      */
-    public Iterable<Problem> getProblems() {
-        Iterable<Problem> problems = repository.findAll();
-        log.debug("Get Problems call" + problems.spliterator().getExactSizeIfKnown());
-        return problems;
+    public List<Problem> getProblems() {
+        return repository.findAll();
+    }
+
+    public List<Problem> getProblemsForMember(User technician) {
+        return repository.findByTechnicianNullOrTechnician(technician);
+    }
+
+    public List<Problem> getProblems(Specification<Problem> spec) {
+        return repository.findAll(spec);
+    }
+
+    public Page<Problem> getProblems(Specification<Problem> spec, Pageable pageable) {
+        return repository.findAll(spec, pageable);
+    }
+
+    public long countProblems(Specification<Problem> spec) {
+        return repository.count(spec);
     }
 
     /**
@@ -159,19 +176,15 @@ public class ProblemService {
     ) {
         Map<Long, TechnicianStatsDTO> stats = new HashMap<>();
         for (Problem p : problems) {
-            if (p.getTechnician() != null) {
-                Long techId = p.getTechnician().getId();
-                String name = (currentUser.getRole() == UserRole.MEMBER && currentUser.getId().equals(techId))
-                        ? "Moi"
-                        : p.getTechnician().getFirstname() + " " + p.getTechnician().getLastname();
-                stats.computeIfAbsent(techId, id -> new TechnicianStatsDTO(techId, name, 0))
-                        .setTicketCount(stats.getOrDefault(techId, new TechnicianStatsDTO(techId, name, 0)).getTicketCount() + 1);
-            }
+            if (p.getTechnician() == null) continue;
+            User tech = p.getTechnician();
+            Long techId = tech.getId();
+            String name = (currentUser.getRole() == UserRole.MEMBER && currentUser.getId().equals(techId))
+                    ? "Moi"
+                    : tech.getFirstname() + " " + tech.getLastname();
+            TechnicianStatsDTO dto = stats.computeIfAbsent(techId, id -> new TechnicianStatsDTO(id, name, 0));
+            dto.setTicketCount(dto.getTicketCount() + 1);
         }
-        // Corrige l’incrémentation (car computeIfAbsent + getTicketCount +1 peut écraser, donc on fait plus simple)
-        stats.values().forEach(ts -> ts.setTicketCount(
-                problems.stream().filter(p -> p.getTechnician() != null && p.getTechnician().getId().equals(ts.getTechnicianId())).count()
-        ));
         return new ArrayList<>(stats.values());
     }
 }

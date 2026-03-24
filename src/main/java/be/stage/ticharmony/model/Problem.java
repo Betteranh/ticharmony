@@ -13,7 +13,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "problems")
+@Table(name = "problems", indexes = {
+        @Index(name = "idx_problem_user",       columnList = "user_id"),
+        @Index(name = "idx_problem_technician", columnList = "technician_id"),
+        @Index(name = "idx_problem_status",     columnList = "status"),
+        @Index(name = "idx_problem_priority",   columnList = "priority"),
+        @Index(name = "idx_problem_created_at", columnList = "created_at"),
+        @Index(name = "idx_problem_status_tech",columnList = "status,technician_id")
+})
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

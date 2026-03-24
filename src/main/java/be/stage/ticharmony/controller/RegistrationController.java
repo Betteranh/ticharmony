@@ -2,6 +2,7 @@ package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.model.UserRole;
+import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,11 +25,13 @@ public class RegistrationController {
 
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Autowired
-    public RegistrationController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    public RegistrationController(UserService userService, BCryptPasswordEncoder passwordEncoder, MailService mailService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     @GetMapping
@@ -37,7 +41,8 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model) {
+    public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model,
+                               @RequestParam(defaultValue = "false") boolean sendCredentials) {
         if (bindingResult.hasErrors()) {
             return "authentication/registration";
         }
@@ -62,9 +67,12 @@ public class RegistrationController {
             }
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getProfileManagementPassword() != null && !user.getProfileManagementPassword().isBlank()) {
-            user.setProfileManagementPassword(passwordEncoder.encode(user.getProfileManagementPassword()));
+        String rawPassword = user.getPassword();
+        String rawProfilePassword = user.getProfileManagementPassword();
+
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        if (rawProfilePassword != null && !rawProfilePassword.isBlank()) {
+            user.setProfileManagementPassword(passwordEncoder.encode(rawProfilePassword));
         }
         user.setCreated_at(LocalDateTime.now());
         user.setActiveFrom(LocalDate.now());
@@ -76,6 +84,11 @@ public class RegistrationController {
         }
 
         userService.addUser(user);
+
+        if (sendCredentials) {
+            mailService.sendWelcomeCredentialsEmail(user, rawPassword, rawProfilePassword);
+        }
+
         return "redirect:/partners?registrationSuccess=true";
     }
 }

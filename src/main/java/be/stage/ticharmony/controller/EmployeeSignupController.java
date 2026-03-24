@@ -1,6 +1,7 @@
 package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.User;
+import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,11 +23,13 @@ import java.time.LocalDateTime;
 public class EmployeeSignupController {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Autowired
-    public EmployeeSignupController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    public EmployeeSignupController(UserService userService, BCryptPasswordEncoder passwordEncoder, MailService mailService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     @GetMapping
@@ -35,7 +39,8 @@ public class EmployeeSignupController {
     }
 
     @PostMapping
-    public String registerEmployee(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model) {
+    public String registerEmployee(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model,
+                                   @RequestParam(defaultValue = "false") boolean sendCredentials) {
         // Vérifier les erreurs de validation
         if (bindingResult.hasErrors()) {
             return "authentication/employeeSignup";
@@ -63,7 +68,8 @@ public class EmployeeSignupController {
         }
 
         // Encoder le mot de passe
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String rawPassword = user.getPassword();
+        user.setPassword(passwordEncoder.encode(rawPassword));
         // Initialiser created_at et activeFrom
         user.setCreated_at(LocalDateTime.now());
         user.setActiveFrom(LocalDate.now());
@@ -75,6 +81,11 @@ public class EmployeeSignupController {
         user.setLangue("fr");
 
         userService.addUser(user);
+
+        if (sendCredentials) {
+            mailService.sendWelcomeCredentialsEmail(user, rawPassword, null);
+        }
+
         return "redirect:/employees";
     }
 }

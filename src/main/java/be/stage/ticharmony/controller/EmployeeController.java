@@ -2,6 +2,7 @@ package be.stage.ticharmony.controller;
 
 import be.stage.ticharmony.model.User;
 import be.stage.ticharmony.model.UserRole;
+import be.stage.ticharmony.service.MailService;
 import be.stage.ticharmony.service.UserService;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,10 @@ import java.util.stream.Collectors;
 public class EmployeeController {
     @Autowired
     private UserService userService;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private MailService mailService;
 
     @GetMapping
     public String listEmployees(Model model) {
@@ -46,13 +48,30 @@ public class EmployeeController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editEmployeeForm(@PathVariable Long id, Model model) {
+    public String editEmployeeForm(@PathVariable Long id, Model model,
+                                   @RequestParam(defaultValue = "false") boolean credentialsSent) {
         User employee = userService.getUser(id);
         if (employee == null) {
             return "redirect:/employees";
         }
         model.addAttribute("user", employee);
+        model.addAttribute("credentialsSent", credentialsSent);
         return "formEditEmployee";
+    }
+
+    @PostMapping("/{id}/send-credentials")
+    public String sendCredentials(@PathVariable Long id,
+                                  @RequestParam(required = false) String newPassword) {
+        User user = userService.getUser(id);
+        if (user == null) return "redirect:/employees";
+
+        if (newPassword != null && !newPassword.isBlank()) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userService.updateUser(user);
+        }
+
+        mailService.sendWelcomeCredentialsEmail(user, newPassword, null);
+        return "redirect:/employees/edit/" + id + "?credentialsSent=true";
     }
 
     @PostMapping("/edit/{id}")

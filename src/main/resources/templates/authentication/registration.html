@@ -162,6 +162,20 @@
             margin-bottom: 1.25rem;
         }
 
+        /* ── Send credentials checkbox ── */
+        .send-creds-box {
+            display: flex; align-items: flex-start; gap: 10px;
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            border-radius: 10px; padding: .85rem 1rem;
+            margin-bottom: 1.25rem; cursor: pointer;
+        }
+        .send-creds-box input[type="checkbox"] {
+            width: 17px; height: 17px; flex-shrink: 0;
+            margin-top: 1px; accent-color: var(--green); cursor: pointer;
+        }
+        .send-creds-label { font-size: .85rem; color: #15803d; line-height: 1.5; cursor: pointer; }
+        .send-creds-label strong { font-weight: 700; }
+
         /* ── Buttons ── */
         .btn-row { display: flex; gap: .75rem; margin-top: 1.5rem; flex-wrap: wrap; }
         .btn-submit {
@@ -363,6 +377,15 @@
                     </svg>
                     <span th:text="${errorMessage}"></span>
                 </div>
+
+                <!-- Send credentials -->
+                <label class="send-creds-box">
+                    <input type="checkbox" name="sendCredentials" value="true"/>
+                    <div class="send-creds-label">
+                        <strong>Envoyer les identifiants par email</strong><br>
+                        Le client recevra son identifiant et ses mots de passe sur l'adresse email renseignée.
+                    </div>
+                </label>
 
                 <!-- Buttons -->
                 <div class="btn-row">

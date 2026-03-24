@@ -69,6 +69,7 @@ public class ProfileController {
         model.addAttribute("managementError", "1".equals(manageError));
         model.addAttribute("openManage", "1".equals(openManage));
         model.addAttribute("setupMode", lock != null && "1".equals(setup));
+        model.addAttribute("hideNotifications", true);
         return "profile/selectProfile";
     }
 

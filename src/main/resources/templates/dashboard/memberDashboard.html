@@ -230,8 +230,7 @@
             <div class="stat-icon" style="background:var(--green-bg); border:1px solid var(--green-br);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
                      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
+                    <polyline points="20 6 9 17 4 12"/>
                 </svg>
             </div>
             <div class="stat-body">
@@ -320,63 +319,6 @@
         </div>
     </div>
 
-    <!-- ── En attente de confirmation client ── -->
-    <div class="ticket-section fu d4">
-        <div class="ticket-section-header">
-            <div>
-                <div class="section-heading">En attente de confirmation client</div>
-                <div class="section-sub">Résolutions soumises — le client doit confirmer ou rouvrir</div>
-            </div>
-            <a th:if="${resolvedPendingTotal > 0}" th:href="@{/problems(status='RESOLVED')}" class="view-all-link"
-               th:text="${resolvedPendingTotal > 5} ? 'Tout voir (' + ${resolvedPendingTotal} + ') →' : 'Tout voir →'"></a>
-        </div>
-
-        <div th:if="${#lists.isEmpty(resolvedPendingList)}" class="empty-state">
-            Aucune résolution en attente de confirmation
-            <div style="margin-top:.5rem;">
-                <a th:href="@{/problems}" style="font-size:.8rem;font-weight:700;color:var(--blue);text-decoration:none;">
-                    Voir tous les tickets →
-                </a>
-            </div>
-        </div>
-
-        <div th:if="${!#lists.isEmpty(resolvedPendingList)}">
-            <th:block th:each="problem : ${resolvedPendingList}">
-                <a th:href="@{'/problems/' + ${problem.id}}"
-                   class="ticket-row"
-                   style="--row-accent:#16a34a;">
-                    <div style="flex:1;min-width:0;">
-                        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.22rem;">
-                            <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
-                            <span class="ticket-title" th:text="${problem.title}"></span>
-                        </div>
-                        <div class="ticket-meta">
-                            <span class="ticket-date"
-                                  th:attr="data-date=${#temporals.format(problem.createdAt, 'yyyy-MM-dd')}"
-                                  th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
-                            <span>·</span>
-                            <span th:text="${problem.user != null and problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user?.nomEntreprise}"></span>
-                            <th:block th:if="${problem.ticketUserInfo != null}">
-                                <span>·</span>
-                                <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
-                            </th:block>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'URGENT'}" class="badge b-urgent">⚠ Critique</span>
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'HIGH'}"   class="badge b-high">↑ Élevée</span>
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'MEDIUM'}" class="badge b-medium">Normale</span>
-                        <span th:if="${problem.priority != null and problem.priority.name() == 'LOW'}"    class="badge b-low">Faible</span>
-                    </div>
-                    <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                    </svg>
-                </a>
-            </th:block>
-        </div>
-    </div>
-
     <!-- ── Tickets disponibles (non assignés) ── -->
     <div class="ticket-section fu d5">
         <div class="ticket-section-header">
@@ -431,6 +373,49 @@
                 </a>
             </th:block>
         </div>
+    </div>
+
+    <!-- ── En attente de confirmation client ── -->
+    <div th:if="${!#lists.isEmpty(resolvedPendingList)}" class="ticket-section fu d5"
+         style="opacity:.75;">
+        <div class="ticket-section-header" style="background:var(--bg);">
+            <div>
+                <div class="section-heading" style="font-size:.82rem;color:var(--text-2);">
+                    En attente de confirmation client
+                    <span style="font-size:.75rem;font-weight:600;color:var(--text-3);margin-left:.4rem;"
+                          th:text="'(' + ${resolvedPendingTotal} + ')'"></span>
+                </div>
+                <div class="section-sub">Le client doit valider ou rouvrir — aucune action requise de votre part</div>
+            </div>
+            <a th:if="${resolvedPendingTotal > 5}" th:href="@{/problems(status='RESOLVED')}" class="view-all-link"
+               th:text="'Tout voir (' + ${resolvedPendingTotal} + ') →'"></a>
+        </div>
+        <th:block th:each="problem : ${resolvedPendingList}">
+            <a th:href="@{'/problems/' + ${problem.id}}"
+               class="ticket-row" style="--row-accent:#16a34a;">
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.22rem;">
+                        <span class="ticket-id">#<span th:text="${problem.id}"></span></span>
+                        <span class="ticket-title" th:text="${problem.title}"></span>
+                    </div>
+                    <div class="ticket-meta">
+                        <span class="ticket-date"
+                              th:attr="data-date=${#temporals.format(problem.createdAt, 'yyyy-MM-dd')}"
+                              th:text="${#temporals.format(problem.createdAt, 'dd/MM/yyyy')}"></span>
+                        <span>·</span>
+                        <span th:text="${problem.user != null and problem.user.role.name() == 'ADMIN'} ? 'Tic Harmony' : ${problem.user?.nomEntreprise}"></span>
+                        <th:block th:if="${problem.ticketUserInfo != null}">
+                            <span>·</span>
+                            <span th:text="${problem.ticketUserInfo.firstName + ' ' + problem.ticketUserInfo.lastName}"></span>
+                        </th:block>
+                    </div>
+                </div>
+                <svg class="ticket-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </a>
+        </th:block>
     </div>
 
 </div>

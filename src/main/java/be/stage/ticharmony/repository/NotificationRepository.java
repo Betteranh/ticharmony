@@ -37,4 +37,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Modifying
     @Query("UPDATE Notification n SET n.viewed = true WHERE n.user = ?1 AND n.problem = ?2 AND n.viewed = false")
     int markAllReadByUserAndProblem(User user, Problem problem);
+
+    /** UPDATE en batch pour un type précis sur un ticket */
+    @Modifying
+    @Query("UPDATE Notification n SET n.viewed = true WHERE n.user = ?1 AND n.problem = ?2 AND n.type = ?3 AND n.viewed = false")
+    int markReadByUserAndProblemAndType(User user, Problem problem, NotificationType type);
 }
