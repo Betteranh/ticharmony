@@ -361,7 +361,9 @@
                 </thead>
                 <tbody>
                     <tr th:each="partner : ${partners}" class="partner-row"
-                        th:classappend="${!partner.active} ? ' inactive' : ''">
+                        th:classappend="${!partner.active} ? ' inactive' : ''"
+                        th:data-href="@{'/partners/' + ${partner.id}}"
+                        style="cursor:pointer">
 
                         <!-- Entreprise + contact -->
                         <td>
@@ -427,7 +429,7 @@
                         <!-- Actions (admin) -->
                         <td class="center" sec:authorize="hasRole('ADMIN')">
                             <div style="display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;">
-                                <a th:href="@{'/partners/edit/' + ${partner.id}}" class="act-edit">
+                                <a th:href="@{'/partners/' + ${partner.id}}" class="act-edit">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -578,7 +580,16 @@ function setFilter(f) {
 
 window.filterPartners = function(query) { applyFilters(); };
 
-document.addEventListener('DOMContentLoaded', applyFilters);
+document.addEventListener('DOMContentLoaded', function() {
+    applyFilters();
+
+    // Lignes cliquables → fiche partenaire (exclure actions et liens)
+    document.getElementById('partnersTable').addEventListener('click', function(e) {
+        if (e.target.closest('a, button, form')) return;
+        var row = e.target.closest('.partner-row');
+        if (row && row.dataset.href) window.location.href = row.dataset.href;
+    });
+});
 
 function applyFilters() {
     var q = (document.getElementById('partnerSearch').value || '').toLowerCase().trim();

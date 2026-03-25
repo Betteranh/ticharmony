@@ -1,10 +1,13 @@
 package be.stage.ticharmony.controller;
 
-import be.stage.ticharmony.model.User;
-import be.stage.ticharmony.model.UserRole;
+import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.service.MailService;
+import be.stage.ticharmony.service.PartnerSheetService;
+import be.stage.ticharmony.service.ProblemService;
 import be.stage.ticharmony.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,13 +23,113 @@ public class PartnerController {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final MailService mailService;
+    private final PartnerSheetService sheetService;
+    private final ProblemService problemService;
 
     @Autowired
-    public PartnerController(UserService userService, BCryptPasswordEncoder passwordEncoder, MailService mailService) {
+    public PartnerController(UserService userService, BCryptPasswordEncoder passwordEncoder,
+                             MailService mailService, PartnerSheetService sheetService,
+                             ProblemService problemService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.mailService = mailService;
+        this.sheetService = sheetService;
+        this.problemService = problemService;
     }
+
+    // ─── Detail page ────────────────────────────────────────────────────────
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+    public String partnerDetail(@PathVariable Long id, Model model, Authentication auth) {
+        User partner = userService.getUser(id);
+        if (partner == null || partner.getRole() != UserRole.CLIENT) {
+            return "redirect:/partners";
+        }
+        User currentUser = userService.findByLogin(auth.getName());
+        PartnerSheet sheet = sheetService.getOrCreateSheet(partner);
+        List<Problem> tickets = (List<Problem>) problemService.getProblemsByUser(partner);
+
+        model.addAttribute("partner", partner);
+        model.addAttribute("sheet", sheet);
+        model.addAttribute("tickets", tickets);
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("module", "partners");
+        return "partnerDetail";
+    }
+
+    // ─── Sheet: notes ───────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/sheet/notes")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String saveNotes(@PathVariable Long id, @RequestParam(required = false) String notes) {
+        User partner = userService.getUser(id);
+        if (partner != null) {
+            sheetService.saveNotes(sheetService.getOrCreateSheet(partner), notes);
+        }
+        return "redirect:/partners/" + id + "?tab=fiche";
+    }
+
+    // ─── Sheet: sections ────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/sheet/sections")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String addSection(@PathVariable Long id,
+                             @RequestParam(required = false) String icon,
+                             @RequestParam String title) {
+        User partner = userService.getUser(id);
+        if (partner != null && title != null && !title.isBlank()) {
+            sheetService.addSection(sheetService.getOrCreateSheet(partner), icon, title);
+        }
+        return "redirect:/partners/" + id + "?tab=fiche";
+    }
+
+    @PostMapping("/{id}/sheet/sections/{sectionId}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String editSection(@PathVariable Long id, @PathVariable Long sectionId,
+                              @RequestParam(required = false) String icon,
+                              @RequestParam String title) {
+        sheetService.findSection(sectionId).ifPresent(s -> sheetService.updateSection(s, icon, title));
+        return "redirect:/partners/" + id + "?tab=fiche";
+    }
+
+    @PostMapping("/{id}/sheet/sections/{sectionId}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteSection(@PathVariable Long id, @PathVariable Long sectionId) {
+        sheetService.findSection(sectionId).ifPresent(sheetService::deleteSection);
+        return "redirect:/partners/" + id + "?tab=fiche";
+    }
+
+    // ─── Sheet: entries ─────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/sheet/sections/{sectionId}/entries")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String addEntry(@PathVariable Long id, @PathVariable Long sectionId,
+                           @RequestParam String label,
+                           @RequestParam(required = false) String value,
+                           @RequestParam(defaultValue = "false") boolean password) {
+        sheetService.findSection(sectionId).ifPresent(s -> sheetService.addEntry(s, label, value, password));
+        return "redirect:/partners/" + id + "?tab=fiche";
+    }
+
+    @PostMapping("/{id}/sheet/entries/{entryId}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String editEntry(@PathVariable Long id, @PathVariable Long entryId,
+                            @RequestParam String label,
+                            @RequestParam(required = false) String value,
+                            @RequestParam(defaultValue = "false") boolean password) {
+        sheetService.findEntry(entryId).ifPresent(e -> sheetService.updateEntry(e, label, value, password));
+        return "redirect:/partners/" + id + "?tab=fiche";
+    }
+
+    @PostMapping("/{id}/sheet/entries/{entryId}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteEntry(@PathVariable Long id, @PathVariable Long entryId) {
+        sheetService.findEntry(entryId).ifPresent(sheetService::deleteEntry);
+        return "redirect:/partners/" + id + "?tab=fiche";
+    }
+
+    // ─── List ────────────────────────────────────────────────────────────────
 
     @GetMapping
     public String listPartners(Model model) {
