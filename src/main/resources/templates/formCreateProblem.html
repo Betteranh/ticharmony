@@ -278,7 +278,7 @@
         <p class="page-sub">Notre équipe vous répond dans les 24 heures.</p>
     </div>
 
-    <form method="post" th:action="@{/problems/save}" th:object="${problem}">
+    <form id="problemForm" method="post" th:action="@{/problems/save}" th:object="${problem}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
         <!-- 1. Qu'est-ce qui se passe ? -->
@@ -448,7 +448,7 @@
         });
 
         /* ── Validation au submit ── */
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('problemForm').addEventListener('submit', function(e) {
             var ok = true;
 
             // Valider les champs texte requis

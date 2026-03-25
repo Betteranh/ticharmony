@@ -38,7 +38,7 @@ public class MailService {
         String ticketUrl = baseUrl + "/problems/" + problem.getId();
         String subject = "Nouveau ticket #" + problem.getId() + " — " + problem.getTitle();
 
-        String entreprise = problem.getUser() != null ? escape(problem.getUser().getNomEntreprise()) : "";
+        String entreprise = safeEntreprise(problem);
         String demandeur = "";
         if (problem.getUserProfile() != null) {
             demandeur = escape(problem.getUserProfile().getDisplayName());
@@ -87,7 +87,7 @@ public class MailService {
         String ticketUrl = baseUrl + "/problems/" + problem.getId();
         String subject = "Ticket #" + problem.getId() + " assigné — " + problem.getTitle();
 
-        String entreprise = problem.getUser() != null ? escape(problem.getUser().getNomEntreprise()) : "";
+        String entreprise = safeEntreprise(problem);
         String demandeur = "";
         if (problem.getUserProfile() != null) {
             demandeur = escape(problem.getUserProfile().getDisplayName());
@@ -240,6 +240,19 @@ public class MailService {
             return problem.getTicketUserInfo().getEmail();
         }
         return null;
+    }
+
+    // ─── Utilitaires internes ─────────────────────────────────────────────────
+
+    /**
+     * Retourne le nom d'entreprise du créateur du ticket.
+     * Utilise Hibernate.isInitialized() pour éviter un LazyInitializationException
+     * dans les méthodes @Async (thread sans session Hibernate).
+     */
+    private String safeEntreprise(Problem problem) {
+        if (problem.getUser() == null) return "";
+        if (!org.hibernate.Hibernate.isInitialized(problem.getUser())) return "";
+        return escape(problem.getUser().getNomEntreprise());
     }
 
     // ─── Envoi ───────────────────────────────────────────────────────────────

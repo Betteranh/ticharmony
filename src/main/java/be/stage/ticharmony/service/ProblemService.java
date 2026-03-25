@@ -2,27 +2,27 @@ package be.stage.ticharmony.service;
 
 import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.repository.ProblemRepository;
-import lombok.Data;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Slf4j
-@Data
+@RequiredArgsConstructor
 @Service
 public class ProblemService {
 
-    @Autowired
-    private ProblemRepository repository;
+    private final ProblemRepository repository;
 
-    public ProblemService(ProblemRepository repository) {
-        this.repository = repository;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * Récupère tous les problèmes
@@ -68,14 +68,24 @@ public class ProblemService {
     }
 
     /**
-     * Crée un nouveau problème
+     * Crée un nouveau problème.
+     * user et userProfile sont résolus dans la même transaction via find() pour
+     * garantir des entités managées et éviter toute violation FK.
      *
-     * @param e Un nouveau problème (sans id)
-     * @return Le problème créé avec son id généré
+     * @param e             Le problème à persister
+     * @param userId        L'id de l'utilisateur créateur
+     * @param userProfileId L'id du profil actif (CLIENT), ou null
      */
-    public Problem createProblem(Problem e) {
+    @Transactional
+    public Problem createProblem(Problem e, Long userId, Long userProfileId) {
+        e.setUser(entityManager.getReference(User.class, userId));
+        if (userProfileId != null) {
+            e.setUserProfile(entityManager.find(UserProfile.class, userProfileId));
+        } else {
+            e.setUserProfile(null);
+        }
         Problem savedProblem = repository.save(e);
-        log.debug("Problem created with id " + savedProblem.getId());
+        log.debug("Problem created with id {}", savedProblem.getId());
         return savedProblem;
     }
 

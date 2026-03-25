@@ -2,11 +2,15 @@ package be.stage.ticharmony.service;
 
 import be.stage.ticharmony.model.*;
 import be.stage.ticharmony.repository.ProblemRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,8 +26,16 @@ class ProblemServiceTest {
     @Mock
     ProblemRepository repository;
 
+    @Mock
+    EntityManager entityManager;
+
     @InjectMocks
     ProblemService service;
+
+    @BeforeEach
+    void injectEntityManager() {
+        ReflectionTestUtils.setField(service, "entityManager", entityManager);
+    }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
@@ -63,9 +75,13 @@ class ProblemServiceTest {
         Problem saved = new Problem();
         saved.setId(5L);
         saved.setTitle("Écran noir");
+
+        User userRef = new User();
+        userRef.setId(1L);
+        when(entityManager.getReference(User.class, 1L)).thenReturn(userRef);
         when(repository.save(input)).thenReturn(saved);
 
-        Problem result = service.createProblem(input);
+        Problem result = service.createProblem(input, 1L, null);
 
         assertThat(result.getId()).isEqualTo(5L);
         verify(repository).save(input);

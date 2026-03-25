@@ -1066,7 +1066,7 @@
                              th:style="${problem.status != null and problem.status.name() == 'OPEN'} ? '--row-accent:#2563eb' :
                                        (${problem.status != null and problem.status.name() == 'IN_PROGRESS'} ? '--row-accent:#d97706' :
                                        (${problem.status != null and problem.status.name() == 'RESOLVED'} ? '--row-accent:#16a34a' : '--row-accent:var(--border)'))"
-                             th:onclick="'window.location.href=\'' + @{/problems/{id}(id=${problem.id})} + '\';'">
+                             th:data-href="@{/problems/{id}(id=${problem.id})}">
 
                             <div class="tr-inner">
 
@@ -1116,7 +1116,7 @@
                                     </div>
 
                                     <!-- Details row: technician · age · actions -->
-                                    <div class="tr-details-row" onclick="event.stopPropagation()">
+                                    <div class="tr-details-row">
                                         <span class="tmi">
                                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                                             <span th:if="${problem.technician != null}">
@@ -1130,8 +1130,7 @@
                                               th:attr="data-ts=${#temporals.format(problem.createdAt, 'yyyy-MM-dd') + 'T' + #temporals.format(problem.createdAt, 'HH:mm:ss')}">—</span>
                                         <!-- Admin actions -->
                                         <div sec:authorize="hasRole('ADMIN')" class="flex items-center gap-1">
-                                            <a th:href="@{'/problems/update/' + ${problem.id}}" class="act-btn edit" title="Modifier"
-                                               onclick="event.stopPropagation()">
+                                            <a th:href="@{'/problems/update/' + ${problem.id}}" class="act-btn edit" title="Modifier">
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -1230,6 +1229,8 @@
 
 </div>
 
+<th:block layout:fragment="scripts">
+
 <!-- ════════════════════════════════════════
      MODAL DE CONFIRMATION (ADMIN)
 ════════════════════════════════════════ -->
@@ -1252,7 +1253,6 @@
     </div>
 </div>
 
-<th:block layout:fragment="scripts">
     <script>
         /*<![CDATA[*/
 
@@ -1337,6 +1337,22 @@
 
             /* ── Event delegation ── */
             document.addEventListener('click', function(e) {
+                // Boutons clôturer / valider
+                var confirmBtn = e.target.closest('[data-confirm]');
+                if (confirmBtn) {
+                    e.stopPropagation();
+                    var isValidate = confirmBtn.dataset.confirm === 'validate';
+                    var form = confirmBtn.closest('form');
+                    openConfirmModal(form, isValidate);
+                    return;
+                }
+                // Ticket row navigation — exclut les boutons d'action et les liens
+                var row = e.target.closest('.ticket-row');
+                if (row && !e.target.closest('.act-btn, .admin-close-form, a')) {
+                    var href = row.dataset.href;
+                    if (href) window.location.href = href;
+                    return;
+                }
                 // Pagination
                 var pag = e.target.closest('.pag-btn');
                 if (pag) {

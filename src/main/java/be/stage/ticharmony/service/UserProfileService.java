@@ -31,6 +31,10 @@ public class UserProfileService {
         return repo.findById(id);
     }
 
+    public boolean existsById(Long id) {
+        return repo.existsById(id);
+    }
+
     public UserProfile create(User user, String displayName, String color) {
         UserProfile profile = new UserProfile();
         profile.setUser(user);

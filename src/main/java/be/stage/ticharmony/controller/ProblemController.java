@@ -10,6 +10,7 @@ import be.stage.ticharmony.service.ProblemService;
 import be.stage.ticharmony.service.UserProfileService;
 import be.stage.ticharmony.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequestMapping("/problems")
 public class ProblemController {
@@ -136,7 +138,7 @@ public class ProblemController {
         Problem problem = service.getProblem(id);
         User current = userService.findByLogin(auth.getName());
 
-        // Vérifie que c’est bien le technicien assigné et que le ticket est IN_PROGRESS
+        // Vérifie que c'est bien le technicien assigné et que le ticket est IN_PROGRESS
         if (problem == null
                 || !current.equals(problem.getTechnician())
                 || problem.getStatus() != Status.IN_PROGRESS) {
@@ -145,7 +147,7 @@ public class ProblemController {
 
         model.addAttribute("problem", problem);
         model.addAttribute("module", "problems");
-        return "formResolveProblem"; // ton template
+        return "formResolveProblem";
     }
 
     /**
@@ -303,7 +305,6 @@ public class ProblemController {
         model.addAttribute("nextPage", Math.min(currentPage + 1, totalPages));
         model.addAttribute("prevPage", Math.max(currentPage - 1, 1));
 
-
         return "listProblems";
     }
 
@@ -430,13 +431,22 @@ public class ProblemController {
             formProblem.setPriority(Priority.MEDIUM);
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User currentUser = userService.findByLogin(auth.getName());
-            formProblem.setUser(currentUser);
 
-            // Rattacher le profil actif si CLIENT
+            // Profil actif (CLIENT uniquement) — on vérifie que le profil existe encore en DB
+            // (la session peut contenir un ID obsolète si la DB a été reconstruite)
+            Long profileId = null;
             if (currentUser.getRole() == UserRole.CLIENT) {
-                Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
-                if (profileId != null) {
-                    userProfileService.findById(profileId).ifPresent(formProblem::setUserProfile);
+                Long sessionProfileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
+                if (sessionProfileId != null) {
+                    boolean valid = userProfileService.findById(sessionProfileId)
+                        .map(p -> p.getUser().getId().equals(currentUser.getId()))
+                        .orElse(false);
+                    if (valid) {
+                        profileId = sessionProfileId;
+                    } else {
+                        // Profil introuvable ou volé : nettoyer la session
+                        session.removeAttribute(ProfileController.SESSION_PROFILE_KEY);
+                    }
                 }
             }
 
@@ -447,12 +457,12 @@ public class ProblemController {
                 formProblem.setStatus(Status.IN_PROGRESS);
             }
 
-            service.createProblem(formProblem);
-            long newId = formProblem.getId(); // on capture l'id avant la suite
+            service.createProblem(formProblem, currentUser.getId(), profileId);
+            formProblem.setUser(currentUser); // remplace le proxy Hibernate par l'entité chargée pour les méthodes @Async
+            long newId = formProblem.getId();
 
             // Persister email/téléphone sur le profil CLIENT pour pré-remplissage futur
             if (currentUser.getRole() == UserRole.CLIENT) {
-                Long profileId = (Long) session.getAttribute(ProfileController.SESSION_PROFILE_KEY);
                 if (profileId != null && formProblem.getTicketUserInfo() != null) {
                     userProfileService.findById(profileId).ifPresent(profile -> {
                         String email = formProblem.getTicketUserInfo().getEmail();
@@ -464,12 +474,14 @@ public class ProblemController {
                 }
             }
 
-            // notification NEW_PROBLEM pour tous les admins
+            // notification NEW_PROBLEM pour les autres admins (pas le créateur)
             List<User> adminsForNotif = userService.getUsersByRole(UserRole.ADMIN);
-            adminsForNotif.forEach(admin -> {
-                notificationService.notify(admin, formProblem, NotificationType.NEW_PROBLEM);
-                mailService.sendNewProblemEmail(admin, formProblem);
-            });
+            adminsForNotif.stream()
+                    .filter(admin -> !admin.getId().equals(currentUser.getId()))
+                    .forEach(admin -> {
+                        notificationService.notify(admin, formProblem, NotificationType.NEW_PROBLEM);
+                        mailService.sendNewProblemEmail(admin, formProblem);
+                    });
 
             // Si pas de technicien assigné : notifier tous les members qu'une demande est disponible
             if (formProblem.getTechnician() == null) {
@@ -485,7 +497,6 @@ public class ProblemController {
                 mailService.sendAssignedEmail(formProblem.getTechnician(), formProblem);
             }
 
-            // Rediriger vers la page de confirmation pour les nouveaux tickets
             return "redirect:/problems/" + newId + "/confirmation";
 
         } else {
@@ -628,7 +639,7 @@ public class ProblemController {
     }
 
     /**
-     * Retourne le statut actuel d’un ticket (polling JSON pour le client).
+     * Retourne le statut actuel d'un ticket (polling JSON pour le client).
      */
     @GetMapping("/{id}/status")
     @ResponseBody
@@ -639,7 +650,7 @@ public class ProblemController {
     }
 
     /**
-     * Retourne les commentaires d’un ticket après un ID donné (polling JSON).
+     * Retourne les commentaires d'un ticket après un ID donné (polling JSON).
      */
     @GetMapping("/{id}/comments")
     @ResponseBody
@@ -666,7 +677,7 @@ public class ProblemController {
     }
 
     /**
-     * Détail d’un ticket + liste des techniciens pour l’admin.
+     * Détail d'un ticket + liste des techniciens pour l'admin.
      * avec bouton Prise en charge / Valider.
      */
     @GetMapping("/{id}")
@@ -679,7 +690,7 @@ public class ProblemController {
 
         User current = userService.findByLogin(auth.getName());
 
-        // Pour commentaires :
+        // Pour commentaires :
         List<Comment> comments = commentService.getCommentsByProblem(problem);
         model.addAttribute("comments", comments);
 
@@ -702,9 +713,8 @@ public class ProblemController {
             List<User> technicians = new java.util.ArrayList<>(userService.getUsersByRole(UserRole.MEMBER));
             technicians.add(current); // l'admin peut s'assigner lui-même
 
-            // Map<Long, Long> techId → nombre de tickets (hors CLOSED) — une seule requête SQL
             java.util.Map<Long, Long> techTicketCounts = service.countOpenTicketsByTechnicians(technicians);
-            // Garantir une entrée à 0 pour les techniciens sans ticket (GROUP BY les exclut sinon → NPE OGNL)
+            // Garantir une entrée à 0 pour les techniciens sans ticket
             technicians.forEach(t -> techTicketCounts.putIfAbsent(t.getId(), 0L));
 
             model.addAttribute("technicians", technicians);
@@ -716,7 +726,7 @@ public class ProblemController {
     }
 
     /**
-     * Assignation d’un technicien — accessible *seulement* aux ADMIN.
+     * Assignation d'un technicien — accessible *seulement* aux ADMIN.
      * Notifie le technicien nouvellement assigné.
      */
     @PostMapping("/{id}/assignTechnician")

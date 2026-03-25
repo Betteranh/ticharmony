@@ -523,7 +523,7 @@
                 <!-- Réinitialiser le mot de passe -->
                 <form th:if="${p.active}" th:action="@{/profiles/{id}/remove-password(id=${p.id})}" method="post" style="margin:0;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button type="submit" class="sp-pwd-btn">Réinitialiser</button>
+                    <button type="submit" class="sp-pwd-btn">Réinitialiser le mot de passe</button>
                 </form>
                 <!-- Désactiver (actif) -->
                 <form th:if="${p.active}" th:action="@{/profiles/{id}/deactivate(id=${p.id})}" method="post" style="margin:0;">
