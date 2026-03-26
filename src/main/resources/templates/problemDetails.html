@@ -235,6 +235,17 @@
         }
         @media (max-width: 640px) { .confirm-grid { grid-template-columns: 1fr; } }
 
+        @media (max-width: 600px) {
+            .topbar        { flex-wrap: wrap; gap: .6rem; }
+            .doc-header    { padding: 1.25rem 1.25rem 1rem; }
+            .doc-section   { padding: 1.1rem 1.25rem; }
+        }
+
+        @media (max-width: 420px) {
+            .doc-header  { padding: 1rem; }
+            .doc-section { padding: .9rem 1rem; }
+        }
+
         .btn-yes, .btn-no {
             display: flex; align-items: center; justify-content: center; gap: .5rem;
             padding: .9rem 1rem; border-radius: 10px;

@@ -103,6 +103,10 @@ public class ProblemController {
         Problem problem = service.getProblem(id);
         User current = userService.findByLogin(auth.getName());
 
+        if (problem == null) {
+            return "redirect:/problems";
+        }
+
         if (problem.getStatus() == Status.IN_PROGRESS
                 && current.equals(problem.getTechnician())) {
             problem.setResolution(resolution);

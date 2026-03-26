@@ -6,8 +6,10 @@
 <head>
     <title>Partenaires – TicHarmony</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
         :root {
-            --bg:       #eef2f8;
+            --bg:       #f0f4fb;
             --white:    #ffffff;
             --border:   #dde3ee;
             --text:     #0f172a;
@@ -23,7 +25,10 @@
             --green:    #16a34a;
             --green-bg: #f0fdf4;
             --green-br: #bbf7d0;
+            --amber:    #d97706;
+            --amber-bg: #fffbeb;
             --sh:       0 2px 12px rgba(15,23,42,.07), 0 1px 4px rgba(15,23,42,.04);
+            --sh-md:    0 4px 20px rgba(15,23,42,.09), 0 1px 4px rgba(15,23,42,.04);
         }
 
         body { background: var(--bg) !important; }
@@ -33,6 +38,15 @@
             color: var(--text);
             padding: 2.5rem 0 6rem;
         }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fu { opacity: 0; animation: fadeUp .38s cubic-bezier(.16,1,.3,1) forwards; }
+        .d1 { animation-delay: .04s; }
+        .d2 { animation-delay: .10s; }
+        .d3 { animation-delay: .16s; }
 
         /* ── Toast ── */
         .toast-success {
@@ -54,19 +68,19 @@
         }
         .lp-title {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 2rem; font-weight: 800;
+            font-size: 1.9rem; font-weight: 800;
             letter-spacing: -.03em; color: var(--text);
             display: flex; align-items: center; gap: 10px;
             margin-bottom: .2rem;
         }
         .lp-count {
-            font-size: .78rem; font-weight: 700;
+            font-size: .75rem; font-weight: 700;
             color: var(--blue); background: var(--blue-bg);
             border: 1px solid var(--blue-br);
             border-radius: 99px; padding: .15rem .7rem;
             font-family: 'Nunito', sans-serif;
         }
-        .lp-sub { font-size: .9rem; color: var(--text-2); }
+        .lp-sub { font-size: .88rem; color: var(--text-2); }
 
         .btn-new {
             display: inline-flex; align-items: center; gap: 7px;
@@ -85,32 +99,12 @@
             display: flex; align-items: center; gap: .75rem;
             margin-bottom: 1rem; flex-wrap: wrap;
         }
-        .search-wrap { position: relative; flex: 1; min-width: 180px; }
-        .search-icon {
-            position: absolute; left: 13px; top: 50%;
-            transform: translateY(-50%); color: var(--text-3); pointer-events: none;
-        }
-        .search-input {
-            width: 100%; background: var(--white);
-            border: 1px solid var(--border); border-radius: 11px;
-            color: var(--text); padding: .7rem .7rem .7rem 2.5rem;
-            font-family: 'Nunito', sans-serif; font-size: .9rem; outline: none;
-            box-shadow: var(--sh);
-            transition: border-color .2s, box-shadow .2s;
-            box-sizing: border-box;
-        }
-        .search-input::placeholder { color: var(--text-3); }
-        .search-input:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-        }
-
-        /* ── Filter buttons ── */
+        .filter-group { display: flex; gap: .4rem; flex-shrink: 0; }
         .filter-btn {
-            padding: .3rem .9rem; border-radius: 99px;
+            padding: .4rem .95rem; border-radius: 99px;
             border: 1px solid var(--border);
             background: var(--white); color: var(--text-2);
-            font-family: 'Nunito', sans-serif; font-size: .78rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .78rem; font-weight: 700;
             cursor: pointer; transition: background .15s, border-color .15s, color .15s;
             white-space: nowrap;
         }
@@ -120,6 +114,24 @@
             box-shadow: 0 2px 8px rgba(37,99,235,.3);
         }
         .filter-btn--active:hover { background: var(--blue-h); border-color: var(--blue-h); }
+
+        .search-wrap { position: relative; flex: 1; min-width: 200px; }
+        .search-icon {
+            position: absolute; left: 13px; top: 50%;
+            transform: translateY(-50%); color: var(--text-3); pointer-events: none;
+        }
+        .search-input {
+            width: 100%; background: var(--white);
+            border: 1px solid var(--border); border-radius: 11px;
+            color: var(--text); padding: .65rem .7rem .65rem 2.5rem;
+            font-family: 'Nunito', sans-serif; font-size: .9rem; outline: none;
+            box-shadow: var(--sh); transition: border-color .2s, box-shadow .2s;
+            box-sizing: border-box;
+        }
+        .search-input::placeholder { color: var(--text-3); }
+        .search-input:focus {
+            border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
 
         /* ── Table ── */
         .table-card {
@@ -136,7 +148,7 @@
         .lp-table th {
             padding: .85rem 1rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: .68rem; font-weight: 700;
+            font-size: .67rem; font-weight: 700;
             letter-spacing: .08em; text-transform: uppercase;
             color: var(--text-3); text-align: left; white-space: nowrap;
         }
@@ -151,75 +163,61 @@
         }
         .lp-table tbody tr.partner-row.inactive { opacity: .5; }
         .lp-table tbody tr.partner-row.inactive:hover { background: var(--bg); box-shadow: none; }
-        .lp-table td { padding: .8rem 1rem; vertical-align: middle; }
+        .lp-table td { padding: .85rem 1rem; vertical-align: middle; }
         .lp-table td.center { text-align: center; }
 
-        /* ── Company avatar ── */
+        /* ── Cellule Entreprise ── */
+        .company-cell { display: flex; align-items: center; gap: .75rem; }
         .company-avatar {
-            width: 34px; height: 34px; border-radius: 9px;
-            background: var(--blue-bg); border: 1px solid var(--blue-br);
-            color: var(--blue);
+            width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .72rem; font-weight: 800;
-            text-transform: uppercase; flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .78rem; font-weight: 800;
+            text-transform: uppercase; color: #fff;
         }
+        /* Couleurs avatar par lettre */
+        .av-blue    { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+        .av-violet  { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+        .av-emerald { background: linear-gradient(135deg, #059669, #047857); }
+        .av-amber   { background: linear-gradient(135deg, #d97706, #b45309); }
+        .av-rose    { background: linear-gradient(135deg, #e11d48, #be123c); }
+
+        .company-info {}
         .company-name { font-weight: 700; color: var(--text); font-size: .88rem; }
-        .contact-name { font-size: .78rem; color: var(--text-3); margin-top: 1px; }
-
-        /* ── Login badge ── */
+        .company-meta {
+            display: flex; align-items: center; gap: .4rem; margin-top: 2px; flex-wrap: wrap;
+        }
+        .contact-name { font-size: .75rem; color: var(--text-3); }
         .login-badge {
-            display: inline-flex; align-items: center; gap: 4px;
+            display: inline-flex; align-items: center; gap: 3px;
             background: var(--bg); border: 1px solid var(--border);
-            border-radius: 6px; padding: .22rem .6rem;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: .75rem; font-weight: 600; color: var(--text-2); white-space: nowrap;
+            border-radius: 5px; padding: .1rem .45rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem; font-weight: 500; color: var(--text-3); white-space: nowrap;
         }
 
-        /* ── TVA badge ── */
-        .tva-badge {
-            display: inline-block; background: var(--blue-bg);
-            border: 1px solid var(--blue-br); border-radius: 6px;
-            padding: .18rem .6rem; font-size: .73rem; font-weight: 600;
-            color: var(--blue); font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap;
-        }
-
-        /* ── Email / text ── */
-        .email-link { color: var(--text-2); font-size: .83rem; text-decoration: none; transition: color .15s; }
+        /* ── Adresse / Email / Téléphone ── */
+        .cell-text  { font-size: .83rem; color: var(--text-2); }
+        .email-link { font-size: .83rem; color: var(--text-2); text-decoration: none; transition: color .15s; }
         .email-link:hover { color: var(--blue); }
-        .cell-text { font-size: .83rem; color: var(--text-2); }
 
-        /* ── Status badge ── */
-        .status-active   { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;background:var(--green-bg);color:var(--green);border:1px solid var(--green-br); }
-        .status-inactive { display:inline-flex;align-items:center;gap:4px;padding:.18rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;background:var(--red-bg);color:var(--red);border:1px solid var(--red-br); }
+        /* ── Statut ── */
+        .status-active   { display:inline-flex;align-items:center;gap:4px;padding:.2rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;background:var(--green-bg);color:var(--green);border:1px solid var(--green-br); }
+        .status-inactive { display:inline-flex;align-items:center;gap:4px;padding:.2rem .6rem;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;background:var(--red-bg);color:var(--red);border:1px solid var(--red-br); }
+        .s-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
         /* ── Action buttons ── */
-        .act-toggle-off {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: .28rem .75rem; border-radius: 7px;
-            background: #fef9c3; border: 1px solid #fde047;
-            color: #854d0e; font-size: .78rem; font-weight: 700;
-            font-family: 'Nunito', sans-serif;
-            cursor: pointer; transition: background .15s; white-space: nowrap;
+        .act-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 8px;
+            border: 1px solid var(--border); background: var(--white);
+            color: var(--text-3); cursor: pointer;
+            transition: background .15s, color .15s, border-color .15s;
+            text-decoration: none;
         }
-        .act-toggle-off:hover { background: #fef08a; }
-        .act-toggle-on {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: .28rem .75rem; border-radius: 7px;
-            background: var(--green-bg); border: 1px solid var(--green-br);
-            color: #15803d; font-size: .78rem; font-weight: 700;
-            font-family: 'Nunito', sans-serif;
-            cursor: pointer; transition: background .15s; white-space: nowrap;
-        }
-        .act-toggle-on:hover { background: #dcfce7; }
-        .act-edit {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: .28rem .75rem; border-radius: 7px;
-            background: var(--blue-bg); border: 1px solid var(--blue-br);
-            color: var(--blue); font-size: .78rem; font-weight: 700;
-            text-decoration: none; font-family: 'Nunito', sans-serif;
-            transition: background .15s; white-space: nowrap;
-        }
-        .act-edit:hover { background: var(--blue-br); }
+        .act-btn:hover { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-br); }
+        .act-btn--danger:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-br); }
+        .act-btn--success:hover { background: var(--green-bg); color: var(--green); border-color: var(--green-br); }
+        .act-actions { display: flex; align-items: center; justify-content: center; gap: .35rem; }
 
         /* ── Empty state ── */
         .empty-state { padding: 4rem 1rem; text-align: center; }
@@ -229,19 +227,21 @@
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 1rem;
         }
+        .empty-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--text); margin-bottom: .35rem; }
+        .empty-sub   { font-size: .85rem; color: var(--text-3); }
 
         /* ── Modal ── */
         .modal-backdrop {
-            position: fixed; inset: 0; background: rgba(15,23,42,.45);
-            backdrop-filter: blur(3px);
+            position: fixed; inset: 0; background: rgba(15,23,42,.5);
+            backdrop-filter: blur(6px);
             display: flex; align-items: center; justify-content: center;
             z-index: 9999; opacity: 0; pointer-events: none;
             transition: opacity .18s;
         }
         .modal-backdrop.open { opacity: 1; pointer-events: auto; }
         .modal-box {
-            background: var(--white); border-radius: 18px;
-            box-shadow: 0 20px 60px rgba(15,23,42,.2), 0 4px 16px rgba(15,23,42,.08);
+            background: var(--white); border-radius: 20px;
+            box-shadow: 0 24px 64px rgba(15,23,42,.18);
             padding: 2rem; width: 100%; max-width: 400px; margin: 1rem;
             transform: scale(.95) translateY(8px);
             transition: transform .22s cubic-bezier(.34,1.56,.64,1);
@@ -252,22 +252,17 @@
             display: flex; align-items: center; justify-content: center;
             margin-bottom: 1.1rem;
         }
-        .modal-icon--danger { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-br); }
+        .modal-icon--danger  { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br); }
         .modal-icon--success { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
-        .modal-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.15rem; font-weight: 800; color: var(--text);
-            margin-bottom: .45rem;
-        }
-        .modal-body { font-size: .9rem; color: var(--text-2); line-height: 1.55; margin-bottom: 1.5rem; }
-        .modal-name { font-weight: 700; color: var(--text); }
+        .modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: .45rem; }
+        .modal-body  { font-size: .9rem; color: var(--text-2); line-height: 1.55; margin-bottom: 1.5rem; }
+        .modal-name  { font-weight: 700; color: var(--text); }
         .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; }
         .modal-cancel {
             padding: .6rem 1.15rem; border-radius: 10px;
             border: 1px solid var(--border); background: var(--white);
             color: var(--text-2); font-family: 'Nunito', sans-serif;
-            font-size: .88rem; font-weight: 700; cursor: pointer;
-            transition: background .15s;
+            font-size: .88rem; font-weight: 700; cursor: pointer; transition: background .15s;
         }
         .modal-cancel:hover { background: var(--bg); }
         .modal-confirm--danger {
@@ -285,15 +280,74 @@
         }
         .modal-confirm--success:hover { background: #15803d; }
 
-        /* ── Animations ── */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* ── Pagination ── */
+        .pagination-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: .85rem 1.2rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap; gap: .5rem;
         }
-        .fu { opacity: 0; animation: fadeUp .38s ease forwards; }
-        .d1 { animation-delay: .04s; }
-        .d2 { animation-delay: .10s; }
-        .d3 { animation-delay: .16s; }
+        .pagination-info { font-size: .8rem; color: var(--text-3); }
+        .pagination-controls { display: flex; align-items: center; gap: .3rem; }
+        .page-btn {
+            min-width: 32px; height: 32px; border-radius: 8px; padding: 0 .45rem;
+            border: 1px solid var(--border); background: var(--white);
+            color: var(--text-2); font-family: 'Nunito', sans-serif;
+            font-size: .8rem; font-weight: 700; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: background .12s, border-color .12s, color .12s;
+        }
+        .page-btn:hover:not(:disabled) { background: var(--blue-bg); border-color: var(--blue-br); color: var(--blue); }
+        .page-btn:disabled { opacity: .35; cursor: default; }
+        .page-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; cursor: default; }
+
+        /* ── Tablet: masquer adresse ── */
+        @media (max-width: 860px) {
+            .lp-table th:nth-child(3),
+            .lp-table td:nth-child(3) { display: none; }
+        }
+
+        /* ── Mobile: table → cartes ── */
+        @media (max-width: 600px) {
+            .lp-table thead { display: none; }
+            .lp-table tbody { display: block; }
+
+            .lp-table tbody tr.partner-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                padding: .9rem 1rem;
+                column-gap: .75rem;
+                row-gap: .3rem;
+                border-bottom: 1px solid var(--border);
+                border-radius: 0;
+                cursor: pointer;
+            }
+            .lp-table tbody tr.no-data {
+                display: block;
+            }
+            .lp-table td { padding: 0; border: none; vertical-align: initial; }
+
+            /* Entreprise: toute la largeur, 1ère ligne */
+            .lp-table tbody tr.partner-row td:nth-child(1) { grid-column: 1; grid-row: 1; }
+            /* Statut */
+            .lp-table tbody tr.partner-row td:nth-child(2) { grid-column: 1; grid-row: 2; align-self: center; }
+            /* Adresse: cachée */
+            .lp-table tbody tr.partner-row td:nth-child(3) { display: none; }
+            /* Email */
+            .lp-table tbody tr.partner-row td:nth-child(4) { grid-column: 1; grid-row: 3; }
+            /* Téléphone */
+            .lp-table tbody tr.partner-row td:nth-child(5) { grid-column: 1; grid-row: 4; }
+            /* Actions: colonne droite sur toute la hauteur */
+            .lp-table tbody tr.partner-row td:nth-child(6) { grid-column: 2; grid-row: 1 / 5; align-self: center; }
+
+            .act-actions { flex-direction: column; }
+
+            .company-avatar { width: 34px; height: 34px; border-radius: 8px; font-size: .72rem; }
+            .company-name   { font-size: .85rem; }
+            .email-link, .cell-text { font-size: .78rem; }
+
+            .pagination-bar { flex-direction: column; align-items: flex-start; gap: .6rem; }
+        }
     </style>
 </head>
 
@@ -313,7 +367,7 @@
         <div>
             <div class="lp-title">
                 Partenaires
-                <span class="lp-count" th:text="${activeCount} + ' client(s) actif(s)'">0 client(s)</span>
+                <span class="lp-count" th:text="${activeCount} + ' actif(s)'">0</span>
             </div>
             <div class="lp-sub">Gestion et visualisation de tous les partenaires clients</div>
         </div>
@@ -328,7 +382,7 @@
 
     <!-- Toolbar -->
     <div class="toolbar fu d2">
-        <div style="display:flex;gap:.5rem;flex-shrink:0;">
+        <div class="filter-group">
             <button onclick="setFilter('active')"   id="f-active"   class="filter-btn filter-btn--active">Actifs</button>
             <button onclick="setFilter('inactive')" id="f-inactive" class="filter-btn">Inactifs</button>
         </div>
@@ -350,12 +404,10 @@
                 <thead>
                     <tr>
                         <th>Entreprise</th>
-                        <th>Login</th>
+                        <th>Statut</th>
                         <th>Adresse</th>
                         <th>Email</th>
                         <th>Téléphone</th>
-                        <th>TVA</th>
-                        <th>Statut</th>
                         <th class="center" sec:authorize="hasRole('ADMIN')">Actions</th>
                     </tr>
                 </thead>
@@ -365,26 +417,27 @@
                         th:data-href="@{'/partners/' + ${partner.id}}"
                         style="cursor:pointer">
 
-                        <!-- Entreprise + contact -->
+                        <!-- Entreprise -->
                         <td>
-                            <div style="display:flex;align-items:center;gap:10px;">
-                                <div class="company-avatar"
-                                     th:text="${#strings.length(partner.nomEntreprise) > 0 ? #strings.substring(partner.nomEntreprise, 0, T(java.lang.Math).min(2, #strings.length(partner.nomEntreprise))) : '??'}">AB</div>
-                                <div>
+                            <div class="company-cell">
+                                <div class="company-avatar" th:text="${#strings.length(partner.nomEntreprise) > 0 ? #strings.toUpperCase(#strings.substring(partner.nomEntreprise, 0, 1)) : '?'}">A</div>
+                                <div class="company-info">
                                     <div class="company-name" th:text="${partner.nomEntreprise}">Entreprise</div>
-                                    <div class="contact-name" th:text="${partner.firstname + ' ' + partner.lastname}">Prénom Nom</div>
+                                    <div class="company-meta">
+                                        <span class="contact-name" th:text="${partner.firstname + ' ' + partner.lastname}"></span>
+                                        <span class="login-badge" th:text="${partner.login}"></span>
+                                    </div>
                                 </div>
                             </div>
                         </td>
 
-                        <!-- Login -->
+                        <!-- Statut -->
                         <td>
-                            <span class="login-badge">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                <span th:text="${partner.login}"></span>
+                            <span th:if="${partner.active}" class="status-active">
+                                <span class="s-dot"></span>Actif
+                            </span>
+                            <span th:unless="${partner.active}" class="status-inactive">
+                                <span class="s-dot"></span>Inactif
                             </span>
                         </td>
 
@@ -397,62 +450,37 @@
                         <!-- Email -->
                         <td>
                             <a th:href="'mailto:' + ${partner.email}" class="email-link"
-                               th:text="${partner.email}"></a>
+                               th:text="${partner.email}" onclick="event.stopPropagation()"></a>
                         </td>
 
                         <!-- Téléphone -->
                         <td>
-                            <span class="cell-text"
-                                  th:text="${partner.telephone != null and !#strings.isEmpty(partner.telephone)} ? ${partner.telephone} : '—'"></span>
-                        </td>
-
-                        <!-- TVA -->
-                        <td>
-                            <span th:if="${partner.tva != null and !partner.tva.isEmpty()}"
-                                  class="tva-badge" th:text="${partner.tva}"></span>
-                            <span th:unless="${partner.tva != null and !partner.tva.isEmpty()}"
-                                  style="color:var(--text-3);font-size:.8rem;">—</span>
-                        </td>
-
-                        <!-- Statut -->
-                        <td>
-                            <span th:if="${partner.active}" class="status-active">
-                                <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
-                                Actif
-                            </span>
-                            <span th:unless="${partner.active}" class="status-inactive">
-                                <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor"><circle cx="3" cy="3" r="3"/></svg>
-                                Inactif
-                            </span>
+                            <a th:if="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}"
+                               th:href="'tel:' + ${partner.telephone}" class="email-link"
+                               th:text="${partner.telephone}" onclick="event.stopPropagation()"></a>
+                            <span th:unless="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}"
+                                  class="cell-text">—</span>
                         </td>
 
                         <!-- Actions (admin) -->
                         <td class="center" sec:authorize="hasRole('ADMIN')">
-                            <div style="display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;">
-                                <a th:href="@{'/partners/' + ${partner.id}}" class="act-edit">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    Consulter
+                            <div class="act-actions">
+                                <a th:href="@{'/partners/' + ${partner.id}}"
+                                   class="act-btn" title="Consulter la fiche"
+                                   onclick="event.stopPropagation()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </a>
                                 <form th:action="@{'/partners/' + ${partner.id} + '/toggle'}" method="post"
                                       style="display:inline;" class="toggle-form">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <button type="button"
-                                            th:class="${partner.active} ? 'act-toggle-off' : 'act-toggle-on'"
+                                            th:class="${partner.active} ? 'act-btn act-btn--danger' : 'act-btn act-btn--success'"
                                             th:data-name="${partner.nomEntreprise}"
                                             th:data-active="${partner.active}"
-                                            onclick="openToggleModal(this)">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path th:if="${partner.active}" d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/>
-                                            <path th:if="${partner.active}" d="M12 2v10"/>
-                                            <path th:unless="${partner.active}"
-                                                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        <span th:text="${partner.active} ? 'Désactiver' : 'Activer'"></span>
+                                            onclick="openToggleModal(this); event.stopPropagation()"
+                                            th:title="${partner.active} ? 'Désactiver' : 'Réactiver'">
+                                        <svg th:if="${partner.active}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/><path d="M12 2v10"/></svg>
+                                        <svg th:unless="${partner.active}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     </button>
                                 </form>
                             </div>
@@ -460,40 +488,41 @@
                     </tr>
 
                     <!-- Empty state -->
-                    <tr th:if="${#lists.isEmpty(partners)}" id="no-partners" class="no-data">
-                        <td colspan="8">
+                    <tr th:if="${#lists.isEmpty(partners)}" class="no-data">
+                        <td colspan="6">
                             <div class="empty-state">
                                 <div class="empty-icon">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                                         style="color:var(--blue);">
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                                        <polyline points="9 22 9 12 15 12 15 22"/>
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue);">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                                     </svg>
                                 </div>
-                                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--text);margin-bottom:.35rem;">Aucun partenaire</div>
-                                <div style="font-size:.85rem;color:var(--text-3);">Ajoutez votre premier partenaire avec le bouton ci-dessus.</div>
+                                <div class="empty-title">Aucun partenaire</div>
+                                <div class="empty-sub">Ajoutez votre premier partenaire avec le bouton ci-dessus.</div>
                             </div>
                         </td>
                     </tr>
 
                     <!-- No search results -->
                     <tr id="noResultRow" style="display:none;" class="no-data">
-                        <td colspan="8" style="padding:3rem 1rem;text-align:center;color:var(--text-3);font-size:.88rem;" id="noResultMsg">
+                        <td colspan="4" style="padding:3rem 1rem;text-align:center;color:var(--text-3);font-size:.88rem;" id="noResultMsg">
                             Aucun partenaire dans cette catégorie.
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <!-- Pagination -->
+        <div class="pagination-bar" id="paginationBar" style="display:none;">
+            <span class="pagination-info" id="paginationInfo"></span>
+            <div class="pagination-controls" id="paginationControls"></div>
+        </div>
     </div>
 
-    <!-- ── Modal Toggle ── -->
+    <!-- Modal Toggle -->
     <div id="toggleModal" class="modal-backdrop" onclick="closeToggleModal(event)">
         <div class="modal-box">
             <div id="toggleModalIcon" class="modal-icon modal-icon--danger">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/><path d="M12 2v10"/>
                 </svg>
             </div>
@@ -515,6 +544,23 @@
 <script>
 /*<![CDATA[*/
 
+/* ── Couleur avatar par première lettre ── */
+(function() {
+    var ranges = [
+        [0,4,'av-blue'], [5,9,'av-violet'], [10,14,'av-emerald'],
+        [15,19,'av-amber'], [20,25,'av-rose']
+    ];
+    document.querySelectorAll('.company-avatar').forEach(function(av) {
+        var letter = (av.textContent || '').trim().toUpperCase();
+        var ch = letter.charCodeAt(0) - 65;
+        var cls = 'av-blue';
+        for (var i = 0; i < ranges.length; i++) {
+            if (ch >= ranges[i][0] && ch <= ranges[i][1]) { cls = ranges[i][2]; break; }
+        }
+        av.classList.add(cls);
+    });
+})();
+
 /* ── Toggle modal ── */
 var _toggleForm = null;
 
@@ -522,14 +568,11 @@ function openToggleModal(btn) {
     _toggleForm = btn.closest('form');
     var name   = btn.dataset.name;
     var active = btn.dataset.active === 'true';
-
     document.getElementById('toggleModalName').textContent = name;
-
     var icon    = document.getElementById('toggleModalIcon');
     var title   = document.getElementById('toggleModalTitle');
     var desc    = document.getElementById('toggleModalDesc');
     var confirm = document.getElementById('toggleModalConfirm');
-
     if (active) {
         icon.className    = 'modal-icon modal-icon--danger';
         icon.innerHTML    = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64A9 9 0 1 1 5.64 5.64"/><path d="M12 2v10"/></svg>';
@@ -545,7 +588,6 @@ function openToggleModal(btn) {
         confirm.className = 'modal-confirm--success';
         confirm.textContent = 'Réactiver';
     }
-
     document.getElementById('toggleModal').classList.add('open');
 }
 
@@ -566,11 +608,15 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-/* ── Filter & search ── */
+/* ── Filter, search & pagination ── */
 var currentFilter = 'active';
+var currentPage   = 1;
+var PAGE_SIZE     = 10;
+var _matchedRows  = [];
 
 function setFilter(f) {
     currentFilter = f;
+    currentPage   = 1;
     ['active','inactive'].forEach(function(k) {
         var btn = document.getElementById('f-' + k);
         if (btn) btn.className = 'filter-btn' + (k === f ? ' filter-btn--active' : '');
@@ -578,12 +624,10 @@ function setFilter(f) {
     applyFilters();
 }
 
-window.filterPartners = function(query) { applyFilters(); };
+window.filterPartners = function() { currentPage = 1; applyFilters(); };
 
 document.addEventListener('DOMContentLoaded', function() {
     applyFilters();
-
-    // Lignes cliquables → fiche partenaire (exclure actions et liens)
     document.getElementById('partnersTable').addEventListener('click', function(e) {
         if (e.target.closest('a, button, form')) return;
         var row = e.target.closest('.partner-row');
@@ -592,26 +636,91 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function applyFilters() {
-    var q = (document.getElementById('partnerSearch').value || '').toLowerCase().trim();
-    var rows = document.querySelectorAll('#partnersTable tbody tr.partner-row');
-    var visible = 0;
-    rows.forEach(function(r) {
+    var q    = (document.getElementById('partnerSearch').value || '').toLowerCase().trim();
+    var rows = Array.from(document.querySelectorAll('#partnersTable tbody tr.partner-row'));
+
+    _matchedRows = rows.filter(function(r) {
         var isInactive  = r.classList.contains('inactive');
         var matchFilter = (currentFilter === 'active'   && !isInactive)
                        || (currentFilter === 'inactive' &&  isInactive);
         var matchSearch = !q || r.innerText.toLowerCase().indexOf(q) !== -1;
-        var show = matchFilter && matchSearch;
-        r.style.display = show ? '' : 'none';
-        if (show) visible++;
+        return matchFilter && matchSearch;
     });
+
+    // Hide all data rows first
+    rows.forEach(function(r) { r.style.display = 'none'; });
+
+    // Show only current page slice
+    var start = (currentPage - 1) * PAGE_SIZE;
+    var end   = start + PAGE_SIZE;
+    _matchedRows.slice(start, end).forEach(function(r) { r.style.display = ''; });
+
+    // No-results row
     var noRes = document.getElementById('noResultRow');
     var noMsg = document.getElementById('noResultMsg');
     if (noRes) {
-        noRes.style.display = (visible === 0 && rows.length > 0) ? '' : 'none';
+        noRes.style.display = (_matchedRows.length === 0 && rows.length > 0) ? '' : 'none';
         if (noMsg) noMsg.textContent = q
             ? 'Aucun résultat pour cette recherche.'
             : 'Aucun partenaire dans cette catégorie.';
     }
+
+    renderPagination();
+}
+
+function renderPagination() {
+    var bar      = document.getElementById('paginationBar');
+    var infoEl   = document.getElementById('paginationInfo');
+    var ctrlEl   = document.getElementById('paginationControls');
+    var total    = _matchedRows.length;
+    var pages    = Math.ceil(total / PAGE_SIZE);
+
+    if (total === 0 || pages <= 1) {
+        bar.style.display = 'none';
+        return;
+    }
+    bar.style.display = '';
+
+    var start = (currentPage - 1) * PAGE_SIZE + 1;
+    var end   = Math.min(currentPage * PAGE_SIZE, total);
+    infoEl.textContent = start + '–' + end + ' sur ' + total + ' partenaire' + (total > 1 ? 's' : '');
+
+    var html = '';
+    // Prev
+    html += '<button class="page-btn" onclick="goPage(' + (currentPage - 1) + ')"'
+          + (currentPage === 1 ? ' disabled' : '') + ' aria-label="Page précédente">'
+          + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
+          + '</button>';
+
+    // Page numbers (show at most 5 around current)
+    var lo = Math.max(1, currentPage - 2);
+    var hi = Math.min(pages, currentPage + 2);
+    if (lo > 1) html += '<button class="page-btn" onclick="goPage(1)">1</button>'
+                      + (lo > 2 ? '<span style="color:var(--text-3);padding:0 .2rem;font-size:.8rem;">…</span>' : '');
+    for (var p = lo; p <= hi; p++) {
+        html += '<button class="page-btn' + (p === currentPage ? ' active' : '') + '"'
+              + ' onclick="goPage(' + p + ')">' + p + '</button>';
+    }
+    if (hi < pages) {
+        html += (hi < pages - 1 ? '<span style="color:var(--text-3);padding:0 .2rem;font-size:.8rem;">…</span>' : '')
+              + '<button class="page-btn" onclick="goPage(' + pages + ')">' + pages + '</button>';
+    }
+
+    // Next
+    html += '<button class="page-btn" onclick="goPage(' + (currentPage + 1) + ')"'
+          + (currentPage === pages ? ' disabled' : '') + ' aria-label="Page suivante">'
+          + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
+          + '</button>';
+
+    ctrlEl.innerHTML = html;
+}
+
+function goPage(p) {
+    var pages = Math.ceil(_matchedRows.length / PAGE_SIZE);
+    if (p < 1 || p > pages) return;
+    currentPage = p;
+    applyFilters();
+    document.getElementById('partnersTable').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 /*]]>*/
 </script>

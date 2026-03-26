@@ -9,30 +9,31 @@
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
         :root {
-            --bg:        #eef2f8;
-            --white:     #ffffff;
-            --border:    #dde3ee;
-            --text:      #0f172a;
-            --text-2:    #475569;
-            --text-3:    #94a3b8;
-            --blue:      #2563eb;
-            --blue-bg:   #eff6ff;
-            --blue-br:   #bfdbfe;
-            --blue-h:    #1d4ed8;
-            --green:     #16a34a;
-            --green-bg:  #f0fdf4;
-            --green-br:  #bbf7d0;
-            --red:       #dc2626;
-            --red-bg:    #fef2f2;
-            --red-br:    #fecaca;
-            --amber:     #d97706;
-            --amber-bg:  #fffbeb;
-            --violet:    #7c3aed;
-            --emerald:   #059669;
-            --rose:      #e11d48;
-            --sh:        0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
-            --sh-md:     0 4px 20px rgba(15,23,42,.09), 0 1px 4px rgba(15,23,42,.04);
-            --radius:    14px;
+            --bg:         #f0f4fb;
+            --white:      #ffffff;
+            --border:     #dde3ee;
+            --text:       #0f172a;
+            --text-2:     #475569;
+            --text-3:     #94a3b8;
+            --blue:       #2563eb;
+            --blue-bg:    #eff6ff;
+            --blue-br:    #bfdbfe;
+            --blue-light: #dbeafe;
+            --blue-h:     #1d4ed8;
+            --green:      #16a34a;
+            --green-bg:   #f0fdf4;
+            --green-br:   #bbf7d0;
+            --red:        #dc2626;
+            --red-bg:     #fef2f2;
+            --red-br:     #fecaca;
+            --amber:      #d97706;
+            --amber-bg:   #fffbeb;
+            --violet:     #7c3aed;
+            --emerald:    #059669;
+            --rose:       #e11d48;
+            --sh:         0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+            --sh-md:      0 4px 20px rgba(15,23,42,.09), 0 1px 4px rgba(15,23,42,.04);
+            --radius:     16px;
         }
 
         body { background: var(--bg) !important; }
@@ -41,27 +42,30 @@
             font-family: 'Nunito', sans-serif;
             color: var(--text);
             padding: 2rem 0 6rem;
-            max-width: 920px;
+            max-width: 960px;
             margin: 0 auto;
         }
 
-        /* ── Animations ── */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-        .fu  { opacity: 0; animation: fadeUp .35s ease forwards; }
-        .fd1 { animation-delay: .04s; }
-        .fd2 { animation-delay: .1s; }
-        .fd3 { animation-delay: .16s; }
-        .fd4 { animation-delay: .22s; }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .fu  { opacity: 0; animation: fadeUp .4s cubic-bezier(.16,1,.3,1) forwards; }
+        .fd1 { animation-delay: .05s; }
+        .fd2 { animation-delay: .12s; }
+        .fd3 { animation-delay: .19s; }
+        .fd4 { animation-delay: .26s; }
 
         /* ── Back link ── */
         .back-link {
-            display: inline-flex; align-items: center; gap: 5px;
-            font-size: .82rem; font-weight: 700; color: var(--text-3);
-            text-decoration: none; margin-bottom: 1.5rem;
-            transition: color .15s;
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: .8rem; font-weight: 700; color: var(--text-3);
+            text-decoration: none; margin-bottom: 1.25rem;
+            transition: color .15s; letter-spacing: .02em;
         }
         .back-link:hover { color: var(--blue); }
         .back-link svg { transition: transform .15s; }
@@ -72,29 +76,29 @@
         ══════════════════════════════ */
         .hero {
             background: var(--white);
-            border-radius: 18px;
+            border-radius: 20px;
             box-shadow: var(--sh-md);
-            padding: 2rem 2.25rem;
-            display: flex; align-items: center; gap: 1.75rem;
-            margin-bottom: 1.25rem;
-            position: relative;
             overflow: hidden;
+            margin-bottom: 1rem;
         }
-        .hero::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--blue), #818cf8, var(--blue));
+        .hero-stripe {
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #818cf8, #2563eb, #818cf8);
+            background-size: 300% 100%;
+            animation: gradientShift 5s linear infinite;
         }
-
+        .hero-inner {
+            padding: 1.75rem 2rem;
+            display: flex; align-items: center; gap: 1.5rem;
+        }
         .hero-avatar {
-            width: 72px; height: 72px; border-radius: 18px;
+            width: 68px; height: 68px; border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.8rem; font-weight: 800; color: #fff;
+            font-size: 1.75rem; font-weight: 800; color: #fff;
             flex-shrink: 0;
-            box-shadow: 0 6px 20px rgba(37,99,235,.3);
+            box-shadow: 0 8px 24px rgba(37,99,235,.3);
         }
-        /* Avatar colors — set via JS */
         .av-blue    { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
         .av-violet  { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
         .av-emerald { background: linear-gradient(135deg, #059669, #047857); }
@@ -104,201 +108,318 @@
         .hero-body { flex: 1; min-width: 0; }
         .hero-name {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.5rem; font-weight: 800;
-            letter-spacing: -.025em; color: var(--text);
+            font-size: 1.45rem; font-weight: 800;
+            letter-spacing: -.03em; color: var(--text);
             margin-bottom: .25rem;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .hero-contact {
-            font-size: .85rem; color: var(--text-2);
-            display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+            display: flex; align-items: center; gap: .4rem; flex-wrap: wrap;
             margin-bottom: .6rem;
         }
         .hero-contact-item {
-            display: inline-flex; align-items: center; gap: 4px;
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: .8rem; color: var(--text-2);
+            padding: .22rem .6rem;
+            background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
         }
+        .hero-contact-item svg { color: var(--text-3); flex-shrink: 0; }
         .hero-contact-item a { color: var(--text-2); text-decoration: none; }
         .hero-contact-item a:hover { color: var(--blue); }
 
-        .hero-badges { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+        .hero-badges { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
         .badge {
             display: inline-flex; align-items: center; gap: 4px;
-            padding: .2rem .65rem; border-radius: 99px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: .68rem; font-weight: 700;
+            padding: .22rem .65rem; border-radius: 99px;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .68rem; font-weight: 700;
         }
         .badge-active   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
-        .badge-inactive { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-br); }
-        .badge-support  { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-br); }
+        .badge-inactive { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br); }
+        .badge-support  { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-br); }
         .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
-        .hero-actions { display: flex; gap: .5rem; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+        .hero-actions { display: flex; gap: .4rem; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
         .btn-edit {
             display: inline-flex; align-items: center; gap: 6px;
             padding: .55rem 1.1rem; border-radius: 10px;
             background: var(--blue); color: #fff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: .8rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .8rem; font-weight: 700;
             text-decoration: none; white-space: nowrap;
             box-shadow: 0 3px 10px rgba(37,99,235,.25);
-            transition: background .15s, transform .12s;
+            transition: background .15s, transform .12s, box-shadow .15s;
         }
-        .btn-edit:hover { background: var(--blue-h); transform: translateY(-1px); }
-        .btn-credentials {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: .45rem 1rem; border-radius: 10px;
-            background: var(--white); border: 1px solid var(--border);
-            color: var(--text-2);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: .78rem; font-weight: 700;
-            text-decoration: none; white-space: nowrap;
-            transition: border-color .15s, color .15s;
-        }
-        .btn-credentials:hover { border-color: var(--blue); color: var(--blue); }
+        .btn-edit:hover { background: var(--blue-h); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.3); }
 
         /* ══════════════════════════════
            TABS
         ══════════════════════════════ */
         .tab-bar {
-            display: flex; gap: 0;
-            background: var(--white);
-            border-radius: 14px;
-            box-shadow: var(--sh);
-            padding: .35rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border);
+            position: relative; display: flex;
+            background: var(--white); border-radius: 16px;
+            box-shadow: var(--sh); padding: .3rem;
+            margin-bottom: 1.5rem; border: 1px solid var(--border);
+        }
+        .tab-slider {
+            position: absolute; top: .3rem; bottom: .3rem;
+            background: var(--blue); border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(37,99,235,.35);
+            transition: left .22s cubic-bezier(.4,0,.2,1), width .22s cubic-bezier(.4,0,.2,1);
+            pointer-events: none; z-index: 0;
         }
         .tab-btn {
-            flex: 1; display: flex; align-items: center; justify-content: center; gap: .5rem;
-            padding: .6rem 1rem; border-radius: 10px; border: none; background: transparent;
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: .45rem;
+            padding: .65rem 1rem; border-radius: 12px; border: none; background: transparent;
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: .82rem; font-weight: 700;
-            color: var(--text-3); cursor: pointer; transition: all .18s;
-            white-space: nowrap;
+            color: var(--text-3); cursor: pointer; transition: color .18s;
+            white-space: nowrap; position: relative; z-index: 1;
         }
-        .tab-btn:hover { color: var(--text-2); background: var(--bg); }
-        .tab-btn.active { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,.3); }
+        .tab-btn:hover:not(.active) { color: var(--text-2); }
+        .tab-btn.active { color: #fff; }
         .tab-count {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 18px; height: 18px; border-radius: 99px;
-            font-size: .65rem; font-weight: 700;
-            background: rgba(255,255,255,.25); color: inherit;
+            min-width: 18px; height: 18px; padding: 0 4px; border-radius: 99px;
+            font-size: .63rem; font-weight: 700;
         }
-        .tab-btn:not(.active) .tab-count { background: var(--bg); color: var(--text-3); }
+        .tab-btn.active .tab-count        { background: rgba(255,255,255,.22); color: #fff; }
+        .tab-btn:not(.active) .tab-count  { background: var(--bg); color: var(--text-3); border: 1px solid var(--border); }
 
-        /* ── Tab panels ── */
         .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
+        .tab-panel.active { display: block; animation: fadeUp .3s cubic-bezier(.16,1,.3,1) forwards; }
 
         /* ══════════════════════════════
-           TAB: INFORMATIONS
+           TAB: INFORMATIONS — 2 panneaux
         ══════════════════════════════ */
-        .info-grid {
+        .info-layout {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: 1fr 320px;
             gap: .75rem;
+            align-items: start;
         }
-        .info-card {
+
+        /* --- Panneau Coordonnées --- */
+        .info-panel {
             background: var(--white); border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 1rem 1.25rem;
-            display: flex; align-items: flex-start; gap: .85rem;
-            transition: box-shadow .15s, border-color .15s;
+            overflow: hidden;
         }
-        .info-card:hover { box-shadow: var(--sh-md); border-color: #c7d5ee; }
-        .info-icon-bg {
-            width: 36px; height: 36px; border-radius: 10px;
-            background: var(--blue-bg);
+        .panel-header {
+            display: flex; align-items: center; gap: .6rem;
+            padding: .85rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+        }
+        .panel-header-icon {
+            width: 28px; height: 28px; border-radius: 8px;
+            background: var(--blue-bg); border: 1px solid var(--blue-br);
             display: flex; align-items: center; justify-content: center;
-            color: var(--blue); flex-shrink: 0; margin-top: .05rem;
+            color: var(--blue); flex-shrink: 0;
         }
-        .info-card-body { flex: 1; min-width: 0; }
-        .info-label {
-            font-size: .68rem; font-weight: 700; letter-spacing: .07em;
+        .panel-header-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .75rem; font-weight: 800;
+            letter-spacing: .07em; text-transform: uppercase;
+            color: var(--text-2);
+        }
+
+        /* Rangées de coordonnées */
+        .coord-list { padding: .35rem 0; }
+        .coord-row {
+            display: flex; align-items: center;
+            padding: .75rem 1.4rem; gap: 1rem;
+            transition: background .1s;
+        }
+        .coord-row:hover { background: #f8fafd; }
+        .coord-row + .coord-row { border-top: 1px solid #f1f5f9; }
+        .coord-icon {
+            width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--blue-bg); color: var(--blue);
+        }
+        .coord-body { flex: 1; min-width: 0; }
+        .coord-label {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em;
             text-transform: uppercase; color: var(--text-3);
-            margin-bottom: .3rem;
+            margin-bottom: .15rem;
         }
-        .info-value {
-            font-size: .92rem; font-weight: 700; color: var(--text);
+        .coord-value {
+            font-size: .9rem; font-weight: 600; color: var(--text);
             word-break: break-word;
         }
-        .info-value a { color: var(--blue); text-decoration: none; }
-        .info-value a:hover { text-decoration: underline; }
-        .info-empty { color: var(--text-3); font-weight: 400; font-style: italic; }
+        .coord-value a { color: var(--blue); text-decoration: none; }
+        .coord-value a:hover { text-decoration: underline; }
+        .coord-empty { color: var(--text-3); font-weight: 400; font-style: italic; font-size: .85rem; }
+        .coord-copy {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border-radius: 7px; border: none;
+            background: transparent; color: var(--text-3); cursor: pointer;
+            padding: 0; transition: color .15s, background .15s;
+            opacity: 0; flex-shrink: 0; margin-left: auto;
+        }
+        .coord-row:hover .coord-copy { opacity: 1; }
+        .coord-copy:hover  { color: var(--blue); background: var(--blue-bg); }
+        .coord-copy.copied { color: var(--green); background: var(--green-bg); }
+        @media (hover: none) { .coord-copy { opacity: 1; } }
+
+        /* --- Panneau Contrat & Accès --- */
+        .contract-panel {
+            display: flex; flex-direction: column; gap: .75rem;
+        }
+
+        /* Carte statut */
+        .status-card {
+            background: var(--white); border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.25rem 1.4rem;
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .status-card.is-active {
+            background: var(--green-bg); border-color: var(--green-br);
+        }
+        .status-card.is-inactive {
+            background: var(--red-bg); border-color: var(--red-br);
+        }
+        .status-icon-wrap {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .is-active .status-icon-wrap   { background: rgba(22,163,74,.15); color: var(--green); }
+        .is-inactive .status-icon-wrap { background: rgba(220,38,38,.12); color: var(--red); }
+        .status-card-body {}
+        .status-card-label {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; margin-bottom: .2rem;
+        }
+        .is-active .status-card-label   { color: var(--green); }
+        .is-inactive .status-card-label { color: var(--red); }
+        .status-card-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.05rem; font-weight: 800;
+        }
+        .is-active .status-card-value   { color: var(--green); }
+        .is-inactive .status-card-value { color: var(--red); }
+
+        /* Support card */
+        .support-card {
+            background: var(--white); border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.1rem 1.4rem;
+        }
+        .support-card-label {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--text-3);
+            margin-bottom: .6rem;
+            display: flex; align-items: center; gap: .4rem;
+        }
+        .support-card-label svg { color: var(--blue); }
+        .support-dates {
+            display: flex; align-items: center; gap: .5rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: .92rem; font-weight: 700; color: var(--text);
+        }
+        .support-arrow {
+            color: var(--text-3); font-size: .8rem;
+        }
+        .support-date-pill {
+            background: var(--blue-bg); color: var(--blue);
+            border: 1px solid var(--blue-br);
+            padding: .2rem .65rem; border-radius: 7px;
+            font-size: .82rem;
+        }
+
+        /* Access card (TVA, login, langue) */
+        .access-card {
+            background: var(--white); border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .access-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: .65rem 1.4rem; gap: 1rem;
+        }
+        .access-row + .access-row { border-top: 1px solid #f1f5f9; }
+        .access-row { position: relative; }
+        .access-row:hover { background: #f8fafd; }
+        .access-row .coord-copy {
+            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+        }
+        .access-row:hover .coord-copy { opacity: 1; }
+        .access-row-label {
+            font-size: .72rem; font-weight: 700; color: var(--text-3);
+            letter-spacing: .03em; white-space: nowrap;
+        }
+        .access-row-value {
+            font-size: .85rem; font-weight: 600; color: var(--text);
+            text-align: right; word-break: break-word;
+        }
+        .access-row-empty { color: var(--text-3); font-style: italic; font-size: .8rem; font-weight: 400; }
 
         /* ══════════════════════════════
            TAB: FICHE TECHNIQUE
         ══════════════════════════════ */
-
-        /* Notes card */
         .notes-card {
             background: var(--white); border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.25rem;
+            padding: 1.25rem 1.5rem; margin-bottom: 1rem;
         }
         .notes-label {
-            font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+            font-size: .66rem; font-weight: 700; letter-spacing: .08em;
             text-transform: uppercase; color: var(--text-3);
-            margin-bottom: .6rem;
+            margin-bottom: .65rem;
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .notes-label::before {
+            content: ''; display: inline-block;
+            width: 3px; height: 12px; background: var(--blue); border-radius: 2px;
         }
         .notes-textarea {
             width: 100%; min-height: 90px; resize: vertical;
             background: var(--bg); border: 1px solid var(--border);
             border-radius: 10px; padding: .75rem 1rem;
-            font-family: 'Nunito', sans-serif; font-size: .9rem;
-            color: var(--text); outline: none;
-            transition: border-color .2s, box-shadow .2s;
+            font-family: 'Nunito', sans-serif; font-size: .9rem; color: var(--text);
+            outline: none; transition: border-color .2s, box-shadow .2s; box-sizing: border-box;
         }
         .notes-textarea:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+            border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
         .notes-textarea[readonly] { background: var(--bg); cursor: default; }
-        .notes-footer {
-            display: flex; justify-content: flex-end; margin-top: .6rem;
-        }
+        .notes-footer { display: flex; justify-content: flex-end; margin-top: .6rem; }
         .btn-save-notes {
             display: inline-flex; align-items: center; gap: 5px;
             padding: .45rem 1rem; border-radius: 9px;
             background: var(--blue); color: #fff; border: none;
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: .78rem; font-weight: 700;
-            cursor: pointer; transition: background .15s;
+            cursor: pointer; transition: background .15s, transform .12s;
         }
-        .btn-save-notes:hover { background: var(--blue-h); }
+        .btn-save-notes:hover { background: var(--blue-h); transform: translateY(-1px); }
 
-        /* Sections wrap */
-        .sections-wrap { display: flex; flex-direction: column; gap: 1rem; }
-
-        /* Section card */
+        .sections-wrap { display: flex; flex-direction: column; gap: .85rem; }
         .section-card {
             background: var(--white); border-radius: var(--radius);
-            border: 1px solid var(--border);
-            overflow: hidden;
+            border: 1px solid var(--border); overflow: hidden;
+            transition: box-shadow .2s;
         }
-        /* Left accent cycling via nth-child */
-        .sections-wrap .section-card:nth-child(5n+1) { --sec: #2563eb; --sec-bg: #eff6ff; }
-        .sections-wrap .section-card:nth-child(5n+2) { --sec: #7c3aed; --sec-bg: #f5f3ff; }
-        .sections-wrap .section-card:nth-child(5n+3) { --sec: #059669; --sec-bg: #ecfdf5; }
-        .sections-wrap .section-card:nth-child(5n+4) { --sec: #d97706; --sec-bg: #fffbeb; }
-        .sections-wrap .section-card:nth-child(5n+5) { --sec: #e11d48; --sec-bg: #fff1f2; }
+        .section-card:hover { box-shadow: var(--sh-md); }
+        .sections-wrap .section-card:nth-child(5n+1) { --sec: #2563eb; --sec-bg: #eff6ff; --sec-light: #dbeafe; }
+        .sections-wrap .section-card:nth-child(5n+2) { --sec: #7c3aed; --sec-bg: #f5f3ff; --sec-light: #ede9fe; }
+        .sections-wrap .section-card:nth-child(5n+3) { --sec: #059669; --sec-bg: #ecfdf5; --sec-light: #d1fae5; }
+        .sections-wrap .section-card:nth-child(5n+4) { --sec: #d97706; --sec-bg: #fffbeb; --sec-light: #fde68a; }
+        .sections-wrap .section-card:nth-child(5n+5) { --sec: #e11d48; --sec-bg: #fff1f2; --sec-light: #fecdd3; }
         .section-card { border-left: 3px solid var(--sec, var(--blue)); }
-
         .section-head {
             display: flex; align-items: center; gap: .75rem;
-            padding: .9rem 1.25rem;
-            border-bottom: 1px solid var(--border);
+            padding: .85rem 1.25rem; border-bottom: 1px solid var(--border);
             background: color-mix(in srgb, var(--sec, var(--blue)) 4%, white);
         }
         .section-icon-bg {
-            width: 32px; height: 32px; border-radius: 9px;
-            background: var(--sec-bg, var(--blue-bg));
+            width: 30px; height: 30px; border-radius: 8px;
+            background: var(--sec-bg, var(--blue-bg)); border: 1px solid var(--sec-light, var(--blue-light));
             display: flex; align-items: center; justify-content: center;
-            font-size: 1rem; flex-shrink: 0;
+            color: var(--sec, var(--blue)); font-size: .85rem; flex-shrink: 0;
         }
         .section-title-text {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: .88rem; font-weight: 800; color: var(--text);
-            flex: 1;
+            font-size: .875rem; font-weight: 800; color: var(--text); flex: 1;
         }
         .section-controls { display: flex; align-items: center; gap: .35rem; }
         .icon-btn {
@@ -307,54 +428,32 @@
             background: transparent; color: var(--text-3); cursor: pointer;
             transition: background .15s, color .15s;
         }
-        .icon-btn:hover { background: var(--bg); color: var(--text-2); }
-        .icon-btn--danger:hover { background: var(--red-bg); color: var(--red); }
+        .icon-btn:hover           { background: var(--bg); color: var(--text-2); }
+        .icon-btn--danger:hover   { background: var(--red-bg); color: var(--red); }
 
-        /* Entries */
-        .entries-list { padding: .35rem 0; }
         .entry-row {
-            display: grid;
-            grid-template-columns: 190px 1fr auto;
-            align-items: center;
-            padding: .55rem 1.25rem;
-            gap: 1rem;
+            display: grid; grid-template-columns: 185px 1fr auto;
+            align-items: center; padding: .55rem 1.25rem; gap: 1rem;
             transition: background .1s;
         }
         .entry-row:hover { background: #f8fafd; }
         .entry-row + .entry-row { border-top: 1px solid #f1f5f9; }
-        .entry-lbl {
-            display: flex; align-items: center;
-        }
+        .entry-lbl { display: flex; align-items: center; }
         .entry-lbl-text {
-            font-size: .74rem; font-weight: 700; color: var(--text-2);
-            background: #f1f5f9; border-radius: 6px;
-            padding: .2rem .55rem;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            max-width: 100%;
-            letter-spacing: .01em;
+            font-size: .72rem; font-weight: 700; color: var(--text-2);
+            background: var(--bg); border-radius: 6px; border: 1px solid var(--border);
+            padding: .22rem .55rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 100%; letter-spacing: .01em;
         }
-        .entry-val {
-            font-size: .87rem; color: var(--text);
-            word-break: break-word; font-weight: 500;
-        }
+        .entry-val { font-size: .88rem; color: var(--text); word-break: break-word; font-weight: 500; }
         .entry-val-empty { color: var(--text-3); font-style: italic; font-size: .82rem; font-weight: 400; }
         .entry-actions-cell { display: flex; gap: .25rem; opacity: 0; transition: opacity .15s; }
         .entry-row:hover .entry-actions-cell { opacity: 1; }
         @media (hover: none) { .entry-actions-cell { opacity: 1; } }
 
-        /* Password field */
-        .pw-wrap {
-            display: inline-flex; align-items: center; gap: .5rem;
-        }
-        .pw-masked {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: .85rem; letter-spacing: .05em; color: var(--text-3);
-        }
-        .pw-real {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: .85rem; color: var(--text);
-            display: none;
-        }
+        .pw-wrap { display: inline-flex; align-items: center; gap: .5rem; }
+        .pw-masked { font-family: 'JetBrains Mono', monospace; font-size: .85rem; letter-spacing: .05em; color: var(--text-3); }
+        .pw-real   { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--text); display: none; }
         .pw-eye {
             display: inline-flex; align-items: center; justify-content: center;
             width: 22px; height: 22px; border-radius: 5px; border: none;
@@ -363,7 +462,6 @@
         }
         .pw-eye:hover { color: var(--blue); }
 
-        /* Copy button */
         .copy-btn {
             display: inline-flex; align-items: center; justify-content: center;
             width: 22px; height: 22px; border-radius: 5px; border: none;
@@ -373,15 +471,11 @@
         }
         .entry-row:hover .copy-btn,
         .entry-val:focus-within .copy-btn { opacity: 1; }
-        .copy-btn:hover { color: var(--blue); background: var(--blue-bg); }
+        .copy-btn:hover  { color: var(--blue); background: var(--blue-bg); }
         .copy-btn.copied { color: var(--green); }
         @media (hover: none) { .copy-btn { opacity: 1; } }
 
-        /* Section footer */
-        .section-footer {
-            padding: .6rem 1.25rem;
-            border-top: 1px dashed var(--border);
-        }
+        .section-footer { padding: .55rem 1.25rem; border-top: 1px dashed var(--border); }
         .btn-add-entry {
             display: inline-flex; align-items: center; gap: 5px;
             padding: .3rem .8rem; border-radius: 7px; border: none;
@@ -391,11 +485,7 @@
         }
         .btn-add-entry:hover { color: var(--blue); background: var(--blue-bg); }
 
-        /* Add section area */
-        .add-section-area {
-            display: flex; justify-content: center;
-            padding: 1.5rem 0 0;
-        }
+        .add-section-area { display: flex; justify-content: center; padding: 1.25rem 0 0; }
         .btn-add-section {
             display: inline-flex; align-items: center; gap: 7px;
             padding: .65rem 1.5rem; border-radius: 12px;
@@ -404,105 +494,203 @@
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: .82rem; font-weight: 700;
             cursor: pointer; transition: all .18s;
         }
-        .btn-add-section:hover {
-            border-color: var(--blue); color: var(--blue);
-            background: var(--blue-bg);
-        }
+        .btn-add-section:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-bg); }
 
-        /* Empty fiche */
         .fiche-empty {
             text-align: center; padding: 3rem 1rem;
             background: var(--white); border-radius: var(--radius);
             border: 2px dashed var(--border);
         }
         .fiche-empty--admin { border-color: var(--blue-br); background: var(--blue-bg); }
-        .fiche-empty-icon { font-size: 2.5rem; margin-bottom: .75rem; }
-        .fiche-empty-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1rem; font-weight: 800; color: var(--text);
-            margin-bottom: .35rem;
+        .fiche-empty-icon  { font-size: 2.5rem; margin-bottom: .75rem; }
+        .fiche-empty-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: .35rem; }
+        .fiche-empty-sub   { font-size: .85rem; color: var(--text-3); }
+
+        /* Section sans entrées */
+        .entries-empty {
+            padding: .8rem 1.25rem;
+            font-size: .8rem; color: var(--text-3);
+            font-style: italic;
         }
-        .fiche-empty-sub { font-size: .85rem; color: var(--text-3); }
 
         /* ══════════════════════════════
            TAB: TICKETS
         ══════════════════════════════ */
-        .tickets-list { display: flex; flex-direction: column; gap: .45rem; }
-        .ticket-item {
+
+        /* Barre de résumé des statuts */
+        .tickets-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: .6rem;
+            margin-bottom: 1rem;
+        }
+        .summary-chip {
             background: var(--white); border-radius: 12px;
             border: 1px solid var(--border);
-            border-left: 3px solid var(--t-color, var(--border));
-            padding: .85rem 1.25rem;
+            padding: .75rem 1rem;
+            display: flex; align-items: center; gap: .65rem;
+            transition: box-shadow .15s;
+        }
+        .summary-chip:hover { box-shadow: var(--sh-md); }
+        .summary-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .summary-dot--open     { background: #f97316; box-shadow: 0 0 0 3px #fff7ed; }
+        .summary-dot--progress { background: #d97706; box-shadow: 0 0 0 3px #fffbeb; }
+        .summary-dot--resolved { background: #16a34a; box-shadow: 0 0 0 3px #f0fdf4; }
+        .summary-dot--closed   { background: #cbd5e1; box-shadow: 0 0 0 3px #f8fafc; }
+        .summary-body {}
+        .summary-count {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.15rem; font-weight: 800; color: var(--text);
+            line-height: 1;
+        }
+        .summary-label {
+            font-size: .68rem; font-weight: 600; color: var(--text-3);
+            margin-top: .1rem;
+        }
+
+        /* Liste tickets */
+        .tickets-list { display: flex; flex-direction: column; gap: .5rem; }
+
+        .ticket-item {
+            background: var(--white); border-radius: 14px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--t-color, var(--border));
+            padding: .9rem 1.25rem;
             display: flex; align-items: center; gap: 1rem;
             text-decoration: none; color: inherit;
-            transition: box-shadow .15s, border-color .15s, transform .12s;
+            transition: box-shadow .2s, transform .18s;
         }
-        .ticket-item:hover { box-shadow: 0 3px 14px rgba(15,23,42,.08); transform: translateX(2px); }
+        .ticket-item:hover { box-shadow: var(--sh-md); transform: translateX(3px); }
         .ticket-item[data-status="OPEN"]        { --t-color: #f97316; }
         .ticket-item[data-status="IN_PROGRESS"] { --t-color: #d97706; }
         .ticket-item[data-status="RESOLVED"]    { --t-color: #16a34a; }
         .ticket-item[data-status="CLOSED"]      { --t-color: #cbd5e1; }
+
         .ticket-meta { flex: 1; min-width: 0; }
-        .ticket-top { display: flex; align-items: center; gap: .6rem; margin-bottom: .2rem; }
+        .ticket-top  { display: flex; align-items: baseline; gap: .55rem; margin-bottom: .3rem; }
         .ticket-id {
             font-family: 'JetBrains Mono', monospace;
-            font-size: .7rem; font-weight: 500; color: var(--text-3);
+            font-size: .68rem; font-weight: 500; color: var(--text-3);
+            background: var(--bg); border: 1px solid var(--border);
+            padding: .08rem .4rem; border-radius: 5px;
             white-space: nowrap; flex-shrink: 0;
         }
         .ticket-title {
-            font-weight: 700; font-size: .88rem; color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700; font-size: .9rem; color: var(--text);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .ticket-bottom { display: flex; align-items: center; gap: .5rem; }
+        .ticket-bottom { display: flex; align-items: center; gap: .45rem; }
         .ticket-cat {
-            font-size: .72rem; color: var(--text-3);
-            background: #f1f5f9; border-radius: 5px; padding: .1rem .45rem;
-            white-space: nowrap;
+            font-size: .71rem; color: var(--text-2); font-weight: 600;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 5px; padding: .1rem .45rem; white-space: nowrap;
         }
-        .ticket-date { font-size: .72rem; color: var(--text-3); white-space: nowrap; margin-left: auto; }
+        .ticket-date { font-size: .71rem; color: var(--text-3); white-space: nowrap; margin-left: auto; }
 
         .t-badge {
-            display: inline-flex; align-items: center; gap: 3px;
-            padding: .18rem .6rem; border-radius: 99px;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: .2rem .65rem; border-radius: 99px;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: .67rem; font-weight: 700; white-space: nowrap;
+            font-size: .67rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
         }
-        .t-open     { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+        .t-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+        .t-open     { background: #fff7ed; color: #c2410c;      border: 1px solid #fed7aa; }
         .t-progress { background: #fffbeb; color: var(--amber); border: 1px solid #fde68a; }
         .t-resolved { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
         .t-closed   { background: #f8fafc; color: var(--text-3); border: 1px solid var(--border); }
 
         .tickets-empty {
-            text-align: center; padding: 2.5rem 1rem;
+            text-align: center; padding: 3rem 1rem;
             background: var(--white); border-radius: var(--radius);
             border: 1px solid var(--border);
-            color: var(--text-3); font-size: .88rem;
         }
+        .tickets-empty-icon  { font-size: 2.5rem; margin-bottom: .6rem; }
+        .tickets-empty-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; font-weight: 800; color: var(--text); margin-bottom: .3rem; }
+        .tickets-empty-sub   { font-size: .83rem; color: var(--text-3); }
+
+        /* ── Chips filtrables ── */
+        .summary-chip { cursor: pointer; }
+        .summary-chip.filter-active {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(37,99,235,.18);
+        }
+        .summary-chip.filter-active .summary-count,
+        .summary-chip.filter-active .summary-label { color: var(--blue); }
+        .ticket-item.hidden-by-filter { display: none; }
+
+        /* ── Support expiré / bientôt ── */
+        .support-card.expiring {
+            background: var(--amber-bg); border-color: #fde68a;
+        }
+        .support-card.expired {
+            background: var(--red-bg); border-color: var(--red-br);
+        }
+        .support-alert {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: .72rem; font-weight: 700;
+            margin-top: .5rem; padding: .2rem .55rem;
+            border-radius: 6px;
+        }
+        .support-alert.expiring { background: #fef3c7; color: var(--amber); }
+        .support-alert.expired  { background: var(--red-bg); color: var(--red); }
+
+        /* ── Modal de confirmation danger ── */
+        .confirm-box {
+            max-width: 380px;
+            text-align: center;
+        }
+        .confirm-icon-wrap {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: var(--red-bg);
+            border: 2px solid var(--red-br);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--red); margin: 1.5rem auto .75rem;
+        }
+        .confirm-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem; font-weight: 800; color: var(--text);
+            margin-bottom: .4rem;
+        }
+        .confirm-message {
+            font-size: .88rem; color: var(--text-2);
+            margin-bottom: .25rem; padding: 0 1rem;
+        }
+        .confirm-footer {
+            display: flex; gap: .6rem; justify-content: center;
+            padding: 1.25rem 1.5rem 1.5rem;
+        }
+        .btn-danger {
+            padding: .55rem 1.2rem; border-radius: 9px; border: none;
+            background: var(--red); color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: .82rem; font-weight: 700;
+            cursor: pointer; transition: background .15s, transform .12s;
+            box-shadow: 0 2px 8px rgba(220,38,38,.3);
+        }
+        .btn-danger:hover { background: #b91c1c; transform: translateY(-1px); }
 
         /* ══════════════════════════════
            MODALS
         ══════════════════════════════ */
         .modal-overlay {
             display: none; position: fixed; inset: 0;
-            background: rgba(15,23,42,.45); backdrop-filter: blur(4px);
+            background: rgba(15,23,42,.5); backdrop-filter: blur(6px);
             z-index: 9999; align-items: center; justify-content: center;
         }
         .modal-overlay.open { display: flex; }
         .modal-box {
-            background: var(--white); border-radius: 18px;
+            background: var(--white); border-radius: 20px;
             box-shadow: 0 24px 64px rgba(15,23,42,.18);
-            width: 100%; max-width: 440px; margin: 1rem;
-            overflow: hidden;
+            width: 100%; max-width: 440px; margin: 1rem; overflow: hidden;
+            animation: fadeUp .25s cubic-bezier(.16,1,.3,1);
         }
         .modal-header {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 1.25rem 1.5rem 1rem;
-            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem 1rem; border-bottom: 1px solid var(--border);
         }
-        .modal-header h3 {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1rem; font-weight: 800; color: var(--text); margin: 0;
-        }
+        .modal-header h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; color: var(--text); margin: 0; }
         .modal-close {
             width: 28px; height: 28px; border-radius: 7px; border: none;
             background: var(--bg); color: var(--text-3); cursor: pointer;
@@ -512,38 +700,27 @@
         .modal-close:hover { background: var(--red-bg); color: var(--red); }
         .modal-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
         .form-group { display: flex; flex-direction: column; gap: .4rem; }
-        .form-label {
-            font-size: .75rem; font-weight: 700; letter-spacing: .04em;
-            text-transform: uppercase; color: var(--text-2);
-        }
+        .form-label { font-size: .73rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-2); }
         .form-label .req { color: var(--red); }
         .form-input {
             width: 100%; padding: .65rem .9rem;
             background: var(--bg); border: 1px solid var(--border);
             border-radius: 9px; color: var(--text);
             font-family: 'Nunito', sans-serif; font-size: .92rem;
-            outline: none; transition: border-color .2s, box-shadow .2s;
+            outline: none; transition: border-color .2s, box-shadow .2s; box-sizing: border-box;
         }
-        .form-input:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-            background: var(--white);
-        }
+        .form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); background: var(--white); }
         .form-hint { font-size: .72rem; color: var(--text-3); }
         .form-check {
             display: flex; align-items: center; gap: .5rem;
             padding: .65rem .9rem; background: var(--bg);
-            border: 1px solid var(--border); border-radius: 9px;
-            cursor: pointer;
+            border: 1px solid var(--border); border-radius: 9px; cursor: pointer;
         }
         .form-check input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; }
-        .form-check-label {
-            font-size: .85rem; font-weight: 600; color: var(--text-2); cursor: pointer;
-        }
+        .form-check-label { font-size: .85rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
         .modal-footer {
             display: flex; align-items: center; justify-content: flex-end; gap: .6rem;
-            padding: 1rem 1.5rem 1.25rem;
-            border-top: 1px solid var(--border);
+            padding: 1rem 1.5rem 1.25rem; border-top: 1px solid var(--border);
         }
         .btn-modal-cancel {
             padding: .55rem 1.1rem; border-radius: 9px; border: 1px solid var(--border);
@@ -556,15 +733,30 @@
             padding: .55rem 1.2rem; border-radius: 9px; border: none;
             background: var(--blue); color: #fff;
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: .82rem; font-weight: 700;
-            cursor: pointer; transition: background .15s;
+            cursor: pointer; transition: background .15s, transform .12s;
             box-shadow: 0 2px 8px rgba(37,99,235,.3);
         }
-        .btn-modal-save:hover { background: var(--blue-h); }
+        .btn-modal-save:hover { background: var(--blue-h); transform: translateY(-1px); }
 
-        @media (max-width: 640px) {
-            .hero { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .hero-actions { flex-direction: row; align-items: flex-start; }
-            .entry-row { grid-template-columns: 130px 1fr auto; }
+        @media (max-width: 700px) {
+            .pd-root     { padding: 1.5rem 1rem 5rem; }
+            .hero-inner  { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.25rem 1.25rem; }
+            .hero-actions { flex-direction: row; }
+            .info-layout { grid-template-columns: 1fr; }
+            .tickets-summary { grid-template-columns: repeat(2, 1fr); }
+            .entry-row { grid-template-columns: 110px 1fr auto; }
+            .modal-box { max-height: 90vh; overflow-y: auto; margin: .75rem; }
+            .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+            .tab-btn  { flex: 0 0 auto; padding: .6rem .85rem; font-size: .8rem; }
+        }
+
+        @media (max-width: 420px) {
+            .hero-name { font-size: 1.15rem; }
+            .tickets-summary { grid-template-columns: 1fr 1fr; gap: .5rem; }
+            .entry-row { grid-template-columns: 90px 1fr auto; font-size: .82rem; }
+            .coord-row { font-size: .82rem; }
+            .tab-btn   { gap: .3rem; }
+            .tab-btn svg { display: none; }
         }
     </style>
 </head>
@@ -581,45 +773,49 @@
 
     <!-- ── Hero ── -->
     <div class="hero fu fd2">
-        <div class="hero-avatar" th:text="${#strings.length(partner.nomEntreprise) > 0 ? #strings.toUpperCase(#strings.substring(partner.nomEntreprise, 0, 1)) : '?'}">A</div>
-        <div class="hero-body">
-            <div class="hero-name" th:text="${partner.nomEntreprise}">Entreprise</div>
-            <div class="hero-contact">
-                <span class="hero-contact-item">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span th:text="${partner.firstname + ' ' + partner.lastname}"></span>
-                </span>
-                <span class="hero-contact-item" th:if="${partner.email != null}">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                    <a th:href="'mailto:' + ${partner.email}" th:text="${partner.email}"></a>
-                </span>
-                <span class="hero-contact-item" th:if="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.77 3.36 2 2 0 0 1 3.74 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 8.29 8.29l1.14-1.14a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 24 18v3a2 2 0 0 1-2 2h-.08z"/></svg>
-                    <a th:href="'tel:' + ${partner.telephone}" th:text="${partner.telephone}"></a>
-                </span>
+        <div class="hero-stripe"></div>
+        <div class="hero-inner">
+            <div class="hero-avatar" th:text="${#strings.length(partner.nomEntreprise) > 0 ? #strings.toUpperCase(#strings.substring(partner.nomEntreprise, 0, 1)) : '?'}">A</div>
+            <div class="hero-body">
+                <div class="hero-name" th:text="${partner.nomEntreprise}">Entreprise</div>
+                <div class="hero-contact">
+                    <span class="hero-contact-item">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span th:text="${partner.firstname + ' ' + partner.lastname}"></span>
+                    </span>
+                    <span class="hero-contact-item" th:if="${partner.email != null}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <a th:href="'mailto:' + ${partner.email}" th:text="${partner.email}"></a>
+                    </span>
+                    <span class="hero-contact-item" th:if="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.77 3.36 2 2 0 0 1 3.74 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 8.29 8.29l1.14-1.14a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 24 18v3a2 2 0 0 1-2 2h-.08z"/></svg>
+                        <a th:href="'tel:' + ${partner.telephone}" th:text="${partner.telephone}"></a>
+                    </span>
+                </div>
+                <div class="hero-badges">
+                    <span th:if="${partner.active}" class="badge badge-active">
+                        <span class="badge-dot"></span>Actif
+                    </span>
+                    <span th:unless="${partner.active}" class="badge badge-inactive">
+                        <span class="badge-dot"></span>Inactif
+                    </span>
+                    <span th:if="${partner.supportTo != null}" class="badge badge-support">
+                        Support jusqu'au <span th:text="${#temporals.format(partner.supportTo, 'dd/MM/yyyy')}"></span>
+                    </span>
+                </div>
             </div>
-            <div class="hero-badges">
-                <span th:if="${partner.active}" class="badge badge-active">
-                    <span class="badge-dot"></span>Actif
-                </span>
-                <span th:unless="${partner.active}" class="badge badge-inactive">
-                    <span class="badge-dot"></span>Inactif
-                </span>
-                <span th:if="${partner.supportTo != null}" class="badge badge-support">
-                    Support jusqu'au <span th:text="${#temporals.format(partner.supportTo, 'dd/MM/yyyy')}"></span>
-                </span>
+            <div class="hero-actions" sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{'/partners/edit/' + ${partner.id}}" class="btn-edit">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Modifier les infos
+                </a>
             </div>
-        </div>
-        <div class="hero-actions" sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{'/partners/edit/' + ${partner.id}}" class="btn-edit">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Modifier les infos
-            </a>
         </div>
     </div>
 
     <!-- ── Tab nav ── -->
     <div class="tab-bar fu fd3">
+        <div class="tab-slider" id="tabSlider"></div>
         <button class="tab-btn" data-tab="infos">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             Informations
@@ -635,84 +831,133 @@
         </button>
     </div>
 
-    <!-- ════════════════════════════
-         TAB: INFORMATIONS
-    ════════════════════════════ -->
+    <!-- ════════════════════════════════════
+         TAB: INFORMATIONS — 2 panneaux
+    ════════════════════════════════════ -->
     <div class="tab-panel fu fd4" id="tab-infos">
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Contact</div>
-                    <div class="info-value" th:text="${partner.firstname + ' ' + partner.lastname}">—</div>
+        <div class="info-layout">
+
+            <!-- Panneau gauche : Coordonnées -->
+            <div class="info-panel">
+                <div class="panel-header">
+                    <div class="panel-header-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <span class="panel-header-title">Coordonnées</span>
                 </div>
-            </div>
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Email</div>
-                    <div class="info-value"><a th:href="'mailto:' + ${partner.email}" th:text="${partner.email}">—</a></div>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.77 3.36 2 2 0 0 1 3.74 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 8.29 8.29l1.14-1.14a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 24 18v3a2 2 0 0 1-2 2h-.08z"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Téléphone</div>
-                    <div class="info-value" th:if="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}"><a th:href="'tel:' + ${partner.telephone}" th:text="${partner.telephone}"></a></div>
-                    <div class="info-value info-empty" th:unless="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}">Non renseigné</div>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Adresse</div>
-                    <div class="info-value" th:if="${partner.adresse != null and !#strings.isEmpty(partner.adresse)}" th:text="${partner.adresse}"></div>
-                    <div class="info-value info-empty" th:unless="${partner.adresse != null and !#strings.isEmpty(partner.adresse)}">Non renseignée</div>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Numéro TVA</div>
-                    <div class="info-value" th:if="${partner.tva != null and !#strings.isEmpty(partner.tva)}" th:text="${partner.tva}"></div>
-                    <div class="info-value info-empty" th:unless="${partner.tva != null and !#strings.isEmpty(partner.tva)}">Non renseigné</div>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Identifiant</div>
-                    <div class="info-value" th:text="${partner.login}">login</div>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Langue</div>
-                    <div class="info-value" th:if="${partner.langue != null and !#strings.isEmpty(partner.langue)}" th:text="${partner.langue}"></div>
-                    <div class="info-value info-empty" th:unless="${partner.langue != null and !#strings.isEmpty(partner.langue)}">Non renseignée</div>
-                </div>
-            </div>
-            <div class="info-card" th:if="${partner.supportFrom != null or partner.supportTo != null}">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Période de support</div>
-                    <div class="info-value">
-                        <span th:if="${partner.supportFrom != null}" th:text="${#temporals.format(partner.supportFrom, 'dd/MM/yyyy')}"></span>
-                        <span th:if="${partner.supportFrom != null and partner.supportTo != null}"> → </span>
-                        <span th:if="${partner.supportTo != null}" th:text="${#temporals.format(partner.supportTo, 'dd/MM/yyyy')}"></span>
+                <div class="coord-list">
+                    <div class="coord-row">
+                        <div class="coord-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="coord-body">
+                            <div class="coord-label">Contact</div>
+                            <div class="coord-value" th:text="${partner.firstname + ' ' + partner.lastname}">—</div>
+                        </div>
+                    </div>
+                    <div class="coord-row">
+                        <div class="coord-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="coord-body">
+                            <div class="coord-label">Email</div>
+                            <div class="coord-value"><a th:href="'mailto:' + ${partner.email}" th:text="${partner.email}">—</a></div>
+                        </div>
+                        <button type="button" class="coord-copy" th:attr="data-val=${partner.email}" onclick="copyCoord(this)" title="Copier l'email">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                    </div>
+                    <div class="coord-row">
+                        <div class="coord-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.77 3.36 2 2 0 0 1 3.74 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 8.29 8.29l1.14-1.14a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 24 18v3a2 2 0 0 1-2 2h-.08z"/></svg>
+                        </div>
+                        <div class="coord-body">
+                            <div class="coord-label">Téléphone</div>
+                            <div class="coord-value" th:if="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}"><a th:href="'tel:' + ${partner.telephone}" th:text="${partner.telephone}"></a></div>
+                            <div class="coord-value coord-empty" th:unless="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}">Non renseigné</div>
+                        </div>
+                        <button type="button" class="coord-copy"
+                                th:if="${partner.telephone != null and !#strings.isEmpty(partner.telephone)}"
+                                th:attr="data-val=${partner.telephone}"
+                                onclick="copyCoord(this)" title="Copier le téléphone">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                    </div>
+                    <div class="coord-row">
+                        <div class="coord-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <div class="coord-body">
+                            <div class="coord-label">Adresse</div>
+                            <div class="coord-value" th:if="${partner.adresse != null and !#strings.isEmpty(partner.adresse)}" th:text="${partner.adresse}"></div>
+                            <div class="coord-value coord-empty" th:unless="${partner.adresse != null and !#strings.isEmpty(partner.adresse)}">Non renseignée</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="info-card">
-                <div class="info-icon-bg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-                <div class="info-card-body">
-                    <div class="info-label">Statut</div>
-                    <div class="info-value">
-                        <span th:if="${partner.active}" class="badge badge-active"><span class="badge-dot"></span>Actif</span>
-                        <span th:unless="${partner.active}" class="badge badge-inactive"><span class="badge-dot"></span>Inactif</span>
+
+            <!-- Panneau droit : Contrat & Accès -->
+            <div class="contract-panel">
+
+                <!-- Statut -->
+                <div th:if="${partner.active}" class="status-card is-active">
+                    <div class="status-icon-wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="status-card-body">
+                        <div class="status-card-label">Statut</div>
+                        <div class="status-card-value">Actif</div>
                     </div>
                 </div>
+                <div th:unless="${partner.active}" class="status-card is-inactive">
+                    <div class="status-icon-wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                    </div>
+                    <div class="status-card-body">
+                        <div class="status-card-label">Statut</div>
+                        <div class="status-card-value">Inactif</div>
+                    </div>
+                </div>
+
+                <!-- Période de support -->
+                <div class="support-card" id="supportCard"
+                     th:if="${partner.supportFrom != null or partner.supportTo != null}"
+                     th:attr="data-support-to=${partner.supportTo != null ? #temporals.format(partner.supportTo, 'yyyy-MM-dd') : ''}">
+                    <div class="support-card-label">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Période de support
+                    </div>
+                    <div class="support-dates">
+                        <span class="support-date-pill" th:if="${partner.supportFrom != null}" th:text="${#temporals.format(partner.supportFrom, 'dd/MM/yyyy')}"></span>
+                        <span class="support-arrow" th:if="${partner.supportFrom != null and partner.supportTo != null}">→</span>
+                        <span class="support-date-pill" th:if="${partner.supportTo != null}" th:text="${#temporals.format(partner.supportTo, 'dd/MM/yyyy')}"></span>
+                    </div>
+                    <div id="supportAlert" style="display:none"></div>
+                </div>
+
+                <!-- Accès (TVA, login, langue) -->
+                <div class="access-card">
+                    <div class="access-row">
+                        <span class="access-row-label">Numéro TVA</span>
+                        <span class="access-row-value" th:if="${partner.tva != null and !#strings.isEmpty(partner.tva)}" th:text="${partner.tva}"></span>
+                        <span class="access-row-value access-row-empty" th:unless="${partner.tva != null and !#strings.isEmpty(partner.tva)}">—</span>
+                    </div>
+                    <div class="access-row">
+                        <span class="access-row-label">Identifiant</span>
+                        <span class="access-row-value" th:text="${partner.login}">—</span>
+                        <button type="button" class="coord-copy"
+                                th:attr="data-val=${partner.login}"
+                                onclick="copyCoord(this)" title="Copier l'identifiant">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                    </div>
+                    <div class="access-row">
+                        <span class="access-row-label">Langue</span>
+                        <span class="access-row-value" th:if="${partner.langue != null and !#strings.isEmpty(partner.langue)}" th:text="${partner.langue}"></span>
+                        <span class="access-row-value access-row-empty" th:unless="${partner.langue != null and !#strings.isEmpty(partner.langue)}">—</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -760,15 +1005,15 @@
                         </button>
                         <form th:action="@{'/partners/' + ${partner.id} + '/sheet/sections/' + ${section.id} + '/delete'}" method="post" style="display:inline">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <button type="submit" class="icon-btn icon-btn--danger" title="Supprimer"
-                                    onclick="return confirm('Supprimer cette section et tous ses champs ?')">
+                            <button type="button" class="icon-btn icon-btn--danger" title="Supprimer"
+                                    th:attr="data-title=${section.title}"
+                                    onclick="openConfirmModal(this.closest('form'), 'Supprimer la section «\u00a0' + this.dataset.title + '\u00a0» et tous ses champs ?', 'Supprimer la section')">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                             </button>
                         </form>
                     </div>
                 </div>
-
-                <!-- Entries -->
+                <div class="entries-empty" th:if="${section.entries.isEmpty()}" sec:authorize="!hasRole('ADMIN')">Aucun champ dans cette section.</div>
                 <div class="entries-list" th:if="${!section.entries.isEmpty()}">
                     <div class="entry-row" th:each="entry : ${section.entries}">
                         <div class="entry-lbl"><span class="entry-lbl-text" th:text="${entry.label}">Label</span></div>
@@ -800,15 +1045,15 @@
                             </button>
                             <form th:action="@{'/partners/' + ${partner.id} + '/sheet/entries/' + ${entry.id} + '/delete'}" method="post" style="display:inline">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                <button type="submit" class="icon-btn icon-btn--danger" title="Supprimer"
-                                        onclick="return confirm('Supprimer ce champ ?')">
+                                <button type="button" class="icon-btn icon-btn--danger" title="Supprimer"
+                                        th:attr="data-label=${entry.label}"
+                                        onclick="openConfirmModal(this.closest('form'), 'Supprimer le champ «\u00a0' + this.dataset.label + '\u00a0» ?', 'Supprimer le champ')">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                                 </button>
                             </form>
                         </div>
                     </div>
                 </div>
-
                 <div sec:authorize="hasRole('ADMIN')" class="section-footer">
                     <button type="button" class="btn-add-entry"
                             th:attr="data-section-id=${section.id}"
@@ -820,7 +1065,6 @@
             </div>
         </div>
 
-        <!-- Empty state (no sections yet) -->
         <div th:if="${sheet.sections.isEmpty()}" sec:authorize="!hasRole('ADMIN')" class="fiche-empty">
             <div class="fiche-empty-icon">🗂️</div>
             <div class="fiche-empty-title">Aucune fiche technique</div>
@@ -836,7 +1080,6 @@
             </button>
         </div>
 
-        <!-- Add section button -->
         <div sec:authorize="hasRole('ADMIN')" class="add-section-area">
             <button type="button" class="btn-add-section" onclick="openAddSection()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -849,6 +1092,40 @@
          TAB: TICKETS
     ════════════════════════════ -->
     <div class="tab-panel" id="tab-tickets">
+
+        <!-- Résumé statuts -->
+        <div class="tickets-summary" th:if="${!#lists.isEmpty(tickets)}">
+            <div class="summary-chip">
+                <div class="summary-dot summary-dot--open"></div>
+                <div class="summary-body">
+                    <div class="summary-count" id="cnt-open">0</div>
+                    <div class="summary-label">En attente</div>
+                </div>
+            </div>
+            <div class="summary-chip">
+                <div class="summary-dot summary-dot--progress"></div>
+                <div class="summary-body">
+                    <div class="summary-count" id="cnt-progress">0</div>
+                    <div class="summary-label">En cours</div>
+                </div>
+            </div>
+            <div class="summary-chip">
+                <div class="summary-dot summary-dot--resolved"></div>
+                <div class="summary-body">
+                    <div class="summary-count" id="cnt-resolved">0</div>
+                    <div class="summary-label">Résolus</div>
+                </div>
+            </div>
+            <div class="summary-chip">
+                <div class="summary-dot summary-dot--closed"></div>
+                <div class="summary-body">
+                    <div class="summary-count" id="cnt-closed">0</div>
+                    <div class="summary-label">Archivés</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste tickets -->
         <div class="tickets-list" th:if="${!#lists.isEmpty(tickets)}">
             <a th:each="ticket : ${tickets}"
                th:href="@{'/problems/' + ${ticket.id}}"
@@ -865,17 +1142,18 @@
                     </div>
                 </div>
                 <span th:switch="${ticket.status.name()}">
-                    <span th:case="'OPEN'"        class="t-badge t-open">En attente</span>
-                    <span th:case="'IN_PROGRESS'" class="t-badge t-progress">En cours</span>
-                    <span th:case="'RESOLVED'"    class="t-badge t-resolved">Résolu</span>
-                    <span th:case="'CLOSED'"      class="t-badge t-closed">Archivé</span>
+                    <span th:case="'OPEN'"        class="t-badge t-open"><span class="t-dot"></span>En attente</span>
+                    <span th:case="'IN_PROGRESS'" class="t-badge t-progress"><span class="t-dot"></span>En cours</span>
+                    <span th:case="'RESOLVED'"    class="t-badge t-resolved"><span class="t-dot"></span>Résolu</span>
+                    <span th:case="'CLOSED'"      class="t-badge t-closed"><span class="t-dot"></span>Archivé</span>
                 </span>
             </a>
         </div>
+
         <div th:if="${#lists.isEmpty(tickets)}" class="tickets-empty">
-            <div style="font-size:2rem;margin-bottom:.6rem;">🎉</div>
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem;">Aucun ticket</div>
-            <div style="font-size:.83rem;">Ce partenaire n'a pas encore de tickets ouverts.</div>
+            <div class="tickets-empty-icon">🎉</div>
+            <div class="tickets-empty-title">Aucun ticket</div>
+            <div class="tickets-empty-sub">Ce partenaire n'a pas encore de tickets ouverts.</div>
         </div>
     </div>
 
@@ -883,7 +1161,22 @@
 
 <th:block layout:fragment="scripts">
 
-    <!-- ── Modal: Section (add / edit) ── -->
+    <!-- ── Modal de confirmation danger ── -->
+    <div id="confirmModal" class="modal-overlay" onclick="if(event.target===this) closeModal('confirmModal')">
+        <div class="modal-box confirm-box">
+            <div class="confirm-icon-wrap">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </div>
+            <div class="confirm-title" id="confirmTitle">Confirmation</div>
+            <div class="confirm-message" id="confirmMessage"></div>
+            <div class="confirm-footer">
+                <button type="button" class="btn-modal-cancel" onclick="closeModal('confirmModal')">Annuler</button>
+                <button type="button" class="btn-danger" id="confirmBtn" onclick="execConfirm()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
     <div id="sectionModal" class="modal-overlay" onclick="if(event.target===this) closeModal('sectionModal')">
         <div class="modal-box">
             <div class="modal-header">
@@ -906,7 +1199,6 @@
         </div>
     </div>
 
-    <!-- ── Modal: Entry (add / edit) ── -->
     <div id="entryModal" class="modal-overlay" onclick="if(event.target===this) closeModal('entryModal')">
         <div class="modal-box">
             <div class="modal-header">
@@ -957,9 +1249,34 @@
             if (av) av.classList.add(cls);
         })();
 
+        /* ── Compteurs tickets ── */
+        (function() {
+            var counts = { OPEN: 0, IN_PROGRESS: 0, RESOLVED: 0, CLOSED: 0 };
+            document.querySelectorAll('.ticket-item').forEach(function(t) {
+                var s = t.dataset.status;
+                if (counts[s] !== undefined) counts[s]++;
+            });
+            var el;
+            if ((el = document.getElementById('cnt-open')))     el.textContent = counts.OPEN;
+            if ((el = document.getElementById('cnt-progress'))) el.textContent = counts.IN_PROGRESS;
+            if ((el = document.getElementById('cnt-resolved'))) el.textContent = counts.RESOLVED;
+            if ((el = document.getElementById('cnt-closed')))   el.textContent = counts.CLOSED;
+        })();
+
+        /* ── Tab slider ── */
+        function updateSlider(btn) {
+            var slider = document.getElementById('tabSlider');
+            if (!slider || !btn) return;
+            var bar = btn.closest('.tab-bar');
+            var barRect = bar.getBoundingClientRect();
+            var btnRect = btn.getBoundingClientRect();
+            slider.style.left  = (btnRect.left - barRect.left) + 'px';
+            slider.style.width = btnRect.width + 'px';
+        }
+
         /* ── Tab system ── */
         var urlParams = new URLSearchParams(window.location.search);
-        var activeTab  = urlParams.get('tab') || 'infos';
+        var activeTab = urlParams.get('tab') || 'infos';
         switchTab(activeTab, false);
 
         function switchTab(name, pushState) {
@@ -968,7 +1285,7 @@
             var panel = document.getElementById('tab-' + name);
             var btn   = document.querySelector('[data-tab="' + name + '"]');
             if (panel) panel.classList.add('active');
-            if (btn)   btn.classList.add('active');
+            if (btn)   { btn.classList.add('active'); updateSlider(btn); }
             if (pushState !== false) {
                 var url = new URL(window.location);
                 url.searchParams.set('tab', name);
@@ -976,8 +1293,19 @@
             }
         }
 
-        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        var tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+        tabBtns.forEach(function(btn) {
             btn.addEventListener('click', function() { switchTab(this.dataset.tab); });
+            btn.addEventListener('keydown', function(e) {
+                var idx = tabBtns.indexOf(this);
+                if (e.key === 'ArrowRight') { e.preventDefault(); tabBtns[(idx + 1) % tabBtns.length].focus(); tabBtns[(idx + 1) % tabBtns.length].click(); }
+                if (e.key === 'ArrowLeft')  { e.preventDefault(); tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].focus(); tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].click(); }
+            });
+        });
+
+        window.addEventListener('resize', function() {
+            var activeBtn = document.querySelector('.tab-btn.active');
+            if (activeBtn) updateSlider(activeBtn);
         });
 
         /* ── Password reveal ── */
@@ -994,10 +1322,77 @@
             if (hide) hide.style.display = isVisible ? 'none' : '';
         }
 
-        /* ── Modals ── */
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('open');
+        /* ── Modal de confirmation danger ── */
+        var _confirmForm = null;
+        function openConfirmModal(form, message, title) {
+            _confirmForm = form;
+            document.getElementById('confirmTitle').textContent   = title   || 'Confirmation';
+            document.getElementById('confirmMessage').textContent = message || 'Confirmer cette action ?';
+            document.getElementById('confirmModal').classList.add('open');
         }
+        function execConfirm() {
+            if (_confirmForm) { _confirmForm.submit(); }
+            closeModal('confirmModal');
+        }
+
+        /* ── Alerte expiration support ── */
+        (function() {
+            var card = document.getElementById('supportCard');
+            if (!card) return;
+            var iso = card.dataset.supportTo;
+            if (!iso) return;
+            var supportTo = new Date(iso);
+            var today     = new Date(); today.setHours(0,0,0,0);
+            var diffDays  = Math.ceil((supportTo - today) / 86400000);
+            var alert     = document.getElementById('supportAlert');
+            if (!alert) return;
+            if (diffDays < 0) {
+                card.classList.add('expired');
+                alert.className = 'support-alert expired';
+                alert.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Support expiré';
+                alert.style.display = 'inline-flex';
+            } else if (diffDays <= 30) {
+                card.classList.add('expiring');
+                alert.className = 'support-alert expiring';
+                alert.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Expire dans ' + diffDays + ' jour' + (diffDays > 1 ? 's' : '');
+                alert.style.display = 'inline-flex';
+            }
+        })();
+
+        /* ── Filtre tickets par chip ── */
+        var activeFilter = null;
+        var filterMap = {
+            'cnt-open':     'OPEN',
+            'cnt-progress': 'IN_PROGRESS',
+            'cnt-resolved': 'RESOLVED',
+            'cnt-closed':   'CLOSED'
+        };
+        document.querySelectorAll('.summary-chip').forEach(function(chip) {
+            chip.addEventListener('click', function() {
+                var countId = chip.querySelector('[id^="cnt-"]');
+                if (!countId) return;
+                var status = filterMap[countId.id];
+                if (!status) return;
+                if (activeFilter === status) {
+                    /* désactiver le filtre */
+                    activeFilter = null;
+                    chip.classList.remove('filter-active');
+                    document.querySelectorAll('.ticket-item').forEach(function(t) {
+                        t.classList.remove('hidden-by-filter');
+                    });
+                } else {
+                    activeFilter = status;
+                    document.querySelectorAll('.summary-chip').forEach(function(c) { c.classList.remove('filter-active'); });
+                    chip.classList.add('filter-active');
+                    document.querySelectorAll('.ticket-item').forEach(function(t) {
+                        t.classList.toggle('hidden-by-filter', t.dataset.status !== status);
+                    });
+                }
+            });
+        });
+
+        /* ── Modals ── */
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
         function openAddSection() {
             document.getElementById('sectionModalTitle').textContent = 'Nouvelle section';
@@ -1035,7 +1430,6 @@
             setTimeout(function() { document.getElementById('entryLabel').focus(); }, 50);
         }
 
-        /* ── Copy entry value ── */
         function copyEntryValue(btn) {
             var val = btn.dataset.val;
             copyToClipboard(val);
@@ -1043,7 +1437,14 @@
             setTimeout(function() { btn.classList.remove('copied'); }, 1500);
         }
 
-        /* Close modals on Escape */
+        function copyCoord(btn) {
+            var val = btn.dataset.val;
+            if (!val) return;
+            copyToClipboard(val);
+            btn.classList.add('copied');
+            setTimeout(function() { btn.classList.remove('copied'); }, 1500);
+        }
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal('sectionModal');

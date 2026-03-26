@@ -298,7 +298,10 @@
             color: var(--text);
         }
         .contact-channels { display: grid; grid-template-columns: 1fr 1fr; }
-        @media (max-width: 540px) { .contact-channels { grid-template-columns: 1fr; } }
+        @media (max-width: 540px) {
+            .contact-channels { grid-template-columns: 1fr; }
+            .greet-name { font-size: 1.4rem; }
+        }
 
         .contact-channel {
             display: flex;

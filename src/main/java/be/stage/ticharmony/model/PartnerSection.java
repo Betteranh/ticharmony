@@ -3,6 +3,7 @@ package be.stage.ticharmony.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,5 +33,6 @@ public class PartnerSection {
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC, id ASC")
+    @BatchSize(size = 30)
     private List<PartnerEntry> entries = new ArrayList<>();
 }
