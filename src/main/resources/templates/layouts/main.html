@@ -79,7 +79,7 @@
 <body class="flex flex-col min-h-screen bg-blue-50">
 
 <!-- Header -->
-<div th:replace="fragments/header :: header"></div>
+<div th:replace="~{fragments/header :: header}"></div>
 
 <div id="already-logged-toast"
      th:if="${alreadyLoggedIn}"
@@ -99,7 +99,7 @@
 </main>
 
 <!-- Footer -->
-<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <!-- Drawer Notifications (Sidebar à droite, UNIQUEMENT pour un utilisateur connecté) -->
 <div sec:authorize="isAuthenticated()">
@@ -114,7 +114,7 @@
                 class="absolute top-3 right-3 z-10 text-xl leading-none text-white text-opacity-60 hover:text-opacity-100 transition-all duration-150"
                 style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgba(255,255,255,.08);"
                 title="Fermer">&times;</button>
-        <div th:replace="fragments/notifications :: notifications"></div>
+        <div th:replace="~{fragments/notifications :: notifications}"></div>
     </div>
 
     <!-- ═══════════════════════════════════════════

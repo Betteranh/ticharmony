@@ -1,0 +1,48 @@
+services:
+
+  # ── Base de données MariaDB ──────────────────────────────────────────────────
+  db:
+    image: mariadb:11
+    container_name: ticharmony-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - ticharmony-net
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Application Spring Boot ──────────────────────────────────────────────────
+  app:
+    build: .
+    container_name: ticharmony-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mariadb://db:3306/${DB_NAME}?useSSL=false&serverTimezone=Europe/Brussels
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      APP_BASE_URL: ${APP_BASE_URL}
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - ticharmony-net
+
+# ── Volumes persistants ──────────────────────────────────────────────────────
+volumes:
+  db_data:
+
+# ── Réseau interne ────────────────────────────────────────────────────────────
+networks:
+  ticharmony-net:
