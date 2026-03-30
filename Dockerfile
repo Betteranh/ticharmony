@@ -5,7 +5,7 @@ WORKDIR /app
 # Copie les fichiers Maven et télécharge les dépendances (cache Docker)
 COPY mvnw pom.xml ./
 COPY .mvn .mvn
-RUN ./mvnw dependency:go-offline -q
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
 
 # Copie le code source et construit le JAR (sans les tests)
 COPY src ./src
