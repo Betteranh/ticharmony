@@ -13,3 +13,9 @@ coverage/
 .idea/
 .vscode/
 .claude/settings.local.json
+
+# Session/planning docs for the AI agent — kept local only, not pushed.
+/CHECKLIST.md
+/DECISIONS.md
+/SESSION.md
+/SPEC.md
