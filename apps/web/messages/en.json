@@ -1,0 +1,392 @@
+{
+  "seo": {
+    "home": {
+      "title": "IT4U — Centralized IT Support for Nonprofits & SMEs | TIC Harmony",
+      "description": "Multi-tenant IT support platform for Belgian nonprofits and SMEs: ticketing, knowledge base and equipment inventory, by TIC Harmony."
+    },
+    "login": {
+      "title": "Sign in — IT4U",
+      "description": "Sign in to your IT4U support workspace to track tickets and access the knowledge base."
+    },
+    "signup": {
+      "title": "Create an account — IT4U | IT Support for Nonprofits & SMEs",
+      "description": "Create your IT4U account and get centralized IT support, built for Belgian nonprofits and SMEs."
+    }
+  },
+  "common": {
+    "appName": "TIC Harmony",
+    "loading": "Loading…",
+    "signingIn": "Signing in…",
+    "signingOut": "Signing out…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Access your support workspace",
+      "email": "Email address",
+      "password": "Password",
+      "submit": "Sign in",
+      "error": "Invalid credentials",
+      "chooseWorkspace": "Several workspaces are linked to this email — choose which one to sign in to:",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create an account"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Your personal support space, ready in 2 minutes",
+      "individualNote": "A personal space to track your requests and chat with our support team.",
+      "subscriptionNote": "A subscription is required to get support. You'll be able to pick a plan after signing up.",
+      "businessTitle": "Represent a business?",
+      "businessNote": "Partner spaces (multi-agent) are set up by our team. Get in touch:",
+      "avatar": "Choose your avatar",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email address",
+      "password": "Password",
+      "submit": "Create my account",
+      "error": "Something went wrong, please try again",
+      "errorConflict": "An account already exists with this email",
+      "haveAccount": "Already have an account?"
+    }
+  },
+  "landing": {
+    "nav": {
+      "login": "Log In",
+      "signup": "Sign Up"
+    },
+    "hero": {
+      "title1": "Customer support,",
+      "title2": "fully under control.",
+      "subtitle": "Centralize tickets, keep your teams aligned, and resolve faster — for internal and external customers alike.",
+      "cta": "Create my account",
+      "businessLink": "Represent a business? →"
+    },
+    "demo": {
+      "title": "Try it yourself",
+      "subtitle": "A preview of your future ticket queue.",
+      "tabQueue": "Ticket queue",
+      "myQueue": "My queue",
+      "noneClaimed": "No tickets claimed yet.",
+      "incidents": "Open tickets"
+    },
+    "features": {
+      "title": "Everything you need to run support",
+      "subtitle": "Built for internal and multi-client support teams.",
+      "tickets": { "title": "Ticket management", "body": "Create, prioritize, and track every request from first contact to resolution." },
+      "multiTenant": { "title": "Secure multi-tenancy", "body": "Strict data isolation between organizations via PostgreSQL row-level security." },
+      "notes": { "title": "Internal notes", "body": "Collaborate as a team on a ticket without the customer seeing behind the scenes." },
+      "sla": { "title": "Priorities & statuses", "body": "From urgent to resolved, keep a clear view of your workload." },
+      "auth": { "title": "Secure authentication", "body": "Role-based accounts (agent, admin, customer) with JWT tokens and isolated access." },
+      "kb": { "title": "Knowledge base", "body": "Centralize your procedures so your team can answer faster." }
+    },
+    "footer": {
+      "rights": "All rights reserved."
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tickets": "Tickets",
+    "knowledgeBase": "Documentation",
+    "users": "Users",
+    "assets": "Asset management",
+    "settings": "Settings",
+    "logout": "Log out",
+    "toolsTrigger": "Tools",
+    "ticketsRemaining": "tickets remaining",
+    "points": "Points",
+    "pointsComingSoon": "Points system coming soon",
+    "activeDirectory": "Active Directory",
+    "tools": {
+      "groups": {
+        "workspace": "Workspace",
+        "knowledge": "Knowledge",
+        "management": "Management",
+        "infrastructure": "Infrastructure"
+      }
+    },
+    "userMenu": {
+      "analytics": "Analytics",
+      "achievements": "Achievements",
+      "pastTickets": "Past tickets",
+      "support": "Support & feedback",
+      "comingSoon": "Coming soon"
+    },
+    "leaderboard": {
+      "title": "Leaderboard",
+      "badge": "Global",
+      "rookie": "Rookie",
+      "user": "User",
+      "score": "Score",
+      "comingSoon": "The leaderboard will be available soon."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "openTickets": "Open tickets",
+    "inProgress": "In progress",
+    "resolvedToday": "Resolved today",
+    "recentTickets": "Recent tickets"
+  },
+  "tickets": {
+    "title": "Tickets",
+    "newTicket": "New ticket",
+    "attachFile": "Attach a file",
+    "unassigned": "Unassigned",
+    "me": "Me",
+    "assignToMe": "Assign to me",
+    "unassign": "Unassign",
+    "confirmAssignment": "Confirm",
+    "closeTicket": "Close ticket",
+    "reopenTicket": "Reopen ticket",
+    "reportedBy": "Reported by",
+    "address": "Address",
+    "department": "Department",
+    "location": "Location",
+    "contact": "Contact",
+    "issueDescription": "Issue Description",
+    "status": {
+      "OPEN": "Open",
+      "IN_PROGRESS": "In progress",
+      "PENDING_CUSTOMER": "Pending customer",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed",
+      "REOPENED": "Reopened"
+    },
+    "priority": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "columns": {
+      "number": "#",
+      "title": "Title",
+      "company": "Company",
+      "requester": "Requester",
+      "assignee": "Assignee",
+      "status": "Status",
+      "priority": "Priority",
+      "updatedAt": "Updated"
+    }
+  },
+  "directory": {
+    "pageTitle": "Active Directory",
+    "clientsSubtitle": "Pick a client company to browse its directory.",
+    "usersCount": "{count} users",
+    "back": "All companies",
+    "searchPlaceholder": "Search users…",
+    "empty": "No client companies yet.",
+    "noUsers": "This company has no users yet.",
+    "newClient": "New client company",
+    "form": {
+      "nameLabel": "Company name",
+      "slugLabel": "Workspace ID",
+      "slugHint": "Lowercase letters, numbers and dashes only — this is the ID the company will use to log in.",
+      "addressLabel": "Address",
+      "adminSectionTitle": "First administrator",
+      "adminFirstNameLabel": "First name",
+      "adminLastNameLabel": "Last name",
+      "adminEmailLabel": "Email",
+      "adminDepartmentLabel": "Department",
+      "adminLocationLabel": "Location",
+      "adminPhoneLabel": "Phone",
+      "adminPasswordLabel": "Password",
+      "create": "Create",
+      "cancel": "Cancel"
+    },
+    "tabs": {
+      "profile": "Profile",
+      "groups": "Groups",
+      "licenses": "Licenses",
+      "devices": "Devices",
+      "authentication": "Authentication"
+    },
+    "profile": {
+      "identity": "Identity",
+      "displayName": "Display Name",
+      "username": "Username",
+      "title": "Title",
+      "employeeId": "Employee ID",
+      "email": "Email",
+      "phone": "Phone",
+      "organization": "Organization",
+      "address": "Address",
+      "department": "Department",
+      "lastLogin": "Last Login"
+    },
+    "groups": {
+      "title": "Group memberships",
+      "name": "Group name",
+      "action": "Action",
+      "addPlaceholder": "Add to group…",
+      "add": "Add"
+    },
+    "licenses": {
+      "title": "Assigned licenses",
+      "name": "License",
+      "action": "Action",
+      "namePlaceholder": "Name (e.g. Office 365, pCloud…)",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Password",
+      "add": "Add",
+      "empty": "No license assigned."
+    },
+    "devices": {
+      "title": "Registered devices",
+      "viewInAssets": "View in Asset Management",
+      "empty": "No registered devices."
+    },
+    "authentication": {
+      "actions": "Actions",
+      "resetPassword": "Reset password",
+      "lockAccount": "Lock account",
+      "resetMfa": "Reset MFA",
+      "disableAccount": "Disable account",
+      "methods": "Authentication methods",
+      "mfaStatus": "MFA status",
+      "mfaEnrolled": "Enrolled",
+      "mfaNotEnrolled": "Not enrolled",
+      "passwordExpired": "Password expired",
+      "yes": "Yes",
+      "no": "No",
+      "identityVerification": "Identity Verification",
+      "sendVerificationCode": "Send verification code"
+    },
+    "simulatedAction": "Simulated — no real change was made"
+  },
+  "knowledgeBase": {
+    "title": "Documentation",
+    "subtitle": "Pick a topic, then an article.",
+    "searchPlaceholder": "Search an article…",
+    "emptyCategories": "No topics yet.",
+    "emptyArticles": "No articles in this topic.",
+    "selectCategory": "Pick a topic on the left.",
+    "updated": "Updated",
+    "back": "Back",
+    "newCategory": "New topic",
+    "editCategory": "Rename topic",
+    "newArticle": "New article",
+    "editArticle": "Edit article",
+    "categoryNameLabel": "Topic name",
+    "categoryLabel": "Topic",
+    "articleTitleLabel": "Title",
+    "articleBodyLabel": "Content",
+    "visibilityLabel": "Visibility",
+    "visibilityInternal": "Internal (staff only)",
+    "visibilityPublic": "Public (visible to customers)",
+    "create": "Create",
+    "translationNote": "Written in French — the English version will mirror this text for now and can be translated later."
+  },
+  "assets": {
+    "pageTitle": "Asset management",
+    "clientsSubtitle": "Pick a client company to browse its IT inventory.",
+    "usersCount": "{count} users",
+    "emptyClients": "No client company yet.",
+    "back": "All companies",
+    "subtitle": "Company IT inventory.",
+    "searchPlaceholder": "Search an asset…",
+    "empty": "No assets yet.",
+    "noResults": "No assets match these filters.",
+    "allTypes": "All types",
+    "allStatuses": "All statuses",
+    "newAsset": "New asset",
+    "editAsset": "Edit asset",
+    "updated": "Updated",
+    "unassigned": "Unassigned",
+    "columns": {
+      "assetTag": "Tag",
+      "type": "Type",
+      "model": "Model",
+      "assignedOrLocation": "Assigned to / Location",
+      "status": "Status",
+      "updatedAt": "Updated"
+    },
+    "type": {
+      "LAPTOP": "Laptop",
+      "DESKTOP": "Desktop",
+      "SWITCH": "Switch",
+      "ROUTER": "Router",
+      "SERVER": "Server",
+      "PRINTER": "Printer",
+      "OTHER": "Other"
+    },
+    "status": {
+      "DEPLOYED": "Deployed",
+      "IN_STOCK": "In stock",
+      "DISABLED": "Disabled",
+      "RETIRED": "Retired"
+    },
+    "form": {
+      "assetTagLabel": "Tag",
+      "typeLabel": "Type",
+      "modelLabel": "Model",
+      "statusLabel": "Status",
+      "assigneeLabel": "Assigned to",
+      "assigneeHint": "Only for computers (laptop/desktop).",
+      "locationLabel": "Location",
+      "locationHint": "For network gear (switch, router, server).",
+      "serialNumberLabel": "Serial number",
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "notes": {
+      "title": "Additional information",
+      "empty": "No information added yet.",
+      "labelPlaceholder": "Label (e.g. User password, Router logs…)",
+      "valuePlaceholder": "Value",
+      "sensitive": "Sensitive (masked by default)",
+      "add": "Add"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage your organization's accounts.",
+    "searchPlaceholder": "Search for a user…",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "roles": "Roles",
+      "status": "Status"
+    },
+    "empty": "No users yet.",
+    "noResults": "No users match this search.",
+    "newUser": "New user",
+    "form": {
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "departmentLabel": "Department",
+      "locationLabel": "Location",
+      "phoneLabel": "Phone",
+      "passwordLabel": "Password",
+      "rolesLabel": "Roles",
+      "create": "Create",
+      "cancel": "Cancel"
+    },
+    "role": {
+      "SUPER_ADMIN": "Super admin",
+      "ADMIN": "Admin",
+      "AGENT": "Technician",
+      "CUSTOMER": "User"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "INVITED": "Invited",
+      "DISABLED": "Disabled"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "markAllRead": "Mark all as read",
+    "types": {
+      "TICKET_ASSIGNED": "Ticket #{number} \"{title}\" was assigned to you",
+      "TICKET_RESOLVED": "Your ticket #{number} \"{title}\" was resolved",
+      "TICKET_COMMENT": "New comment on ticket #{number} \"{title}\""
+    }
+  }
+}

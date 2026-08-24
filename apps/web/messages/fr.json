@@ -1,0 +1,392 @@
+{
+  "seo": {
+    "home": {
+      "title": "IT4U — Support IT centralisé pour ASBL et PME | TIC Harmony",
+      "description": "Plateforme de support IT multi-tenant pour ASBL et PME belges : gestion des tickets, base de connaissances et inventaire du matériel, par TIC Harmony."
+    },
+    "login": {
+      "title": "Connexion — IT4U",
+      "description": "Connectez-vous à votre espace de support IT4U pour suivre vos tickets et accéder à la base de connaissances."
+    },
+    "signup": {
+      "title": "Créer un compte — IT4U | Support IT pour ASBL et PME",
+      "description": "Créez votre compte IT4U et accédez à un support informatique centralisé, pensé pour les ASBL et PME belges."
+    }
+  },
+  "common": {
+    "appName": "TIC Harmony",
+    "loading": "Chargement…",
+    "signingIn": "Connexion…",
+    "signingOut": "Déconnexion…",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "search": "Rechercher"
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "subtitle": "Accédez à votre espace support",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "error": "Identifiants invalides",
+      "chooseWorkspace": "Plusieurs espaces sont associés à cet email — choisissez celui auquel vous connecter :",
+      "noAccount": "Pas encore de compte ?",
+      "createAccount": "Créer un compte"
+    },
+    "signup": {
+      "title": "Créer votre compte",
+      "subtitle": "Votre espace support personnel, prêt en 2 minutes",
+      "individualNote": "Un espace personnel pour suivre vos demandes et échanger avec notre équipe support.",
+      "subscriptionNote": "Un abonnement est nécessaire pour bénéficier du support. Vous pourrez choisir votre formule après l'inscription.",
+      "businessTitle": "Vous représentez une entreprise ?",
+      "businessNote": "Les espaces partenaires (multi-agents) sont mis en place par notre équipe. Contactez-nous :",
+      "avatar": "Choisissez votre avatar",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "submit": "Créer mon compte",
+      "error": "Une erreur est survenue, veuillez réessayer",
+      "errorConflict": "Un compte existe déjà avec cette adresse e-mail",
+      "haveAccount": "Déjà un compte ?"
+    }
+  },
+  "landing": {
+    "nav": {
+      "login": "Connexion",
+      "signup": "Créer un compte"
+    },
+    "hero": {
+      "title1": "Le support client,",
+      "title2": "sous contrôle total.",
+      "subtitle": "Centralisez les tickets, gardez vos équipes alignées et résolvez plus vite — pour vos clients internes comme externes.",
+      "cta": "Créer mon compte",
+      "businessLink": "Vous êtes une entreprise ? →"
+    },
+    "demo": {
+      "title": "Essayez par vous-même",
+      "subtitle": "Un aperçu de votre future file de tickets.",
+      "tabQueue": "File de tickets",
+      "myQueue": "Mes tickets",
+      "noneClaimed": "Aucun ticket assigné pour l'instant.",
+      "incidents": "Tickets ouverts"
+    },
+    "features": {
+      "title": "Tout ce qu'il faut pour gérer votre support",
+      "subtitle": "Conçu pour les équipes support internes et multi-clients.",
+      "tickets": { "title": "Gestion de tickets", "body": "Créez, priorisez et suivez chaque demande du premier contact à la résolution." },
+      "multiTenant": { "title": "Multi-espaces sécurisé", "body": "Isolation stricte des données entre organisations grâce au RLS PostgreSQL." },
+      "notes": { "title": "Notes internes", "body": "Échangez en équipe sur un ticket sans que le client ne voie les coulisses." },
+      "sla": { "title": "Priorités & statuts", "body": "Du ticket urgent au ticket résolu, gardez une vue claire de la charge." },
+      "auth": { "title": "Authentification sécurisée", "body": "Comptes par rôle (agent, admin, client) avec jetons JWT et accès cloisonné." },
+      "kb": { "title": "Base de connaissances", "body": "Centralisez vos procédures pour que votre équipe réponde plus vite." }
+    },
+    "footer": {
+      "rights": "Tous droits réservés."
+    }
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "tickets": "Tickets",
+    "knowledgeBase": "Documentation",
+    "users": "Utilisateurs",
+    "assets": "Gestion des assets",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "toolsTrigger": "Outils",
+    "ticketsRemaining": "tickets restants",
+    "points": "Points",
+    "pointsComingSoon": "Système de points à venir",
+    "activeDirectory": "Annuaire",
+    "tools": {
+      "groups": {
+        "workspace": "Espace de travail",
+        "knowledge": "Connaissances",
+        "management": "Gestion",
+        "infrastructure": "Infrastructure"
+      }
+    },
+    "userMenu": {
+      "analytics": "Statistiques",
+      "achievements": "Succès",
+      "pastTickets": "Historique des tickets",
+      "support": "Support & retours",
+      "comingSoon": "Bientôt disponible"
+    },
+    "leaderboard": {
+      "title": "Classement",
+      "badge": "Global",
+      "rookie": "Débutant",
+      "user": "Utilisateur",
+      "score": "Score",
+      "comingSoon": "Le classement sera bientôt disponible."
+    }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "openTickets": "Tickets ouverts",
+    "inProgress": "En cours",
+    "resolvedToday": "Résolus aujourd'hui",
+    "recentTickets": "Tickets récents"
+  },
+  "tickets": {
+    "title": "Tickets",
+    "newTicket": "Nouveau ticket",
+    "attachFile": "Joindre un fichier",
+    "unassigned": "Non assigné",
+    "me": "Moi",
+    "assignToMe": "S'assigner à moi",
+    "unassign": "Retirer l'assignation",
+    "confirmAssignment": "Confirmer",
+    "closeTicket": "Clôturer le ticket",
+    "reopenTicket": "Réouvrir le ticket",
+    "reportedBy": "Signalé par",
+    "address": "Adresse",
+    "department": "Service",
+    "location": "Emplacement",
+    "contact": "Contact",
+    "issueDescription": "Description du problème",
+    "status": {
+      "OPEN": "Ouvert",
+      "IN_PROGRESS": "En cours",
+      "PENDING_CUSTOMER": "En attente client",
+      "RESOLVED": "Résolu",
+      "CLOSED": "Fermé",
+      "REOPENED": "Réouvert"
+    },
+    "priority": {
+      "LOW": "Basse",
+      "MEDIUM": "Normale",
+      "HIGH": "Haute",
+      "URGENT": "Urgente"
+    },
+    "columns": {
+      "number": "N°",
+      "title": "Titre",
+      "company": "Entreprise",
+      "requester": "Demandeur",
+      "assignee": "Assigné à",
+      "status": "Statut",
+      "priority": "Priorité",
+      "updatedAt": "Mis à jour"
+    }
+  },
+  "directory": {
+    "pageTitle": "Active Directory",
+    "clientsSubtitle": "Choisissez une entreprise cliente pour consulter son annuaire.",
+    "usersCount": "{count} utilisateurs",
+    "back": "Toutes les entreprises",
+    "searchPlaceholder": "Rechercher un utilisateur…",
+    "empty": "Aucune entreprise cliente pour l'instant.",
+    "noUsers": "Cette entreprise n'a pas encore d'utilisateurs.",
+    "newClient": "Nouvelle entreprise cliente",
+    "form": {
+      "nameLabel": "Nom de l'entreprise",
+      "slugLabel": "Identifiant workspace",
+      "slugHint": "Minuscules, chiffres et tirets uniquement — c'est l'ID que l'entreprise utilisera pour se connecter.",
+      "addressLabel": "Adresse",
+      "adminSectionTitle": "Premier administrateur",
+      "adminFirstNameLabel": "Prénom",
+      "adminLastNameLabel": "Nom",
+      "adminEmailLabel": "Email",
+      "adminDepartmentLabel": "Service",
+      "adminLocationLabel": "Emplacement",
+      "adminPhoneLabel": "Téléphone",
+      "adminPasswordLabel": "Mot de passe",
+      "create": "Créer",
+      "cancel": "Annuler"
+    },
+    "tabs": {
+      "profile": "Profil",
+      "groups": "Groupes",
+      "licenses": "Licences",
+      "devices": "Appareils",
+      "authentication": "Authentification"
+    },
+    "profile": {
+      "identity": "Identité",
+      "displayName": "Nom affiché",
+      "username": "Identifiant",
+      "title": "Poste",
+      "employeeId": "Matricule",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "organization": "Organisation",
+      "address": "Adresse",
+      "department": "Service",
+      "lastLogin": "Dernière connexion"
+    },
+    "groups": {
+      "title": "Appartenance aux groupes",
+      "name": "Nom du groupe",
+      "action": "Action",
+      "addPlaceholder": "Ajouter au groupe…",
+      "add": "Ajouter"
+    },
+    "licenses": {
+      "title": "Licences attribuées",
+      "name": "Licence",
+      "action": "Action",
+      "namePlaceholder": "Nom (ex. Office 365, pCloud…)",
+      "emailPlaceholder": "Email",
+      "passwordPlaceholder": "Mot de passe",
+      "add": "Ajouter",
+      "empty": "Aucune licence attribuée."
+    },
+    "devices": {
+      "title": "Appareils enregistrés",
+      "viewInAssets": "Voir dans Gestion des assets",
+      "empty": "Aucun appareil enregistré."
+    },
+    "authentication": {
+      "actions": "Actions",
+      "resetPassword": "Réinitialiser le mot de passe",
+      "lockAccount": "Verrouiller le compte",
+      "resetMfa": "Réinitialiser le MFA",
+      "disableAccount": "Désactiver le compte",
+      "methods": "Méthodes d'authentification",
+      "mfaStatus": "Statut MFA",
+      "mfaEnrolled": "Activé",
+      "mfaNotEnrolled": "Non activé",
+      "passwordExpired": "Mot de passe expiré",
+      "yes": "Oui",
+      "no": "Non",
+      "identityVerification": "Vérification d'identité",
+      "sendVerificationCode": "Envoyer un code de vérification"
+    },
+    "simulatedAction": "Action simulée — aucune modification réelle"
+  },
+  "knowledgeBase": {
+    "title": "Documentation",
+    "subtitle": "Choisissez un thème, puis un article.",
+    "searchPlaceholder": "Rechercher un article…",
+    "emptyCategories": "Aucun thème pour l'instant.",
+    "emptyArticles": "Aucun article dans ce thème.",
+    "selectCategory": "Choisissez un thème à gauche.",
+    "updated": "Mis à jour",
+    "back": "Retour",
+    "newCategory": "Nouveau thème",
+    "editCategory": "Renommer le thème",
+    "newArticle": "Nouvel article",
+    "editArticle": "Modifier l'article",
+    "categoryNameLabel": "Nom du thème",
+    "categoryLabel": "Thème",
+    "articleTitleLabel": "Titre",
+    "articleBodyLabel": "Contenu",
+    "visibilityLabel": "Visibilité",
+    "visibilityInternal": "Interne (équipe uniquement)",
+    "visibilityPublic": "Public (visible des clients)",
+    "create": "Créer",
+    "translationNote": "Rédigez en français — la version anglaise reprendra ce texte pour l'instant et pourra être traduite plus tard."
+  },
+  "assets": {
+    "pageTitle": "Gestion des assets",
+    "clientsSubtitle": "Choisissez une entreprise cliente pour consulter son parc informatique.",
+    "usersCount": "{count} utilisateurs",
+    "emptyClients": "Aucune entreprise cliente pour l'instant.",
+    "back": "Toutes les entreprises",
+    "subtitle": "Parc informatique de l'entreprise.",
+    "searchPlaceholder": "Rechercher un asset…",
+    "empty": "Aucun asset pour l'instant.",
+    "noResults": "Aucun asset ne correspond à ces filtres.",
+    "allTypes": "Tous les types",
+    "allStatuses": "Tous les statuts",
+    "newAsset": "Nouvel asset",
+    "editAsset": "Modifier l'asset",
+    "updated": "Mis à jour",
+    "unassigned": "Non assigné",
+    "columns": {
+      "assetTag": "Tag",
+      "type": "Type",
+      "model": "Modèle",
+      "assignedOrLocation": "Assigné à / Emplacement",
+      "status": "Statut",
+      "updatedAt": "Mis à jour"
+    },
+    "type": {
+      "LAPTOP": "Ordinateur portable",
+      "DESKTOP": "Ordinateur fixe",
+      "SWITCH": "Switch",
+      "ROUTER": "Routeur",
+      "SERVER": "Serveur",
+      "PRINTER": "Imprimante",
+      "OTHER": "Divers"
+    },
+    "status": {
+      "DEPLOYED": "Déployé",
+      "IN_STOCK": "En stock",
+      "DISABLED": "Désactivé",
+      "RETIRED": "Retiré"
+    },
+    "form": {
+      "assetTagLabel": "Tag",
+      "typeLabel": "Type",
+      "modelLabel": "Modèle",
+      "statusLabel": "Statut",
+      "assigneeLabel": "Assigné à",
+      "assigneeHint": "Réservé aux ordinateurs (portable/fixe).",
+      "locationLabel": "Emplacement",
+      "locationHint": "Pour le matériel réseau (switch, routeur, serveur).",
+      "serialNumberLabel": "Numéro de série",
+      "create": "Créer",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "notes": {
+      "title": "Informations supplémentaires",
+      "empty": "Aucune information ajoutée.",
+      "labelPlaceholder": "Libellé (ex. Mot de passe utilisateur, Logs routeur…)",
+      "valuePlaceholder": "Valeur",
+      "sensitive": "Sensible (masqué par défaut)",
+      "add": "Ajouter"
+    }
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "subtitle": "Gérez les comptes de votre organisation.",
+    "searchPlaceholder": "Rechercher un utilisateur…",
+    "columns": {
+      "name": "Nom",
+      "email": "Email",
+      "roles": "Rôles",
+      "status": "Statut"
+    },
+    "empty": "Aucun utilisateur pour l'instant.",
+    "noResults": "Aucun utilisateur ne correspond à cette recherche.",
+    "newUser": "Nouvel utilisateur",
+    "form": {
+      "firstNameLabel": "Prénom",
+      "lastNameLabel": "Nom",
+      "emailLabel": "Email",
+      "departmentLabel": "Service",
+      "locationLabel": "Emplacement",
+      "phoneLabel": "Téléphone",
+      "passwordLabel": "Mot de passe",
+      "rolesLabel": "Rôles",
+      "create": "Créer",
+      "cancel": "Annuler"
+    },
+    "role": {
+      "SUPER_ADMIN": "Super admin",
+      "ADMIN": "Admin",
+      "AGENT": "Technicien",
+      "CUSTOMER": "Utilisateur"
+    },
+    "status": {
+      "ACTIVE": "Actif",
+      "INVITED": "Invité",
+      "DISABLED": "Désactivé"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Aucune notification.",
+    "markAllRead": "Tout marquer comme lu",
+    "types": {
+      "TICKET_ASSIGNED": "Le ticket #{number} « {title} » vous a été assigné",
+      "TICKET_RESOLVED": "Votre ticket #{number} « {title} » a été résolu",
+      "TICKET_COMMENT": "Nouveau commentaire sur le ticket #{number} « {title} »"
+    }
+  }
+}

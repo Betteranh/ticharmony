@@ -1,0 +1,23 @@
+{
+  "name": "helpdesk-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run start:dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.8.0": true,
+    "argon2@0.44.0": true,
+    "prisma@7.8.0": true,
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true,
+    "@parcel/watcher@2.5.6": true,
+    "@swc/core@1.15.41": true
+  }
+}
