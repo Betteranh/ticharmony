@@ -10,7 +10,6 @@ Application web SaaS de helpdesk multi-client (inspirée NinjaOne), pour support
 - Multi-tenant : tenants `INTERNAL` (équipe) et `CLIENT` (entreprises clientes), cloisonnés via RLS PostgreSQL.
 - Deux modes d'inscription : individus en self-serve payant (`/signup`), organisations provisionnées par un admin (`POST /api/tenants`).
 - Langues : français / anglais (`next-intl`, routes `[locale]`).
-- Voir [SPEC.md](SPEC.md) pour le détail fonctionnel, [DECISIONS.md](DECISIONS.md) pour les choix d'architecture.
 
 ## Setup / lancement
 
@@ -47,10 +46,3 @@ packages/
 infra/
   docker/     docker-compose.yml (postgres, redis)
 ```
-
-## Liens utiles
-
-- [SPEC.md](SPEC.md) — objectifs fonctionnels, règles métier, inclus/exclus
-- [CHECKLIST.md](CHECKLIST.md) — règles à suivre avant/pendant/après le codage
-- [DECISIONS.md](DECISIONS.md) — décisions d'architecture et pourquoi
-- [SESSION.md](SESSION.md) — état actuel, reprise rapide entre deux sessions
