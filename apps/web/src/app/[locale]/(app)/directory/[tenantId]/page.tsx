@@ -11,7 +11,7 @@ export default async function DirectoryClientPage({
 }: {
   params: Promise<{ tenantId: string; locale: string }>;
 }) {
-  const { tenantId, locale } = await params;
+  const { tenantId } = await params;
 
   const [t, currentUser, tenants, users, assets] = await Promise.all([
     getTranslations("directory"),
@@ -41,7 +41,6 @@ export default async function DirectoryClientPage({
       assets={assets}
       canManage={canManage}
       isSuperAdmin={isSuperAdmin}
-      locale={locale}
       labels={{
         back: t("back"),
         searchPlaceholder: t("searchPlaceholder"),
@@ -70,13 +69,11 @@ export default async function DirectoryClientPage({
         profile: {
           identity: t("profile.identity"),
           displayName: t("profile.displayName"),
-          username: t("profile.username"),
           employeeId: t("profile.employeeId"),
           email: t("profile.email"),
           phone: t("profile.phone"),
           organization: t("profile.organization"),
           address: t("profile.address"),
-          lastLogin: t("profile.lastLogin"),
         },
         licenses: {
           title: t("licenses.title"),

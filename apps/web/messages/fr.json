@@ -232,13 +232,11 @@
     "profile": {
       "identity": "Identité",
       "displayName": "Nom affiché",
-      "username": "Identifiant",
       "employeeId": "Matricule",
       "email": "E-mail",
       "phone": "Téléphone",
       "organization": "Organisation",
-      "address": "Adresse",
-      "lastLogin": "Dernière connexion"
+      "address": "Adresse"
     },
     "licenses": {
       "title": "Licences attribuées",

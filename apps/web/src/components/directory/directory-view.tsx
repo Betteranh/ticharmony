@@ -21,8 +21,6 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { Avatar } from "@/components/ui/avatar";
 import { Modal } from "@/components/ui/modal";
 import type { Asset, DirectoryUser, UserLicense } from "@/lib/types";
-import { getDirectoryMock } from "@/lib/directory-mock";
-import { relativeTime } from "@/lib/format";
 
 const LICENSE_SUGGESTIONS = ["Office 365", "pCloud"];
 
@@ -48,13 +46,11 @@ interface Labels {
   profile: Record<
     | "identity"
     | "displayName"
-    | "username"
     | "employeeId"
     | "email"
     | "phone"
     | "organization"
-    | "address"
-    | "lastLogin",
+    | "address",
     string
   >;
   licenses: Record<
@@ -87,7 +83,6 @@ export function DirectoryView({
   assets,
   canManage,
   isSuperAdmin,
-  locale,
   labels,
 }: {
   tenantId: string;
@@ -99,7 +94,6 @@ export function DirectoryView({
   assets: Asset[];
   canManage: boolean;
   isSuperAdmin: boolean;
-  locale: string;
   labels: Labels;
 }) {
   const ta = useTranslations("assets");
@@ -141,7 +135,6 @@ export function DirectoryView({
   }, [users, query]);
 
   const selected = users.find((u) => u.id === selectedId) ?? null;
-  const mock = selected ? getDirectoryMock(selected) : null;
   const userAssets = useMemo(
     () => (selectedId ? assets.filter((a) => a.assignee?.id === selectedId) : []),
     [assets, selectedId],
@@ -311,7 +304,7 @@ export function DirectoryView({
             labels={{ ...labels.company, edit: labels.edit }}
             onSaved={() => router.refresh()}
           />
-        ) : selected && mock ? (
+        ) : selected ? (
           <div className="rounded-xl border border-hairline bg-surface">
             <div className="flex items-center justify-between gap-3 border-b border-hairline px-5 py-4">
               <div className="flex items-center gap-3">
@@ -428,7 +421,6 @@ export function DirectoryView({
                     ) : (
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <Field label={labels.profile.displayName} value={`${selected.firstName} ${selected.lastName}`} />
-                        <Field label={labels.profile.username} value={selected.email.split("@")[0]} />
                         <Field label={labels.profile.employeeId} value={selected.employeeCode ?? "—"} />
                         <Field label={labels.profile.email} value={selected.email} />
                         <Field label={labels.profile.phone} value={selected.phone ?? "—"} />
@@ -439,7 +431,6 @@ export function DirectoryView({
                     <p className="mb-3 text-sm font-medium text-text-primary">{labels.profile.organization}</p>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                       <Field label={labels.profile.address} value={tenantAddress ?? "—"} />
-                      <Field label={labels.profile.lastLogin} value={relativeTime(mock.lastLoginAt, locale)} />
                     </div>
                   </div>
                 </div>
