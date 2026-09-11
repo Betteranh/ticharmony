@@ -85,16 +85,33 @@ export function TicketDetail({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const optionsRef = useClickOutside(() => setOptionsOpen(false));
 
-  // Manager reassignment applies only on explicit confirmation, not on every
-  // <select> change, to avoid an accidental reassignment from a stray click.
-  // Resynced during render (not an effect) when the ticket's actual assignee
-  // changes — either from switching tickets or a confirmed reassignment.
+  // Manager reassignment, status and priority changes all apply only on
+  // explicit confirmation, not on every <select> change, to avoid an
+  // accidental change from a stray click. Each is resynced during render
+  // (not an effect) when the ticket's actual value changes — either from
+  // switching tickets or a confirmed change coming back through the props.
   const assigneeKey = `${ticket.id}:${ticket.assignee?.id ?? ""}`;
   const [syncedAssigneeKey, setSyncedAssigneeKey] = useState(assigneeKey);
   const [pendingAssigneeId, setPendingAssigneeId] = useState(ticket.assignee?.id ?? "");
   if (syncedAssigneeKey !== assigneeKey) {
     setSyncedAssigneeKey(assigneeKey);
     setPendingAssigneeId(ticket.assignee?.id ?? "");
+  }
+
+  const statusKey = `${ticket.id}:${ticket.status}`;
+  const [syncedStatusKey, setSyncedStatusKey] = useState(statusKey);
+  const [pendingStatus, setPendingStatus] = useState<Ticket["status"]>(ticket.status);
+  if (syncedStatusKey !== statusKey) {
+    setSyncedStatusKey(statusKey);
+    setPendingStatus(ticket.status);
+  }
+
+  const priorityKey = `${ticket.id}:${ticket.priority}`;
+  const [syncedPriorityKey, setSyncedPriorityKey] = useState(priorityKey);
+  const [pendingPriority, setPendingPriority] = useState<Ticket["priority"]>(ticket.priority);
+  if (syncedPriorityKey !== priorityKey) {
+    setSyncedPriorityKey(priorityKey);
+    setPendingPriority(ticket.priority);
   }
 
   // Present only when internal staff is acting on a client company's ticket
@@ -235,8 +252,9 @@ export function TicketDetail({
             <div className="relative" ref={optionsRef}>
               <button
                 onClick={() => setOptionsOpen((v) => !v)}
-                className="rounded-md p-1.5 text-text-tertiary transition-colors hover:bg-surface-raised hover:text-text-primary"
+                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs font-medium text-text-tertiary transition-colors hover:bg-surface-raised hover:text-text-primary"
               >
+                {t("options")}
                 <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
               </button>
               {optionsOpen && (
@@ -274,9 +292,9 @@ export function TicketDetail({
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {isStaff ? (
               <select
-                defaultValue={ticket.status}
-                onChange={(e) => patchTicket({ status: e.target.value })}
-                className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium outline-none focus:border-accent/60 ${STATUS_PILL[ticket.status]}`}
+                value={pendingStatus}
+                onChange={(e) => setPendingStatus(e.target.value as Ticket["status"])}
+                className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium outline-none focus:border-accent/60 ${STATUS_PILL[pendingStatus]}`}
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -287,11 +305,19 @@ export function TicketDetail({
             ) : (
               <StatusBadge status={ticket.status} />
             )}
+            {isStaff && pendingStatus !== ticket.status && (
+              <button
+                onClick={() => patchTicket({ status: pendingStatus })}
+                className="text-xs font-medium text-accent hover:text-accent-strong"
+              >
+                {t("confirm")}
+              </button>
+            )}
             {isStaff ? (
               <select
-                defaultValue={ticket.priority}
-                onChange={(e) => patchTicket({ priority: e.target.value })}
-                className={`cursor-pointer rounded-md border px-2 py-1 text-[11px] font-mono font-medium uppercase tracking-wider outline-none focus:border-accent/60 ${PRIORITY_PILL[ticket.priority]}`}
+                value={pendingPriority}
+                onChange={(e) => setPendingPriority(e.target.value as Ticket["priority"])}
+                className={`cursor-pointer rounded-md border px-2 py-1 text-[11px] font-mono font-medium uppercase tracking-wider outline-none focus:border-accent/60 ${PRIORITY_PILL[pendingPriority]}`}
               >
                 {PRIORITY_OPTIONS.map((p) => (
                   <option key={p} value={p}>
@@ -301,6 +327,14 @@ export function TicketDetail({
               </select>
             ) : (
               <PriorityBadge priority={ticket.priority} />
+            )}
+            {isStaff && pendingPriority !== ticket.priority && (
+              <button
+                onClick={() => patchTicket({ priority: pendingPriority })}
+                className="text-xs font-medium text-accent hover:text-accent-strong"
+              >
+                {t("confirm")}
+              </button>
             )}
           </div>
 
@@ -332,7 +366,7 @@ export function TicketDetail({
                     onClick={() => patchTicket({ assigneeId: pendingAssigneeId || null })}
                     className="text-xs font-medium text-accent hover:text-accent-strong"
                   >
-                    {t("confirmAssignment")}
+                    {t("confirm")}
                   </button>
                 )}
               </>
