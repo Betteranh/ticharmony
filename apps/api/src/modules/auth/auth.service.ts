@@ -8,9 +8,12 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { Prisma, Tenant } from '../../../generated/prisma/client';
 import { generateEmployeeCode } from '../../common/generate-employee-code';
+import { getTenantTx } from '../../common/tenant-context';
 import { PrismaService } from '../prisma/prisma.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 interface TokenPayload {
   sub: string;
@@ -241,5 +244,42 @@ export class AuthService {
       });
     });
     return user?.status === 'ACTIVE';
+  }
+
+  // Self-service profile edit (Settings → Profil) — name and avatar only.
+  // Open to every authenticated user regardless of role, scoped to their own
+  // row via getTenantTx() (RLS) + the caller's own id, never someone else's.
+  async updateMe(userId: string, dto: UpdateMeDto) {
+    return getTenantTx().user.update({
+      where: { id: userId },
+      data: {
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        avatar: dto.avatar,
+      },
+      select: { id: true, firstName: true, lastName: true, avatar: true },
+    });
+  }
+
+  // Self-service password change (Settings → Compte) — current password
+  // must be proven before a new one is accepted, same principle as every
+  // other password-gated action in this service.
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await getTenantTx().user.findUniqueOrThrow({
+      where: { id: userId },
+    });
+    const currentValid = await argon2.verify(
+      user.passwordHash,
+      dto.currentPassword,
+    );
+    if (!currentValid) {
+      throw new UnauthorizedException('Mot de passe actuel incorrect');
+    }
+    const passwordHash = await argon2.hash(dto.newPassword);
+    await getTenantTx().user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+    return { success: true };
   }
 }

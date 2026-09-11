@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Wrench,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Trophy,
   Ticket as TicketIcon,
   LayoutDashboard,
@@ -11,6 +13,7 @@ import {
   Bell,
   Boxes,
   Users as UsersIcon,
+  Search,
   Settings,
   LogOut,
   BarChart3,
@@ -72,6 +75,7 @@ export function TopNav({
   const tu = useTranslations("nav.userMenu");
   const tl = useTranslations("nav.leaderboard");
   const th = useTranslations("nav.history");
+  const td = useTranslations("dashboard.pagination");
   const tn = useTranslations("notifications");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -79,6 +83,8 @@ export function TopNav({
   const [toolsOpen, setToolsOpen] = useState(false);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyQuery, setHistoryQuery] = useState("");
+  const [historyPage, setHistoryPage] = useState(1);
   const [userOpen, setUserOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifItems, setNotifItems] = useState(notifications);
@@ -86,6 +92,23 @@ export function TopNav({
   const userRef = useClickOutside(() => setUserOpen(false));
   const notifRef = useClickOutside(() => setNotifOpen(false));
   const unreadCount = notifItems.filter((n) => !n.readAt).length;
+
+  // A modal-sized list, not a full page — 10/page keeps it from feeling
+  // cramped inside the fixed-height Modal.
+  const HISTORY_PAGE_SIZE = 10;
+  const filteredHistory = useMemo(() => {
+    const q = historyQuery.trim().toLowerCase();
+    if (!q) return ticketHistory;
+    return ticketHistory.filter(
+      (tk) => tk.title.toLowerCase().includes(q) || String(tk.number).includes(q),
+    );
+  }, [ticketHistory, historyQuery]);
+  const historyTotalPages = Math.max(1, Math.ceil(filteredHistory.length / HISTORY_PAGE_SIZE));
+  const historyCurrentPage = Math.min(historyPage, historyTotalPages);
+  const pagedHistory = filteredHistory.slice(
+    (historyCurrentPage - 1) * HISTORY_PAGE_SIZE,
+    historyCurrentPage * HISTORY_PAGE_SIZE,
+  );
 
   function goToTicket(ticket: Ticket) {
     setHistoryOpen(false);
@@ -253,25 +276,72 @@ export function TopNav({
           {ticketHistory.length === 0 ? (
             <p className="px-5 py-8 text-center text-sm text-text-tertiary">{th("empty")}</p>
           ) : (
-            ticketHistory.map((ticket) => (
-              <button
-                key={ticket.id}
-                onClick={() => goToTicket(ticket)}
-                className="flex w-full flex-col gap-0.5 border-b border-hairline px-5 py-3 text-left transition-colors last:border-0 hover:bg-surface-raised"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="truncate text-sm font-medium text-text-primary">
-                    #{ticket.number} {ticket.title}
-                  </span>
-                  <span className="shrink-0 font-mono text-[10px] text-text-tertiary">
-                    {relativeTime(ticket.updatedAt, locale)}
-                  </span>
+            <>
+              <div className="sticky top-0 z-10 border-b border-hairline bg-surface px-5 py-2.5">
+                <div className="flex items-center gap-2 rounded-lg border border-hairline bg-canvas px-3 py-1.5">
+                  <Search className="h-3.5 w-3.5 text-text-tertiary" strokeWidth={1.75} />
+                  <input
+                    value={historyQuery}
+                    onChange={(e) => {
+                      setHistoryQuery(e.target.value);
+                      setHistoryPage(1);
+                    }}
+                    placeholder="Titre ou numéro…"
+                    className="w-full bg-transparent text-sm text-text-primary outline-none placeholder:text-text-tertiary"
+                  />
                 </div>
-                {ticket.tenant && (
-                  <span className="text-xs text-text-tertiary">{ticket.tenant.name}</span>
-                )}
-              </button>
-            ))
+              </div>
+
+              {pagedHistory.length === 0 ? (
+                <p className="px-5 py-8 text-center text-sm text-text-tertiary">
+                  {th("noResults")}
+                </p>
+              ) : (
+                pagedHistory.map((ticket) => (
+                  <button
+                    key={ticket.id}
+                    onClick={() => goToTicket(ticket)}
+                    className="flex w-full flex-col gap-0.5 border-b border-hairline px-5 py-3 text-left transition-colors last:border-0 hover:bg-surface-raised"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="truncate text-sm font-medium text-text-primary">
+                        #{ticket.number} {ticket.title}
+                      </span>
+                      <span className="shrink-0 font-mono text-[10px] text-text-tertiary">
+                        {relativeTime(ticket.updatedAt, locale)}
+                      </span>
+                    </div>
+                    {ticket.tenant && (
+                      <span className="text-xs text-text-tertiary">{ticket.tenant.name}</span>
+                    )}
+                  </button>
+                ))
+              )}
+
+              {historyTotalPages > 1 && (
+                <div className="flex items-center justify-center gap-3 border-t border-hairline py-3">
+                  <button
+                    onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
+                    disabled={historyCurrentPage === 1}
+                    className="flex items-center gap-1 rounded-lg border border-hairline px-2.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    {td("previous")}
+                  </button>
+                  <span className="font-mono text-xs text-text-tertiary">
+                    {td("page", { page: historyCurrentPage, total: historyTotalPages })}
+                  </span>
+                  <button
+                    onClick={() => setHistoryPage((p) => Math.min(historyTotalPages, p + 1))}
+                    disabled={historyCurrentPage === historyTotalPages}
+                    className="flex items-center gap-1 rounded-lg border border-hairline px-2.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {td("next")}
+                    <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </Modal>
       )}
@@ -377,6 +447,8 @@ export function TopNav({
             <button
               onClick={() => {
                 setUserOpen(false);
+                setHistoryQuery("");
+                setHistoryPage(1);
                 setHistoryOpen(true);
               }}
               className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary"

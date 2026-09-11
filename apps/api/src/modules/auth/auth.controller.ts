@@ -1,10 +1,20 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 import type { JwtPayload } from './jwt.strategy';
 
 @ApiTags('Auth')
@@ -46,5 +56,26 @@ export class AuthController {
   @Get('me')
   me(@Req() req: { user: JwtPayload }) {
     return this.usersService.findOne(req.user.sub);
+  }
+
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Mettre à jour son propre profil (nom affiché, avatar)',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  updateMe(@Req() req: { user: JwtPayload }, @Body() dto: UpdateMeDto) {
+    return this.authService.updateMe(req.user.sub, dto);
+  }
+
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Changer son propre mot de passe' })
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  changePassword(
+    @Req() req: { user: JwtPayload },
+    @Body() dto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(req.user.sub, dto);
   }
 }

@@ -116,7 +116,8 @@
     },
     "history": {
       "title": "Ticket history",
-      "empty": "No closed ticket yet."
+      "empty": "No closed ticket yet.",
+      "noResults": "No ticket matches this search."
     },
     "leaderboard": {
       "title": "Leaderboard",
@@ -401,6 +402,34 @@
       "ACTIVE": "Active",
       "INVITED": "Invited",
       "DISABLED": "Disabled"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "account": "Account"
+    },
+    "profile": {
+      "identity": "Display name",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "save": "Save",
+      "saved": "Saved.",
+      "avatarTitle": "Avatar",
+      "avatarHint": "Choose the avatar shown across the app."
+    },
+    "account": {
+      "title": "Password",
+      "hint": "To change your password, enter your current password, then the new one twice.",
+      "currentPasswordLabel": "Current password",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "submit": "Change password",
+      "success": "Password changed successfully.",
+      "mismatch": "The new passwords don't match.",
+      "tooShort": "The new password must be at least 8 characters.",
+      "genericError": "Something went wrong, please try again."
     }
   },
   "notifications": {
