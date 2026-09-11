@@ -6,9 +6,11 @@ import { getTicket, listTickets } from "@/lib/tickets";
 import { listUsers } from "@/lib/users";
 import type { UserRole } from "@/lib/types";
 import { TicketsFilterBar } from "@/components/tickets/tickets-filter-bar";
+import { MyQueueSection } from "@/components/tickets/my-queue-section";
 import { TicketDetail } from "@/components/tickets/ticket-detail";
 
 const STAFF_ROLES: UserRole[] = ["AGENT", "ADMIN", "SUPER_ADMIN"];
+const MANAGER_ROLES: UserRole[] = ["ADMIN", "SUPER_ADMIN"];
 
 export default async function DashboardPage({
   params,
@@ -34,6 +36,7 @@ export default async function DashboardPage({
   }
 
   const isStaff = STAFF_ROLES.some((role) => currentUser!.roles.includes(role));
+  const isManager = MANAGER_ROLES.some((role) => currentUser!.roles.includes(role));
   const technicians = isStaff
     ? (await listUsers()).filter((u) => STAFF_ROLES.some((role) => u.roles.includes(role)))
     : [];
@@ -51,13 +54,48 @@ export default async function DashboardPage({
     return <TicketDetail ticket={ticket} currentUser={currentUser!} technicians={technicians} />;
   }
 
+  // Every staff member (technician or manager) gets a "My tickets" section
+  // for whatever's assigned to them — managers self-assign too (the
+  // assignee <select> offers "Me") — plus an "Unassigned" section, since
+  // the API already excludes tickets a colleague holds for a plain
+  // technician (see TicketsService.findAllForStaff), so their unassigned
+  // section already *is* their whole general queue. A manager additionally
+  // gets a third, untouched "All tickets" section — they're meant to see
+  // everything regardless of assignee, the other two are just a clearer,
+  // pre-filtered way in for the common cases (mine / up for grabs).
+  const myQueue = isStaff ? tickets.filter((tk) => tk.assignee?.id === currentUser!.id) : [];
+  const unassignedQueue = isStaff ? tickets.filter((tk) => !tk.assignee) : [];
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="font-display text-2xl font-semibold tracking-tight text-text-primary">
         {t("title")}
       </h1>
 
-      <TicketsFilterBar tickets={tickets} newTicketLabel={tt("newTicket")} />
+      {isStaff && (
+        <MyQueueSection
+          tickets={myQueue}
+          title={t("myQueue.title")}
+          emptyLabel={t("myQueue.empty")}
+        />
+      )}
+
+      {isStaff && (
+        <TicketsFilterBar
+          tickets={unassignedQueue}
+          newTicketLabel={tt("newTicket")}
+          title={t("unassignedQueue.title")}
+          showNewTicketButton={!isManager}
+        />
+      )}
+
+      {(isManager || !isStaff) && (
+        <TicketsFilterBar
+          tickets={tickets}
+          newTicketLabel={tt("newTicket")}
+          title={isManager ? t("allTickets.title") : undefined}
+        />
+      )}
     </div>
   );
 }

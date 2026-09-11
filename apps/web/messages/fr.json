@@ -128,7 +128,22 @@
     "openTickets": "Tickets ouverts",
     "inProgress": "En cours",
     "resolvedToday": "Résolus aujourd'hui",
-    "recentTickets": "Tickets récents"
+    "recentTickets": "Tickets récents",
+    "myQueue": {
+      "title": "Mes tickets",
+      "empty": "Aucun ticket qui vous est assigné pour l'instant."
+    },
+    "unassignedQueue": {
+      "title": "Tickets non assignés"
+    },
+    "allTickets": {
+      "title": "Tous les tickets"
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page} sur {total}"
+    }
   },
   "tickets": {
     "title": "Tickets",

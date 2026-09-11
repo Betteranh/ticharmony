@@ -141,7 +141,7 @@ export class TicketsService {
       .map((t) => t.assigneeId!);
     const resolvedUsers = await this.resolveForeignUsers(missingAssigneeIds);
 
-    return allTickets
+    const sorted = allTickets
       .map((t) => ({
         ...t,
         assignee:
@@ -149,6 +149,16 @@ export class TicketsService {
           (t.assigneeId ? (resolvedUsers.get(t.assigneeId) ?? null) : null),
       }))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    // A plain AGENT only ever needs their own queue plus whatever's up for
+    // grabs — tickets already claimed by a colleague are noise, not signal.
+    // ADMIN/SUPER_ADMIN keep the full unfiltered view (they may need to spot
+    // a stuck ticket regardless of who holds it).
+    const { userId, roles } = getRequestContext();
+    const isManager =
+      roles?.includes(UserRole.ADMIN) || roles?.includes(UserRole.SUPER_ADMIN);
+    if (isManager) return sorted;
+    return sorted.filter((t) => !t.assigneeId || t.assigneeId === userId);
   }
 
   async findOne(id: string, tenantIdHint?: string) {
