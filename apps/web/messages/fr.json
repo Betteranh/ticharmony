@@ -114,6 +114,10 @@
       "support": "Support & retours",
       "comingSoon": "Bientôt disponible"
     },
+    "history": {
+      "title": "Historique des tickets",
+      "empty": "Aucun ticket clôturé pour l'instant."
+    },
     "leaderboard": {
       "title": "Classement",
       "badge": "Global",

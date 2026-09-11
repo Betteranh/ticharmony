@@ -114,6 +114,10 @@
       "support": "Support & feedback",
       "comingSoon": "Coming soon"
     },
+    "history": {
+      "title": "Ticket history",
+      "empty": "No closed ticket yet."
+    },
     "leaderboard": {
       "title": "Leaderboard",
       "badge": "Global",

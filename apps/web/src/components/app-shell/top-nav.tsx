@@ -22,12 +22,18 @@ import {
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import type { NotificationItem, Person } from "@/lib/types";
+import type { NotificationItem, Person, Ticket } from "@/lib/types";
 import { Avatar } from "@/components/ui/avatar";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Modal } from "@/components/ui/modal";
 import { FullScreenLoader } from "@/components/ui/full-screen-loader";
 import { relativeTime } from "@/lib/format";
+
+// Points/leaderboard/achievements/analytics are a gamification system not
+// yet implemented (no scoring logic, no backend) — UI kept in the code,
+// just hidden until it's actually built. Flip this flag to bring it back.
+// See DECISIONS.md / SPEC.md ("Système de points").
+const POINTS_SYSTEM_ENABLED = false;
 
 function useClickOutside(onOutside: () => void) {
   const ref = useRef<HTMLDivElement>(null);
@@ -52,23 +58,27 @@ export function TopNav({
   user,
   openTicketsCount,
   notifications,
+  ticketHistory,
   locale,
 }: {
   user: Person;
   openTicketsCount: number;
   notifications: NotificationItem[];
+  ticketHistory: Ticket[];
   locale: string;
 }) {
   const t = useTranslations("nav");
   const tt = useTranslations("nav.tools");
   const tu = useTranslations("nav.userMenu");
   const tl = useTranslations("nav.leaderboard");
+  const th = useTranslations("nav.history");
   const tn = useTranslations("notifications");
   const tc = useTranslations("common");
   const router = useRouter();
 
   const [toolsOpen, setToolsOpen] = useState(false);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifItems, setNotifItems] = useState(notifications);
@@ -76,6 +86,11 @@ export function TopNav({
   const userRef = useClickOutside(() => setUserOpen(false));
   const notifRef = useClickOutside(() => setNotifOpen(false));
   const unreadCount = notifItems.filter((n) => !n.readAt).length;
+
+  function goToTicket(ticket: Ticket) {
+    setHistoryOpen(false);
+    router.push(`/dashboard?ticket=${ticket.id}${ticket.tenant ? `&tenant=${ticket.tenant.id}` : ""}`);
+  }
 
   async function handleNotificationClick(item: NotificationItem) {
     setNotifOpen(false);
@@ -188,16 +203,18 @@ export function TopNav({
 
       <div className="flex-1" />
 
-      <button
-        onClick={() => setLeaderboardOpen(true)}
-        className="hidden items-center gap-1.5 rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-text-tertiary transition-colors hover:border-hairline-strong hover:text-text-primary sm:flex"
-      >
-        <Trophy className="h-3.5 w-3.5" strokeWidth={1.75} />
-        <span className="font-mono text-xs">—</span>
-        <span className="text-[10px] uppercase tracking-wider">{t("points")}</span>
-      </button>
+      {POINTS_SYSTEM_ENABLED && (
+        <button
+          onClick={() => setLeaderboardOpen(true)}
+          className="hidden items-center gap-1.5 rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-text-tertiary transition-colors hover:border-hairline-strong hover:text-text-primary sm:flex"
+        >
+          <Trophy className="h-3.5 w-3.5" strokeWidth={1.75} />
+          <span className="font-mono text-xs">—</span>
+          <span className="text-[10px] uppercase tracking-wider">{t("points")}</span>
+        </button>
+      )}
 
-      {leaderboardOpen && (
+      {POINTS_SYSTEM_ENABLED && leaderboardOpen && (
         <Modal
           icon={<Trophy className="h-4 w-4 text-accent" strokeWidth={1.75} />}
           title={tl("title")}
@@ -223,6 +240,39 @@ export function TopNav({
             <span>{tl("score")}</span>
           </div>
           <p className="px-5 py-8 text-center text-sm text-text-tertiary">{tl("comingSoon")}</p>
+        </Modal>
+      )}
+
+      {historyOpen && (
+        <Modal
+          icon={<History className="h-4 w-4 text-accent" strokeWidth={1.75} />}
+          title={th("title")}
+          badge={String(ticketHistory.length)}
+          onClose={() => setHistoryOpen(false)}
+        >
+          {ticketHistory.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-text-tertiary">{th("empty")}</p>
+          ) : (
+            ticketHistory.map((ticket) => (
+              <button
+                key={ticket.id}
+                onClick={() => goToTicket(ticket)}
+                className="flex w-full flex-col gap-0.5 border-b border-hairline px-5 py-3 text-left transition-colors last:border-0 hover:bg-surface-raised"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="truncate text-sm font-medium text-text-primary">
+                    #{ticket.number} {ticket.title}
+                  </span>
+                  <span className="shrink-0 font-mono text-[10px] text-text-tertiary">
+                    {relativeTime(ticket.updatedAt, locale)}
+                  </span>
+                </div>
+                {ticket.tenant && (
+                  <span className="text-xs text-text-tertiary">{ticket.tenant.name}</span>
+                )}
+              </button>
+            ))
+          )}
         </Modal>
       )}
 
@@ -324,10 +374,24 @@ export function TopNav({
 
         {userOpen && (
           <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-60 animate-rise-in overflow-hidden rounded-xl border border-hairline bg-surface py-1.5 shadow-xl shadow-black/40">
+            <button
+              onClick={() => {
+                setUserOpen(false);
+                setHistoryOpen(true);
+              }}
+              className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary"
+            >
+              <History className="h-4 w-4" strokeWidth={1.75} />
+              {tu("pastTickets")}
+            </button>
+
             {[
-              { label: tu("analytics"), icon: BarChart3 },
-              { label: tu("achievements"), icon: Award },
-              { label: tu("pastTickets"), icon: History },
+              ...(POINTS_SYSTEM_ENABLED
+                ? [
+                    { label: tu("analytics"), icon: BarChart3 },
+                    { label: tu("achievements"), icon: Award },
+                  ]
+                : []),
               { label: tu("support"), icon: LifeBuoy },
             ].map((item) => {
               const Icon = item.icon;
