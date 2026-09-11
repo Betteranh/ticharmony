@@ -184,6 +184,10 @@ export class TicketsService {
         ...ticket.comments.filter((c) => !c.author).map((c) => c.authorId),
       ];
       const resolvedUsers = await this.resolveForeignUsers(missingIds);
+      // Internal notes are staff-only (never notified to the client either,
+      // see NotificationsService) — a CUSTOMER must not see them here even
+      // though the PDF export already filtered them correctly.
+      const isCustomerViewer = roles?.includes(UserRole.CUSTOMER) ?? false;
       const patched = {
         ...ticket,
         assignee:
@@ -191,10 +195,12 @@ export class TicketsService {
           (ticket.assigneeId
             ? (resolvedUsers.get(ticket.assigneeId) ?? null)
             : null),
-        comments: ticket.comments.map((c) => ({
-          ...c,
-          author: c.author ?? resolvedUsers.get(c.authorId) ?? null,
-        })),
+        comments: ticket.comments
+          .filter((c) => !isCustomerViewer || !c.isInternal)
+          .map((c) => ({
+            ...c,
+            author: c.author ?? resolvedUsers.get(c.authorId) ?? null,
+          })),
       };
 
       // The ticket's own tenant's registered address is shown in the "Reported
