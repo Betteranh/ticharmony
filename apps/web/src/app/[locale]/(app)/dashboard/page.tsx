@@ -7,6 +7,7 @@ import { listUsers } from "@/lib/users";
 import type { UserRole } from "@/lib/types";
 import { TicketsFilterBar } from "@/components/tickets/tickets-filter-bar";
 import { MyQueueSection } from "@/components/tickets/my-queue-section";
+import { NewTicketButton } from "@/components/tickets/new-ticket-button";
 import { TicketDetail } from "@/components/tickets/ticket-detail";
 
 const STAFF_ROLES: UserRole[] = ["AGENT", "ADMIN", "SUPER_ADMIN"];
@@ -68,9 +69,12 @@ export default async function DashboardPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-display text-2xl font-semibold tracking-tight text-text-primary">
-        {t("title")}
-      </h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-text-primary">
+          {t("title")}
+        </h1>
+        <NewTicketButton label={tt("newTicket")} />
+      </div>
 
       {isStaff && (
         <MyQueueSection
@@ -83,18 +87,13 @@ export default async function DashboardPage({
       {isStaff && (
         <TicketsFilterBar
           tickets={unassignedQueue}
-          newTicketLabel={tt("newTicket")}
           title={t("unassignedQueue.title")}
-          showNewTicketButton={!isManager}
+          filterBy="priority"
         />
       )}
 
       {(isManager || !isStaff) && (
-        <TicketsFilterBar
-          tickets={tickets}
-          newTicketLabel={tt("newTicket")}
-          title={isManager ? t("allTickets.title") : undefined}
-        />
+        <TicketsFilterBar tickets={tickets} title={isManager ? t("allTickets.title") : undefined} />
       )}
     </div>
   );
