@@ -91,7 +91,7 @@
     "tickets": "Tickets",
     "knowledgeBase": "Documentation",
     "users": "Utilisateurs",
-    "assets": "Gestion des assets",
+    "assets": "Gestion du matériel",
     "settings": "Paramètres",
     "logout": "Déconnexion",
     "toolsTrigger": "Outils",
@@ -274,7 +274,7 @@
     },
     "devices": {
       "title": "Appareils enregistrés",
-      "viewInAssets": "Voir dans Gestion des assets",
+      "viewInAssets": "Voir dans Gestion du matériel",
       "empty": "Aucun appareil enregistré."
     },
     "authentication": {
@@ -306,19 +306,21 @@
     "translationNote": "Rédigez en français — la version anglaise reprendra ce texte pour l'instant et pourra être traduite plus tard."
   },
   "assets": {
-    "pageTitle": "Gestion des assets",
+    "pageTitle": "Gestion du matériel",
     "clientsSubtitle": "Choisissez une entreprise cliente pour consulter son parc informatique.",
     "usersCount": "{count} utilisateurs",
     "emptyClients": "Aucune entreprise cliente pour l'instant.",
+    "clientsSearchPlaceholder": "Rechercher une entreprise…",
+    "clientsNoResults": "Aucune entreprise ne correspond à cette recherche.",
     "back": "Toutes les entreprises",
     "subtitle": "Parc informatique de l'entreprise.",
-    "searchPlaceholder": "Rechercher un asset…",
-    "empty": "Aucun asset pour l'instant.",
-    "noResults": "Aucun asset ne correspond à ces filtres.",
+    "searchPlaceholder": "Rechercher du matériel…",
+    "empty": "Aucun matériel pour l'instant.",
+    "noResults": "Aucun matériel ne correspond à ces filtres.",
     "allTypes": "Tous les types",
     "allStatuses": "Tous les statuts",
-    "newAsset": "Nouvel asset",
-    "editAsset": "Modifier l'asset",
+    "newAsset": "Nouveau matériel",
+    "editAsset": "Modifier le matériel",
     "updated": "Mis à jour",
     "unassigned": "Non assigné",
     "columns": {

@@ -91,7 +91,7 @@
     "tickets": "Tickets",
     "knowledgeBase": "Documentation",
     "users": "Users",
-    "assets": "Asset management",
+    "assets": "Equipment management",
     "settings": "Settings",
     "logout": "Log out",
     "toolsTrigger": "Tools",
@@ -274,7 +274,7 @@
     },
     "devices": {
       "title": "Registered devices",
-      "viewInAssets": "View in Asset Management",
+      "viewInAssets": "View in Equipment Management",
       "empty": "No registered devices."
     },
     "authentication": {
@@ -306,19 +306,21 @@
     "translationNote": "Written in French — the English version will mirror this text for now and can be translated later."
   },
   "assets": {
-    "pageTitle": "Asset management",
+    "pageTitle": "Equipment management",
     "clientsSubtitle": "Pick a client company to browse its IT inventory.",
     "usersCount": "{count} users",
     "emptyClients": "No client company yet.",
+    "clientsSearchPlaceholder": "Search for a company…",
+    "clientsNoResults": "No company matches this search.",
     "back": "All companies",
     "subtitle": "Company IT inventory.",
-    "searchPlaceholder": "Search an asset…",
-    "empty": "No assets yet.",
-    "noResults": "No assets match these filters.",
+    "searchPlaceholder": "Search for equipment…",
+    "empty": "No equipment yet.",
+    "noResults": "No equipment matches these filters.",
     "allTypes": "All types",
     "allStatuses": "All statuses",
-    "newAsset": "New asset",
-    "editAsset": "Edit asset",
+    "newAsset": "New equipment",
+    "editAsset": "Edit equipment",
     "updated": "Updated",
     "unassigned": "Unassigned",
     "columns": {
