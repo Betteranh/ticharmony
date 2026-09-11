@@ -15,19 +15,26 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  @ApiOperation({ summary: 'Créer un compte particulier (self-service, tenant personnel auto-créé)' })
+  @ApiOperation({
+    summary:
+      'Créer un compte particulier (self-service, tenant personnel auto-créé)',
+  })
   @Post('signup')
   signup(@Body() dto: SignupDto) {
     return this.authService.signup(dto);
   }
 
-  @ApiOperation({ summary: "Se connecter et recevoir un access token / refresh token" })
+  @ApiOperation({
+    summary: 'Se connecter et recevoir un access token / refresh token',
+  })
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
-  @ApiOperation({ summary: "Échanger un refresh token contre une nouvelle paire de tokens" })
+  @ApiOperation({
+    summary: 'Échanger un refresh token contre une nouvelle paire de tokens',
+  })
   @Post('refresh')
   refresh(@Body('refreshToken') refreshToken: string) {
     return this.authService.refresh(refreshToken);

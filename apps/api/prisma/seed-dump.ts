@@ -473,7 +473,7 @@ async function main() {
           const recipient = fromAgent ? requester : assignee;
           if (recipient) {
             await prisma.notification.create({
-              data: { userId: recipient.id, type: 'TICKET_COMMENT', channel: 'IN_APP', payload: { ticketId: ticket.id, ticketNumber: ticket.number }, readAt: weightedBool(0.5) ? new Date(lastCommentAt.getTime() + 3600000) : null, createdAt: lastCommentAt },
+              data: { userId: recipient.id, type: 'TICKET_COMMENT', channel: 'IN_APP', payload: { ticketId: ticket.id, ticketNumber: ticket.number, ticketTitle: ticket.title }, readAt: weightedBool(0.5) ? new Date(lastCommentAt.getTime() + 3600000) : null, createdAt: lastCommentAt },
             });
             notifCount++;
           }
@@ -482,7 +482,7 @@ async function main() {
 
       if (isClosed) {
         await prisma.notification.create({
-          data: { userId: requester.id, type: status === 'RESOLVED' ? 'TICKET_RESOLVED' : 'TICKET_CLOSED', channel: 'IN_APP', payload: { ticketId: ticket.id, ticketNumber: ticket.number }, readAt: weightedBool(0.6) ? closedAt : null, createdAt: closedAt! },
+          data: { userId: requester.id, type: status === 'RESOLVED' ? 'TICKET_RESOLVED' : 'TICKET_CLOSED', channel: 'IN_APP', payload: { ticketId: ticket.id, ticketNumber: ticket.number, ticketTitle: ticket.title }, readAt: weightedBool(0.6) ? closedAt : null, createdAt: closedAt! },
         });
         notifCount++;
         await prisma.auditLog.create({

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Download,
   FileText,
   Lock,
   MoreHorizontal,
@@ -134,6 +135,78 @@ export function TicketDetail({
     router.refresh();
   }
 
+  // Plain, print-style document — deliberately undesigned (no brand colors/
+  // layout beyond simple headings) and limited to public comments, so it's
+  // safe to hand to anyone regardless of who exported it.
+  async function exportToPdf() {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const marginX = 48;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const maxWidth = pageWidth - marginX * 2;
+    let y = 56;
+
+    function write(text: string, opts: { size?: number; bold?: boolean; gap?: number } = {}) {
+      const { size = 10, bold = false, gap = 14 } = opts;
+      doc.setFont("helvetica", bold ? "bold" : "normal");
+      doc.setFontSize(size);
+      const lines: string[] = doc.splitTextToSize(text, maxWidth);
+      if (y + lines.length * gap > pageHeight - 48) {
+        doc.addPage();
+        y = 56;
+      }
+      doc.text(lines, marginX, y);
+      y += lines.length * gap;
+    }
+
+    write(`#${ticket.number}`, { size: 9, gap: 12 });
+    write(ticket.title, { size: 16, bold: true, gap: 20 });
+    y += 4;
+    write(`${t(`status.${ticket.status}`)}  ·  ${t(`priority.${ticket.priority}`)}`);
+    if (ticket.category) write(`${t("export.category")}: ${ticket.category}`);
+    y += 8;
+
+    write(
+      `${t("reportedBy")}: ${ticket.requester.firstName} ${ticket.requester.lastName}` +
+        (ticket.requester.email ? ` (${ticket.requester.email})` : ""),
+    );
+    write(new Date(ticket.createdAt).toLocaleString(locale), { size: 9 });
+    if (ticket.tenantAddress) write(`${t("address")}: ${ticket.tenantAddress}`);
+    if (ticket.requester.department) write(`${t("department")}: ${ticket.requester.department}`);
+    if (ticket.requester.location) write(`${t("location")}: ${ticket.requester.location}`);
+    if (ticket.requester.phone) write(`${t("contact")}: ${ticket.requester.phone}`);
+    y += 8;
+
+    write(t("issueDescription"), { bold: true });
+    write(ticket.description);
+    y += 12;
+
+    const publicComments = ticket.comments.filter((c) => !c.isInternal);
+    write(`${t("export.comments")} (${publicComments.length})`, { bold: true, size: 12 });
+    y += 4;
+    if (publicComments.length === 0) {
+      write(t("export.noComments"), { size: 9 });
+    } else {
+      for (const comment of publicComments) {
+        write(
+          `${comment.author.firstName} ${comment.author.lastName} — ${new Date(comment.createdAt).toLocaleString(locale)}`,
+          { bold: true, size: 9 },
+        );
+        write(comment.body, { size: 10 });
+        if (comment.attachments.length > 0) {
+          write(
+            `${t("export.attachments")}: ${comment.attachments.map((a) => a.filename).join(", ")}`,
+            { size: 8 },
+          );
+        }
+        y += 10;
+      }
+    }
+
+    doc.save(`ticket-${ticket.number}.pdf`);
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
@@ -159,16 +232,26 @@ export function TicketDetail({
               )}
             </div>
 
-            {isStaff && (
-              <div className="relative" ref={optionsRef}>
-                <button
-                  onClick={() => setOptionsOpen((v) => !v)}
-                  className="rounded-md p-1.5 text-text-tertiary transition-colors hover:bg-surface-raised hover:text-text-primary"
-                >
-                  <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
-                </button>
-                {optionsOpen && (
-                  <div className="absolute right-0 top-[calc(100%+4px)] z-10 w-48 overflow-hidden rounded-lg border border-hairline bg-surface shadow-xl shadow-black/40">
+            <div className="relative" ref={optionsRef}>
+              <button
+                onClick={() => setOptionsOpen((v) => !v)}
+                className="rounded-md p-1.5 text-text-tertiary transition-colors hover:bg-surface-raised hover:text-text-primary"
+              >
+                <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
+              </button>
+              {optionsOpen && (
+                <div className="absolute right-0 top-[calc(100%+4px)] z-10 w-48 overflow-hidden rounded-lg border border-hairline bg-surface shadow-xl shadow-black/40">
+                  <button
+                    onClick={() => {
+                      setOptionsOpen(false);
+                      exportToPdf();
+                    }}
+                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary"
+                  >
+                    <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    {t("export.menuLabel")}
+                  </button>
+                  {isStaff && (
                     <button
                       onClick={() => {
                         setOptionsOpen(false);
@@ -178,10 +261,10 @@ export function TicketDetail({
                     >
                       {ticket.status === "CLOSED" ? t("reopenTicket") : t("closeTicket")}
                     </button>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-text-primary">

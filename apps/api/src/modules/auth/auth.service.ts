@@ -7,9 +7,17 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { Prisma, Tenant } from '../../../generated/prisma/client';
+import { generateEmployeeCode } from '../../common/generate-employee-code';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
+
+interface TokenPayload {
+  sub: string;
+  tenantId: string;
+  roles: string[];
+  email: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -52,6 +60,7 @@ export class AuthService {
               firstName: dto.firstName,
               lastName: dto.lastName,
               avatar: dto.avatar,
+              employeeCode: generateEmployeeCode(),
               roles: ['CUSTOMER'],
             },
           });
@@ -121,13 +130,28 @@ export class AuthService {
       });
     });
 
-    if (!user || user.status !== 'ACTIVE') {
+    if (!user) {
       throw new UnauthorizedException('Identifiants invalides');
     }
 
+    // Password checked before revealing *why* access is refused (disabled
+    // account/company) — proves the caller actually knows the credential
+    // before we confirm the account exists and its state, same principle as
+    // never revealing account existence to a caller who only guessed right.
     const passwordValid = await argon2.verify(user.passwordHash, dto.password);
     if (!passwordValid) {
       throw new UnauthorizedException('Identifiants invalides');
+    }
+
+    if (!tenant.active) {
+      throw new UnauthorizedException(
+        'Le service de votre entreprise a été suspendu. Contactez votre administrateur.',
+      );
+    }
+    if (user.status !== 'ACTIVE') {
+      throw new UnauthorizedException(
+        'Votre compte a été désactivé. Contactez votre administrateur.',
+      );
     }
 
     return this.issueTokens(user.id, tenant.id, user.roles, user.email);
@@ -136,7 +160,11 @@ export class AuthService {
   // Cross-tenant lookup by email, used only to route login when no workspace
   // is given. Each tenant's users are RLS-isolated, so this has to loop and
   // set app.tenant_id per tenant — same pattern as TenantsService.findClients()
-  // for its per-tenant userCount.
+  // for its per-tenant userCount. Resolves on existence only (not status) —
+  // filtering out a disabled account/tenant here would make it resolve to
+  // zero tenants and fall back to the generic "invalid credentials" message,
+  // never reaching authenticateInTenant's password check and specific
+  // disabled-account/company message.
   private async findTenantsForEmail(email: string): Promise<Tenant[]> {
     const allTenants = await this.prisma.tenant.findMany();
     const matches = await Promise.all(
@@ -145,10 +173,10 @@ export class AuthService {
           await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenant.id}, true)`;
           return tx.user.findUnique({
             where: { tenantId_email: { tenantId: tenant.id, email } },
-            select: { status: true },
+            select: { id: true },
           });
         });
-        return user?.status === 'ACTIVE' ? tenant : null;
+        return user ? tenant : null;
       }),
     );
     return matches.filter((t): t is Tenant => t !== null);
@@ -168,9 +196,22 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  // Re-checks tenant/user status on every refresh, not just at login — the
+  // access token is short-lived (15m), but the refresh token lasts 7 days,
+  // so without this a disabled account/company could keep silently
+  // refreshing valid sessions long after being disabled. No specific message
+  // here (unlike login): a refresh happens invisibly in the background, so
+  // revealing *why* would leak account state without proof of a password.
   async refresh(refreshToken: string) {
     try {
-      const payload = await this.jwt.verifyAsync(refreshToken);
+      const payload = await this.jwt.verifyAsync<TokenPayload>(refreshToken);
+      const stillActive = await this.isUserActiveInTenant(
+        payload.sub,
+        payload.tenantId,
+      );
+      if (!stillActive) {
+        throw new UnauthorizedException('Refresh token invalide');
+      }
       return this.issueTokens(
         payload.sub,
         payload.tenantId,
@@ -180,5 +221,25 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Refresh token invalide');
     }
+  }
+
+  private async isUserActiveInTenant(
+    userId: string,
+    tenantId: string,
+  ): Promise<boolean> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+    if (!tenant || !tenant.active) {
+      return false;
+    }
+    const user = await this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, true)`;
+      return tx.user.findUnique({
+        where: { id: userId },
+        select: { status: true },
+      });
+    });
+    return user?.status === 'ACTIVE';
   }
 }

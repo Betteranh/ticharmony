@@ -5,111 +5,138 @@ import type { KeyboardEvent } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
+  Building2,
   Eye,
   EyeOff,
   Laptop,
-  Lock,
-  Phone,
+  Pencil,
   Plus,
   Search,
-  ShieldOff,
   KeyRound,
-  ShieldQuestion,
   Trash2,
-  X,
+  UserPlus,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Avatar } from "@/components/ui/avatar";
+import { Modal } from "@/components/ui/modal";
 import type { Asset, DirectoryUser, UserLicense } from "@/lib/types";
 import { getDirectoryMock } from "@/lib/directory-mock";
 import { relativeTime } from "@/lib/format";
 
 const LICENSE_SUGGESTIONS = ["Office 365", "pCloud"];
 
-type Tab = "profile" | "groups" | "licenses" | "devices" | "authentication";
+const STATUS_DOT: Record<"ACTIVE" | "INVITED" | "DISABLED", string> = {
+  ACTIVE: "bg-status-resolved",
+  INVITED: "bg-status-open",
+  DISABLED: "bg-status-closed",
+};
+
+// Sentinel selection id for the company profile row — sits above the
+// employee list and is selected by default, ahead of any employee.
+const COMPANY_ROW_ID = "__company__";
+
+type Tab = "profile" | "licenses" | "devices" | "authentication";
 
 interface Labels {
   back: string;
   searchPlaceholder: string;
   noUsers: string;
+  company: Record<"rowLabel" | "sectionTitle" | "name" | "address" | "companyNumber", string>;
+  edit: Record<"button" | "save" | "cancel" | "error" | "disable" | "enable", string>;
   tabs: Record<Tab, string>;
   profile: Record<
     | "identity"
     | "displayName"
     | "username"
-    | "title"
     | "employeeId"
     | "email"
     | "phone"
     | "organization"
     | "address"
-    | "department"
     | "lastLogin",
     string
   >;
-  groups: Record<"title" | "name" | "action" | "addPlaceholder" | "add", string>;
   licenses: Record<
     "title" | "name" | "action" | "namePlaceholder" | "emailPlaceholder" | "passwordPlaceholder" | "add" | "empty",
     string
   >;
   devices: Record<"title" | "viewInAssets" | "empty", string>;
-  authentication: Record<
-    | "actions"
-    | "resetPassword"
-    | "lockAccount"
-    | "resetMfa"
-    | "disableAccount"
-    | "methods"
-    | "mfaStatus"
-    | "mfaEnrolled"
-    | "mfaNotEnrolled"
-    | "passwordExpired"
-    | "yes"
-    | "no"
-    | "identityVerification"
-    | "sendVerificationCode",
+  authentication: Record<"actions" | "resetPassword", string>;
+  addEmployee: Record<
+    | "button"
+    | "firstNameLabel"
+    | "lastNameLabel"
+    | "emailLabel"
+    | "phoneLabel"
+    | "passwordLabel"
+    | "submit"
+    | "cancel"
+    | "error",
     string
   >;
-  simulatedAction: string;
 }
 
 export function DirectoryView({
   tenantId,
   tenantName,
   tenantAddress,
+  tenantCompanyNumber,
+  tenantActive,
   users,
   assets,
   canManage,
+  isSuperAdmin,
   locale,
   labels,
 }: {
   tenantId: string;
   tenantName: string;
   tenantAddress: string | null;
+  tenantCompanyNumber: string | null;
+  tenantActive: boolean;
   users: DirectoryUser[];
   assets: Asset[];
   canManage: boolean;
+  isSuperAdmin: boolean;
   locale: string;
   labels: Labels;
 }) {
   const ta = useTranslations("assets");
+  const tu = useTranslations("users");
+  const router = useRouter();
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState(users[0]?.id ?? null);
+  const [selectedId, setSelectedId] = useState<string>(COMPANY_ROW_ID);
   const [tab, setTab] = useState<Tab>("profile");
   const [revealedNotes, setRevealedNotes] = useState<Record<string, boolean>>({});
   const [actionNote, setActionNote] = useState<string | null>(null);
   const [licensesByUser, setLicensesByUser] = useState<Record<string, UserLicense[]>>(() =>
     Object.fromEntries(users.map((u) => [u.id, u.licenses])),
   );
+  const [editingEmployee, setEditingEmployee] = useState(false);
+  const [empFirstName, setEmpFirstName] = useState("");
+  const [empLastName, setEmpLastName] = useState("");
+  const [empEmail, setEmpEmail] = useState("");
+  const [empSaving, setEmpSaving] = useState(false);
+  const [empError, setEmpError] = useState<string | null>(null);
+  const [confirmingStatus, setConfirmingStatus] = useState(false);
+  const [statusSaving, setStatusSaving] = useState(false);
+  const [confirmingPasswordReset, setConfirmingPasswordReset] = useState(false);
+  const [passwordResetSaving, setPasswordResetSaving] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter(
-      (u) =>
-        `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q),
+    const matches = q
+      ? users.filter(
+          (u) =>
+            `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
+            u.email.toLowerCase().includes(q),
+        )
+      : users;
+    // Disabled accounts sink to the bottom of the list, otherwise the
+    // existing alphabetical order (from the API) is preserved (stable sort).
+    return [...matches].sort(
+      (a, b) => Number(a.status === "DISABLED") - Number(b.status === "DISABLED"),
     );
   }, [users, query]);
 
@@ -129,6 +156,76 @@ export function DirectoryView({
     setSelectedId(id);
     setTab("profile");
     setRevealedNotes({});
+    setEditingEmployee(false);
+    setConfirmingStatus(false);
+    setConfirmingPasswordReset(false);
+  }
+
+  async function handleResetPassword() {
+    if (!selected) return;
+    setPasswordResetSaving(true);
+    const res = await fetch(`/api/tenants/${tenantId}/users/${selected.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resetPassword: true }),
+    });
+    setPasswordResetSaving(false);
+    setConfirmingPasswordReset(false);
+    if (res.ok) {
+      router.refresh();
+    } else {
+      simulate(labels.edit.error);
+    }
+  }
+
+  async function handleToggleStatus() {
+    if (!selected) return;
+    const nextStatus = selected.status === "ACTIVE" ? "DISABLED" : "ACTIVE";
+    setStatusSaving(true);
+    const res = await fetch(`/api/tenants/${tenantId}/users/${selected.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: nextStatus }),
+    });
+    setStatusSaving(false);
+    setConfirmingStatus(false);
+    if (res.ok) {
+      router.refresh();
+    } else {
+      simulate(labels.edit.error);
+    }
+  }
+
+  function startEditingEmployee() {
+    if (!selected) return;
+    setEmpFirstName(selected.firstName);
+    setEmpLastName(selected.lastName);
+    setEmpEmail(selected.email);
+    setEmpError(null);
+    setEditingEmployee(true);
+  }
+
+  async function handleSaveEmployee() {
+    if (!selected || !empFirstName.trim() || !empLastName.trim() || !empEmail.trim()) return;
+    setEmpSaving(true);
+    setEmpError(null);
+    const res = await fetch(`/api/tenants/${tenantId}/users/${selected.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName: empFirstName.trim(),
+        lastName: empLastName.trim(),
+        email: empEmail.trim(),
+      }),
+    });
+    setEmpSaving(false);
+    if (res.ok) {
+      setEditingEmployee(false);
+      router.refresh();
+    } else {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      setEmpError(body?.error ?? labels.edit.error);
+    }
   }
 
   return (
@@ -156,8 +253,29 @@ export function DirectoryView({
               placeholder={labels.searchPlaceholder}
               className="w-full bg-transparent text-sm text-text-primary outline-none placeholder:text-text-tertiary"
             />
+            {isSuperAdmin && (
+              <AddEmployeeButton
+                tenantId={tenantId}
+                labels={labels.addEmployee}
+                onCreated={() => router.refresh()}
+              />
+            )}
           </div>
           <div className="max-h-[560px] overflow-y-auto">
+            <button
+              onClick={() => selectUser(COMPANY_ROW_ID)}
+              className={`flex w-full items-center gap-2.5 border-b border-hairline px-3 py-2.5 text-left transition-colors ${
+                selectedId === COMPANY_ROW_ID ? "bg-surface-raised" : "hover:bg-surface-raised/60"
+              }`}
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-text-secondary">
+                <Building2 className="h-4 w-4" strokeWidth={1.75} />
+              </span>
+              <div className="overflow-hidden">
+                <p className="truncate text-sm font-medium text-text-primary">{tenantName}</p>
+                <p className="truncate text-xs text-text-tertiary">{labels.company.rowLabel}</p>
+              </div>
+            </button>
             {filtered.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-text-tertiary">{labels.noUsers}</p>
             ) : (
@@ -167,7 +285,7 @@ export function DirectoryView({
                   onClick={() => selectUser(u.id)}
                   className={`flex w-full items-center gap-2.5 border-b border-hairline px-3 py-2.5 text-left transition-colors last:border-0 ${
                     u.id === selectedId ? "bg-surface-raised" : "hover:bg-surface-raised/60"
-                  }`}
+                  } ${u.status === "DISABLED" ? "opacity-50" : ""}`}
                 >
                   <Avatar person={u} size="sm" />
                   <div className="overflow-hidden">
@@ -182,23 +300,73 @@ export function DirectoryView({
           </div>
         </div>
 
-        {selected && mock ? (
+        {selectedId === COMPANY_ROW_ID ? (
+          <CompanyProfileCard
+            tenantId={tenantId}
+            tenantName={tenantName}
+            tenantAddress={tenantAddress}
+            tenantCompanyNumber={tenantCompanyNumber}
+            tenantActive={tenantActive}
+            isSuperAdmin={isSuperAdmin}
+            labels={{ ...labels.company, edit: labels.edit }}
+            onSaved={() => router.refresh()}
+          />
+        ) : selected && mock ? (
           <div className="rounded-xl border border-hairline bg-surface">
             <div className="flex items-center justify-between gap-3 border-b border-hairline px-5 py-4">
               <div className="flex items-center gap-3">
                 <Avatar person={selected} />
                 <div>
-                  <p className="text-sm font-medium text-text-primary">
-                    {selected.firstName} {selected.lastName}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-text-primary">
+                      {selected.firstName} {selected.lastName}
+                    </p>
+                    {selected.status === "DISABLED" && (
+                      <span className="flex items-center gap-1 rounded-full border border-hairline bg-surface-raised px-2 py-0.5 text-[10px] font-medium text-text-secondary">
+                        <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT.DISABLED}`} />
+                        {tu("status.DISABLED")}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-text-tertiary">{selected.email}</p>
                 </div>
               </div>
-              {actionNote && (
-                <span className="rounded-full border border-hairline bg-surface-raised px-3 py-1 text-xs text-text-secondary">
-                  {actionNote}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {actionNote && (
+                  <span className="rounded-full border border-hairline bg-surface-raised px-3 py-1 text-xs text-text-secondary">
+                    {actionNote}
+                  </span>
+                )}
+                {isSuperAdmin &&
+                  (confirmingStatus ? (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={handleToggleStatus}
+                        disabled={statusSaving}
+                        className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-50 ${
+                          selected.status === "ACTIVE"
+                            ? "bg-priority-urgent/10 text-priority-urgent hover:bg-priority-urgent/20"
+                            : "bg-accent text-canvas hover:bg-accent-strong"
+                        }`}
+                      >
+                        {labels.edit.save}
+                      </button>
+                      <button
+                        onClick={() => setConfirmingStatus(false)}
+                        className="rounded-lg border border-hairline px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+                      >
+                        {labels.edit.cancel}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmingStatus(true)}
+                      className="rounded-lg border border-hairline px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:border-hairline-strong hover:text-text-primary"
+                    >
+                      {selected.status === "ACTIVE" ? labels.edit.disable : labels.edit.enable}
+                    </button>
+                  ))}
+              </div>
             </div>
 
             <div className="flex border-b border-hairline px-5">
@@ -221,65 +389,58 @@ export function DirectoryView({
               {tab === "profile" && (
                 <div className="flex flex-col gap-5">
                   <div>
-                    <p className="mb-3 text-sm font-medium text-text-primary">{labels.profile.identity}</p>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                      <Field label={labels.profile.displayName} value={`${selected.firstName} ${selected.lastName}`} />
-                      <Field label={labels.profile.username} value={selected.email.split("@")[0]} />
-                      <Field label={labels.profile.title} value={mock.title} />
-                      <Field label={labels.profile.employeeId} value={mock.employeeId} />
-                      <Field label={labels.profile.email} value={selected.email} />
-                      <Field label={labels.profile.phone} value={selected.phone ?? "—"} />
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium text-text-primary">{labels.profile.identity}</p>
+                      {isSuperAdmin && !editingEmployee && (
+                        <button
+                          onClick={startEditingEmployee}
+                          className="flex items-center gap-1 text-xs font-medium text-accent hover:text-accent-strong"
+                        >
+                          <Pencil className="h-3 w-3" strokeWidth={1.75} />
+                          {labels.edit.button}
+                        </button>
+                      )}
                     </div>
+                    {editingEmployee ? (
+                      <div className="flex flex-col gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                          <EditInput label={tu("form.firstNameLabel")} value={empFirstName} onChange={setEmpFirstName} required />
+                          <EditInput label={tu("form.lastNameLabel")} value={empLastName} onChange={setEmpLastName} required />
+                          <EditInput label={labels.profile.email} value={empEmail} onChange={setEmpEmail} required type="email" />
+                        </div>
+                        {empError && <p className="text-xs text-priority-urgent">{empError}</p>}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={handleSaveEmployee}
+                            disabled={empSaving || !empFirstName.trim() || !empLastName.trim() || !empEmail.trim()}
+                            className="rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-canvas transition-colors hover:bg-accent-strong disabled:opacity-50"
+                          >
+                            {labels.edit.save}
+                          </button>
+                          <button
+                            onClick={() => setEditingEmployee(false)}
+                            className="rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+                          >
+                            {labels.edit.cancel}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <Field label={labels.profile.displayName} value={`${selected.firstName} ${selected.lastName}`} />
+                        <Field label={labels.profile.username} value={selected.email.split("@")[0]} />
+                        <Field label={labels.profile.employeeId} value={selected.employeeCode ?? "—"} />
+                        <Field label={labels.profile.email} value={selected.email} />
+                        <Field label={labels.profile.phone} value={selected.phone ?? "—"} />
+                      </div>
+                    )}
                   </div>
                   <div>
                     <p className="mb-3 text-sm font-medium text-text-primary">{labels.profile.organization}</p>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                      <Field label={labels.profile.department} value={selected.department ?? "—"} />
                       <Field label={labels.profile.address} value={tenantAddress ?? "—"} />
                       <Field label={labels.profile.lastLogin} value={relativeTime(mock.lastLoginAt, locale)} />
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {tab === "groups" && (
-                <div>
-                  <p className="mb-3 text-sm font-medium text-text-primary">{labels.groups.title}</p>
-                  <table className="w-full text-left text-sm">
-                    <thead>
-                      <tr className="text-xs uppercase tracking-wider text-text-tertiary">
-                        <th className="border-b border-hairline pb-2 font-medium">{labels.groups.name}</th>
-                        <th className="border-b border-hairline pb-2 text-right font-medium">{labels.groups.action}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mock.groups.map((g) => (
-                        <tr key={g}>
-                          <td className="border-b border-hairline py-2.5 text-text-primary">{g}</td>
-                          <td className="border-b border-hairline py-2.5 text-right">
-                            {g !== "Domain Users" && (
-                              <button
-                                onClick={() => simulate(labels.simulatedAction)}
-                                className="text-text-tertiary transition-colors hover:text-priority-urgent"
-                              >
-                                <X className="ml-auto h-4 w-4" strokeWidth={1.75} />
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <div className="mt-4 flex items-center gap-2">
-                    <select className="rounded-lg border border-hairline bg-surface px-3 py-2 text-sm text-text-secondary outline-none">
-                      <option>{labels.groups.addPlaceholder}</option>
-                    </select>
-                    <button
-                      onClick={() => simulate(labels.simulatedAction)}
-                      className="rounded-lg border border-hairline px-3.5 py-2 text-sm font-medium text-accent transition-colors hover:bg-surface-raised"
-                    >
-                      {labels.groups.add}
-                    </button>
                   </div>
                 </div>
               )}
@@ -369,41 +530,31 @@ export function DirectoryView({
               )}
 
               {tab === "authentication" && (
-                <div className="flex flex-col gap-6">
-                  <div>
-                    <p className="mb-3 text-sm font-medium text-text-primary">{labels.authentication.actions}</p>
-                    <div className="flex flex-wrap gap-2">
-                      <ActionButton icon={KeyRound} label={labels.authentication.resetPassword} onClick={() => simulate(labels.simulatedAction)} />
-                      <ActionButton icon={Lock} label={labels.authentication.lockAccount} onClick={() => simulate(labels.simulatedAction)} />
-                      <ActionButton icon={ShieldQuestion} label={labels.authentication.resetMfa} onClick={() => simulate(labels.simulatedAction)} />
-                      <ActionButton icon={ShieldOff} label={labels.authentication.disableAccount} onClick={() => simulate(labels.simulatedAction)} />
+                <div>
+                  <p className="mb-3 text-sm font-medium text-text-primary">{labels.authentication.actions}</p>
+                  {confirmingPasswordReset ? (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={handleResetPassword}
+                        disabled={passwordResetSaving}
+                        className="rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-canvas transition-colors hover:bg-accent-strong disabled:opacity-50"
+                      >
+                        {labels.edit.save}
+                      </button>
+                      <button
+                        onClick={() => setConfirmingPasswordReset(false)}
+                        className="rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+                      >
+                        {labels.edit.cancel}
+                      </button>
                     </div>
-                  </div>
-
-                  <div>
-                    <p className="mb-3 text-sm font-medium text-text-primary">{labels.authentication.methods}</p>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <Field
-                        label={labels.authentication.mfaStatus}
-                        value={mock.mfaEnrolled ? labels.authentication.mfaEnrolled : labels.authentication.mfaNotEnrolled}
-                      />
-                      <Field
-                        label={labels.authentication.passwordExpired}
-                        value={mock.passwordExpired ? labels.authentication.yes : labels.authentication.no}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="mb-3 text-sm font-medium text-text-primary">{labels.authentication.identityVerification}</p>
-                    <button
-                      onClick={() => simulate(labels.simulatedAction)}
-                      className="flex items-center gap-2 text-sm font-medium text-accent transition-colors hover:text-accent-strong"
-                    >
-                      <Phone className="h-4 w-4" strokeWidth={1.75} />
-                      {labels.authentication.sendVerificationCode}
-                    </button>
-                  </div>
+                  ) : (
+                    <ActionButton
+                      icon={KeyRound}
+                      label={labels.authentication.resetPassword}
+                      onClick={() => setConfirmingPasswordReset(true)}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -411,6 +562,329 @@ export function DirectoryView({
         ) : (
           <div className="flex items-center justify-center rounded-xl border border-dashed border-hairline-strong bg-surface/50 py-16 text-sm text-text-tertiary">
             {labels.noUsers}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AddEmployeeButton({
+  tenantId,
+  labels,
+  onCreated,
+}: {
+  tenantId: string;
+  labels: Labels["addEmployee"];
+  onCreated: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        title={labels.button}
+        className="flex shrink-0 items-center justify-center rounded-md p-1 text-text-tertiary transition-colors hover:bg-surface-raised hover:text-text-primary"
+      >
+        <UserPlus className="h-4 w-4" strokeWidth={1.75} />
+      </button>
+      {open && (
+        <AddEmployeeDialog
+          tenantId={tenantId}
+          labels={labels}
+          onClose={() => setOpen(false)}
+          onCreated={() => {
+            setOpen(false);
+            onCreated();
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+function AddEmployeeDialog({
+  tenantId,
+  labels,
+  onClose,
+  onCreated,
+}: {
+  tenantId: string;
+  labels: Labels["addEmployee"];
+  onClose: () => void;
+  onCreated: () => void;
+}) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    const res = await fetch(`/api/tenants/${tenantId}/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        phone: phone.trim() || undefined,
+        password,
+      }),
+    });
+    setSubmitting(false);
+    if (res.ok) {
+      onCreated();
+    } else {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      setError(body?.error ?? labels.error);
+    }
+  }
+
+  return (
+    <Modal title={labels.button} onClose={onClose} widthClass="w-[420px]">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
+        <div className="grid grid-cols-2 gap-3">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium text-text-secondary">{labels.firstNameLabel}</span>
+            <input
+              required
+              autoFocus
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium text-text-secondary">{labels.lastNameLabel}</span>
+            <input
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+            />
+          </label>
+        </div>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-xs font-medium text-text-secondary">{labels.emailLabel}</span>
+          <input
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-xs font-medium text-text-secondary">{labels.phoneLabel}</span>
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-xs font-medium text-text-secondary">{labels.passwordLabel}</span>
+          <input
+            required
+            type="password"
+            minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+          />
+        </label>
+        {error && <p className="text-xs text-priority-urgent">{error}</p>}
+        <div className="flex items-center justify-end gap-2 pt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-hairline px-3.5 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+          >
+            {labels.cancel}
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-canvas transition-colors hover:bg-accent-strong disabled:opacity-50"
+          >
+            {labels.submit}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function CompanyProfileCard({
+  tenantId,
+  tenantName,
+  tenantAddress,
+  tenantCompanyNumber,
+  tenantActive,
+  isSuperAdmin,
+  labels,
+  onSaved,
+}: {
+  tenantId: string;
+  tenantName: string;
+  tenantAddress: string | null;
+  tenantCompanyNumber: string | null;
+  tenantActive: boolean;
+  isSuperAdmin: boolean;
+  labels: Labels["company"] & { edit: Labels["edit"] };
+  onSaved: () => void;
+}) {
+  const tu = useTranslations("users");
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(tenantName);
+  const [address, setAddress] = useState(tenantAddress ?? "");
+  const [companyNumber, setCompanyNumber] = useState(tenantCompanyNumber ?? "");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmingStatus, setConfirmingStatus] = useState(false);
+  const [statusSaving, setStatusSaving] = useState(false);
+
+  function startEditing() {
+    setName(tenantName);
+    setAddress(tenantAddress ?? "");
+    setCompanyNumber(tenantCompanyNumber ?? "");
+    setError(null);
+    setEditing(true);
+  }
+
+  async function handleSave() {
+    if (!name.trim()) return;
+    setSaving(true);
+    setError(null);
+    const res = await fetch(`/api/tenants/${tenantId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name.trim(),
+        address: address.trim() || null,
+        companyNumber: companyNumber.trim() || null,
+      }),
+    });
+    setSaving(false);
+    if (res.ok) {
+      setEditing(false);
+      onSaved();
+    } else {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      setError(body?.error ?? labels.edit.error);
+    }
+  }
+
+  async function handleToggleStatus() {
+    setStatusSaving(true);
+    const res = await fetch(`/api/tenants/${tenantId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !tenantActive }),
+    });
+    setStatusSaving(false);
+    setConfirmingStatus(false);
+    if (res.ok) onSaved();
+  }
+
+  return (
+    <div className="rounded-xl border border-hairline bg-surface">
+      <div className="flex items-center justify-between gap-3 border-b border-hairline px-5 py-4">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-raised text-text-secondary">
+            <Building2 className="h-4 w-4" strokeWidth={1.75} />
+          </span>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium text-text-primary">{tenantName}</p>
+            {!tenantActive && (
+              <span className="flex items-center gap-1 rounded-full border border-hairline bg-surface-raised px-2 py-0.5 text-[10px] font-medium text-text-secondary">
+                <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT.DISABLED}`} />
+                {tu("status.DISABLED")}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {isSuperAdmin &&
+            !editing &&
+            (confirmingStatus ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={handleToggleStatus}
+                  disabled={statusSaving}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-50 ${
+                    tenantActive
+                      ? "bg-priority-urgent/10 text-priority-urgent hover:bg-priority-urgent/20"
+                      : "bg-accent text-canvas hover:bg-accent-strong"
+                  }`}
+                >
+                  {labels.edit.save}
+                </button>
+                <button
+                  onClick={() => setConfirmingStatus(false)}
+                  className="rounded-lg border border-hairline px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+                >
+                  {labels.edit.cancel}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmingStatus(true)}
+                className="rounded-lg border border-hairline px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:border-hairline-strong hover:text-text-primary"
+              >
+                {tenantActive ? labels.edit.disable : labels.edit.enable}
+              </button>
+            ))}
+          {isSuperAdmin && !editing && (
+            <button
+              onClick={startEditing}
+              className="flex items-center gap-1.5 text-xs font-medium text-accent hover:text-accent-strong"
+            >
+              <Pencil className="h-3.5 w-3.5" strokeWidth={1.75} />
+              {labels.edit.button}
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="px-5 py-5">
+        <p className="mb-3 text-sm font-medium text-text-primary">{labels.sectionTitle}</p>
+        {editing ? (
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <EditInput label={labels.name} value={name} onChange={setName} required />
+              <EditInput label={labels.address} value={address} onChange={setAddress} />
+              <EditInput label={labels.companyNumber} value={companyNumber} onChange={setCompanyNumber} />
+            </div>
+            {error && <p className="text-xs text-priority-urgent">{error}</p>}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSave}
+                disabled={saving || !name.trim()}
+                className="rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-canvas transition-colors hover:bg-accent-strong disabled:opacity-50"
+              >
+                {labels.edit.save}
+              </button>
+              <button
+                onClick={() => setEditing(false)}
+                className="rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+              >
+                {labels.edit.cancel}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Field label={labels.name} value={tenantName} />
+            <Field label={labels.address} value={tenantAddress ?? "—"} />
+            <Field label={labels.companyNumber} value={tenantCompanyNumber ?? "—"} />
           </div>
         )}
       </div>
@@ -577,12 +1051,39 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
+function EditInput({
+  label,
+  value,
+  onChange,
+  required,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+  type?: string;
+}) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-[11px] uppercase tracking-wider text-text-tertiary">{label}</span>
+      <input
+        required={required}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-hairline bg-surface-raised px-2.5 py-1.5 text-sm text-text-primary outline-none focus:border-accent/60"
+      />
+    </label>
+  );
+}
+
 function ActionButton({
   icon: Icon,
   label,
   onClick,
 }: {
-  icon: typeof Lock;
+  icon: typeof KeyRound;
   label: string;
   onClick: () => void;
 }) {

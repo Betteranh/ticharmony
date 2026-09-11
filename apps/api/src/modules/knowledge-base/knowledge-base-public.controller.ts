@@ -13,7 +13,8 @@ export class KnowledgeBasePublicController {
   constructor(private readonly knowledgeBaseService: KnowledgeBaseService) {}
 
   @ApiOperation({
-    summary: 'Articles publics de la base de connaissances (aucune authentification requise)',
+    summary:
+      'Articles publics de la base de connaissances (aucune authentification requise)',
     description:
       'Sous-ensemble ouvert de la base de connaissances : uniquement les articles globaux ' +
       '(non rattachés à un tenant) et marqués PUBLIC. Destiné à un usage Open Data / consultation ' +

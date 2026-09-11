@@ -17,6 +17,8 @@ export interface ClientTenant {
   name: string;
   slug: string;
   address: string | null;
+  companyNumber: string | null;
+  active: boolean;
   userCount: number;
   createdAt: string;
 }
@@ -37,6 +39,7 @@ export interface DirectoryUser {
   avatar: string;
   department: string | null;
   phone: string | null;
+  employeeCode: string | null;
   roles: UserRole[];
   status: DirectoryUserStatus;
   createdAt: string;
@@ -64,6 +67,7 @@ export interface Person {
   department?: string | null;
   location?: string | null;
   phone?: string | null;
+  tenantType?: "INTERNAL" | "CLIENT";
 }
 
 export interface TicketAttachment {

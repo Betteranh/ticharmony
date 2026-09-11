@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserRole } from '../../../generated/prisma/client';
+import { generateEmployeeCode } from '../../common/generate-employee-code';
 import { getRequestContext, getTenantTx } from '../../common/tenant-context';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -48,6 +49,7 @@ export class UsersService {
         department: dto.department,
         location: dto.location,
         phone: dto.phone,
+        employeeCode: generateEmployeeCode(),
         roles: dto.roles,
       },
       select: {
@@ -59,6 +61,7 @@ export class UsersService {
         department: true,
         location: true,
         phone: true,
+        employeeCode: true,
         roles: true,
         status: true,
       },
@@ -76,6 +79,7 @@ export class UsersService {
         department: true,
         location: true,
         phone: true,
+        employeeCode: true,
         roles: true,
         status: true,
       },
@@ -95,6 +99,7 @@ export class UsersService {
         department: true,
         location: true,
         phone: true,
+        employeeCode: true,
         roles: true,
         status: true,
         tenant: { select: { type: true } },

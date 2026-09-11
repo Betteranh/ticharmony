@@ -147,6 +147,13 @@
     "location": "Emplacement",
     "contact": "Contact",
     "issueDescription": "Description du problème",
+    "export": {
+      "menuLabel": "Exporter en PDF",
+      "category": "Catégorie",
+      "comments": "Commentaires",
+      "noComments": "Aucun commentaire public.",
+      "attachments": "Pièces jointes"
+    },
     "status": {
       "OPEN": "Ouvert",
       "IN_PROGRESS": "En cours",
@@ -177,29 +184,47 @@
     "clientsSubtitle": "Choisissez une entreprise cliente pour consulter son annuaire.",
     "usersCount": "{count} utilisateurs",
     "back": "Toutes les entreprises",
+    "clientsSearchPlaceholder": "Rechercher une entreprise…",
+    "noClientResults": "Aucune entreprise ne correspond à cette recherche.",
     "searchPlaceholder": "Rechercher un utilisateur…",
     "empty": "Aucune entreprise cliente pour l'instant.",
     "noUsers": "Cette entreprise n'a pas encore d'utilisateurs.",
     "newClient": "Nouvelle entreprise cliente",
+    "company": {
+      "rowLabel": "Fiche entreprise",
+      "sectionTitle": "Informations",
+      "name": "Nom",
+      "address": "Adresse",
+      "companyNumber": "Numéro d'entreprise"
+    },
+    "edit": {
+      "button": "Modifier",
+      "save": "Confirmer",
+      "cancel": "Annuler",
+      "error": "Une erreur est survenue, réessayez.",
+      "disable": "Désactiver",
+      "enable": "Activer"
+    },
     "form": {
       "nameLabel": "Nom de l'entreprise",
-      "slugLabel": "Identifiant workspace",
-      "slugHint": "Minuscules, chiffres et tirets uniquement — c'est l'ID que l'entreprise utilisera pour se connecter.",
       "addressLabel": "Adresse",
-      "adminSectionTitle": "Premier administrateur",
-      "adminFirstNameLabel": "Prénom",
-      "adminLastNameLabel": "Nom",
-      "adminEmailLabel": "Email",
-      "adminDepartmentLabel": "Service",
-      "adminLocationLabel": "Emplacement",
-      "adminPhoneLabel": "Téléphone",
-      "adminPasswordLabel": "Mot de passe",
+      "companyNumberLabel": "Numéro d'entreprise",
       "create": "Créer",
       "cancel": "Annuler"
     },
+    "addEmployee": {
+      "button": "Ajouter un employé",
+      "firstNameLabel": "Prénom",
+      "lastNameLabel": "Nom",
+      "emailLabel": "Email",
+      "phoneLabel": "Téléphone",
+      "passwordLabel": "Mot de passe",
+      "submit": "Ajouter",
+      "cancel": "Annuler",
+      "error": "Une erreur est survenue, réessayez."
+    },
     "tabs": {
       "profile": "Profil",
-      "groups": "Groupes",
       "licenses": "Licences",
       "devices": "Appareils",
       "authentication": "Authentification"
@@ -208,21 +233,12 @@
       "identity": "Identité",
       "displayName": "Nom affiché",
       "username": "Identifiant",
-      "title": "Poste",
       "employeeId": "Matricule",
       "email": "E-mail",
       "phone": "Téléphone",
       "organization": "Organisation",
       "address": "Adresse",
-      "department": "Service",
       "lastLogin": "Dernière connexion"
-    },
-    "groups": {
-      "title": "Appartenance aux groupes",
-      "name": "Nom du groupe",
-      "action": "Action",
-      "addPlaceholder": "Ajouter au groupe…",
-      "add": "Ajouter"
     },
     "licenses": {
       "title": "Licences attribuées",
@@ -241,21 +257,8 @@
     },
     "authentication": {
       "actions": "Actions",
-      "resetPassword": "Réinitialiser le mot de passe",
-      "lockAccount": "Verrouiller le compte",
-      "resetMfa": "Réinitialiser le MFA",
-      "disableAccount": "Désactiver le compte",
-      "methods": "Méthodes d'authentification",
-      "mfaStatus": "Statut MFA",
-      "mfaEnrolled": "Activé",
-      "mfaNotEnrolled": "Non activé",
-      "passwordExpired": "Mot de passe expiré",
-      "yes": "Oui",
-      "no": "Non",
-      "identityVerification": "Vérification d'identité",
-      "sendVerificationCode": "Envoyer un code de vérification"
-    },
-    "simulatedAction": "Action simulée — aucune modification réelle"
+      "resetPassword": "Réinitialiser le mot de passe"
+    }
   },
   "knowledgeBase": {
     "title": "Documentation",
@@ -386,6 +389,7 @@
     "types": {
       "TICKET_ASSIGNED": "Le ticket #{number} « {title} » vous a été assigné",
       "TICKET_RESOLVED": "Votre ticket #{number} « {title} » a été résolu",
+      "TICKET_CLOSED": "Votre ticket #{number} « {title} » a été clôturé",
       "TICKET_COMMENT": "Nouveau commentaire sur le ticket #{number} « {title} »"
     }
   }

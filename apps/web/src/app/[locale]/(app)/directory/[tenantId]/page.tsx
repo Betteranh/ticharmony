@@ -28,23 +28,41 @@ export default async function DirectoryClientPage({
   if (!tenant || users === null || !currentUser) notFound();
 
   const canManage = currentUser.roles.includes("ADMIN") || currentUser.roles.includes("SUPER_ADMIN");
+  const isSuperAdmin = currentUser.roles.includes("SUPER_ADMIN");
 
   return (
     <DirectoryView
       tenantId={tenantId}
       tenantName={tenant.name}
       tenantAddress={tenant.address}
+      tenantCompanyNumber={tenant.companyNumber}
+      tenantActive={tenant.active}
       users={users}
       assets={assets}
       canManage={canManage}
+      isSuperAdmin={isSuperAdmin}
       locale={locale}
       labels={{
         back: t("back"),
         searchPlaceholder: t("searchPlaceholder"),
         noUsers: t("noUsers"),
+        company: {
+          rowLabel: t("company.rowLabel"),
+          sectionTitle: t("company.sectionTitle"),
+          name: t("company.name"),
+          address: t("company.address"),
+          companyNumber: t("company.companyNumber"),
+        },
+        edit: {
+          button: t("edit.button"),
+          save: t("edit.save"),
+          cancel: t("edit.cancel"),
+          error: t("edit.error"),
+          disable: t("edit.disable"),
+          enable: t("edit.enable"),
+        },
         tabs: {
           profile: t("tabs.profile"),
-          groups: t("tabs.groups"),
           licenses: t("tabs.licenses"),
           devices: t("tabs.devices"),
           authentication: t("tabs.authentication"),
@@ -53,21 +71,12 @@ export default async function DirectoryClientPage({
           identity: t("profile.identity"),
           displayName: t("profile.displayName"),
           username: t("profile.username"),
-          title: t("profile.title"),
           employeeId: t("profile.employeeId"),
           email: t("profile.email"),
           phone: t("profile.phone"),
           organization: t("profile.organization"),
           address: t("profile.address"),
-          department: t("profile.department"),
           lastLogin: t("profile.lastLogin"),
-        },
-        groups: {
-          title: t("groups.title"),
-          name: t("groups.name"),
-          action: t("groups.action"),
-          addPlaceholder: t("groups.addPlaceholder"),
-          add: t("groups.add"),
         },
         licenses: {
           title: t("licenses.title"),
@@ -87,20 +96,18 @@ export default async function DirectoryClientPage({
         authentication: {
           actions: t("authentication.actions"),
           resetPassword: t("authentication.resetPassword"),
-          lockAccount: t("authentication.lockAccount"),
-          resetMfa: t("authentication.resetMfa"),
-          disableAccount: t("authentication.disableAccount"),
-          methods: t("authentication.methods"),
-          mfaStatus: t("authentication.mfaStatus"),
-          mfaEnrolled: t("authentication.mfaEnrolled"),
-          mfaNotEnrolled: t("authentication.mfaNotEnrolled"),
-          passwordExpired: t("authentication.passwordExpired"),
-          yes: t("authentication.yes"),
-          no: t("authentication.no"),
-          identityVerification: t("authentication.identityVerification"),
-          sendVerificationCode: t("authentication.sendVerificationCode"),
         },
-        simulatedAction: t("simulatedAction"),
+        addEmployee: {
+          button: t("addEmployee.button"),
+          firstNameLabel: t("addEmployee.firstNameLabel"),
+          lastNameLabel: t("addEmployee.lastNameLabel"),
+          emailLabel: t("addEmployee.emailLabel"),
+          phoneLabel: t("addEmployee.phoneLabel"),
+          passwordLabel: t("addEmployee.passwordLabel"),
+          submit: t("addEmployee.submit"),
+          cancel: t("addEmployee.cancel"),
+          error: t("addEmployee.error"),
+        },
       }}
     />
   );

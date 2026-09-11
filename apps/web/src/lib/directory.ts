@@ -6,6 +6,8 @@ interface ApiClientTenant {
   name: string;
   slug: string;
   address: string | null;
+  companyNumber: string | null;
+  active: boolean;
   createdAt: string;
   userCount: number;
 }
@@ -17,6 +19,8 @@ export async function listClientTenants(): Promise<ClientTenant[]> {
     name: tenant.name,
     slug: tenant.slug,
     address: tenant.address,
+    companyNumber: tenant.companyNumber,
+    active: tenant.active,
     userCount: tenant.userCount,
     createdAt: tenant.createdAt,
   }));

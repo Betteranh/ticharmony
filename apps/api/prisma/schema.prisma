@@ -76,14 +76,16 @@ enum AssetStatus {
 }
 
 model Tenant {
-  id        String     @id @default(cuid())
-  slug      String     @unique
-  name      String
-  type      TenantType
-  address   String?
-  locale    Locale     @default(FR)
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @updatedAt @map("updated_at")
+  id            String     @id @default(cuid())
+  slug          String     @unique
+  name          String
+  type          TenantType
+  address       String?
+  companyNumber String?    @map("company_number")
+  active        Boolean    @default(true)
+  locale        Locale     @default(FR)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
 
   users      User[]
   tickets    Ticket[]
@@ -107,19 +109,20 @@ model User {
   department   String?
   location     String?
   phone        String?
+  employeeCode String?    @map("employee_code")
   locale       Locale     @default(FR)
   status       UserStatus @default(ACTIVE)
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
 
-  tenant            Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  requestedTickets  Ticket[]       @relation("TicketRequester")
-  assignedTickets   Ticket[]       @relation("TicketAssignee")
-  comments          TicketComment[]
-  notifications     Notification[]
-  auditLogs         AuditLog[]
-  assignedAssets    Asset[]
-  licenses          UserLicense[]
+  tenant           Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  requestedTickets Ticket[]        @relation("TicketRequester")
+  assignedTickets  Ticket[]        @relation("TicketAssignee")
+  comments         TicketComment[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+  assignedAssets   Asset[]
+  licenses         UserLicense[]
 
   @@unique([tenantId, email])
   @@map("users")
@@ -131,8 +134,8 @@ model Category {
   nameFr   String @map("name_fr")
   nameEn   String @map("name_en")
 
-  tenant  Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  tickets Ticket[]
+  tenant   Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tickets  Ticket[]
   articles KnowledgeArticle[]
 
   @@map("categories")
@@ -154,10 +157,10 @@ model Ticket {
   updatedAt   DateTime       @updatedAt @map("updated_at")
   closedAt    DateTime?      @map("closed_at")
 
-  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  category    Category?         @relation(fields: [categoryId], references: [id])
-  requester   User              @relation("TicketRequester", fields: [requesterId], references: [id])
-  assignee    User?             @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category    Category?          @relation(fields: [categoryId], references: [id])
+  requester   User               @relation("TicketRequester", fields: [requesterId], references: [id])
+  assignee    User?              @relation("TicketAssignee", fields: [assigneeId], references: [id])
   comments    TicketComment[]
   attachments TicketAttachment[]
 

@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ArticleVisibility,
   Prisma,
   UserRole,
 } from '../../../generated/prisma/client';
 import { getRequestContext, getTenantTx } from '../../common/tenant-context';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -12,6 +17,8 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class KnowledgeBaseService {
+  constructor(private readonly prisma: PrismaService) {}
+
   private visibilityFilter(): Prisma.KnowledgeArticleWhereInput {
     const { roles } = getRequestContext();
     return roles?.includes(UserRole.CUSTOMER)
@@ -19,7 +26,22 @@ export class KnowledgeBaseService {
       : {};
   }
 
-  async findCategories() {
+  // The authenticated knowledge base (as opposed to the anonymous "public"
+  // one below) is an internal-staff tool — client companies only get their
+  // dashboard/tickets, same restriction as Directory and Assets.
+  private async assertInternalStaff(requesterTenantId: string) {
+    const requesterTenant = await this.prisma.tenant.findUniqueOrThrow({
+      where: { id: requesterTenantId },
+    });
+    if (requesterTenant.type !== 'INTERNAL') {
+      throw new ForbiddenException(
+        'Only internal staff can access the knowledge base',
+      );
+    }
+  }
+
+  async findCategories(requesterTenantId: string) {
+    await this.assertInternalStaff(requesterTenantId);
     const categories = await getTenantTx().category.findMany({
       select: {
         id: true,
@@ -35,7 +57,8 @@ export class KnowledgeBaseService {
     }));
   }
 
-  findArticles() {
+  async findArticles(requesterTenantId: string) {
+    await this.assertInternalStaff(requesterTenantId);
     return getTenantTx().knowledgeArticle.findMany({
       where: this.visibilityFilter(),
       select: {
@@ -71,7 +94,8 @@ export class KnowledgeBaseService {
     });
   }
 
-  createCategory(dto: CreateCategoryDto) {
+  async createCategory(requesterTenantId: string, dto: CreateCategoryDto) {
+    await this.assertInternalStaff(requesterTenantId);
     const { tenantId } = getRequestContext();
     return getTenantTx().category.create({
       data: {
@@ -82,7 +106,12 @@ export class KnowledgeBaseService {
     });
   }
 
-  async updateCategory(id: string, dto: UpdateCategoryDto) {
+  async updateCategory(
+    requesterTenantId: string,
+    id: string,
+    dto: UpdateCategoryDto,
+  ) {
+    await this.assertInternalStaff(requesterTenantId);
     const existing = await getTenantTx().category.findUnique({ where: { id } });
     if (!existing) {
       throw new NotFoundException('Thème introuvable');
@@ -96,7 +125,8 @@ export class KnowledgeBaseService {
     });
   }
 
-  createArticle(dto: CreateArticleDto) {
+  async createArticle(requesterTenantId: string, dto: CreateArticleDto) {
+    await this.assertInternalStaff(requesterTenantId);
     const { tenantId } = getRequestContext();
     return getTenantTx().knowledgeArticle.create({
       data: {
@@ -111,7 +141,12 @@ export class KnowledgeBaseService {
     });
   }
 
-  async updateArticle(id: string, dto: UpdateArticleDto) {
+  async updateArticle(
+    requesterTenantId: string,
+    id: string,
+    dto: UpdateArticleDto,
+  ) {
+    await this.assertInternalStaff(requesterTenantId);
     const existing = await getTenantTx().knowledgeArticle.findUnique({
       where: { id },
     });

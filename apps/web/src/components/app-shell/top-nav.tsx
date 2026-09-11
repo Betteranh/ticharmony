@@ -97,14 +97,17 @@ export function TopNav({
   }
 
   const isAdmin = user.roles.includes("ADMIN") || user.roles.includes("SUPER_ADMIN");
-  const canAccessDirectory = isAdmin || user.roles.includes("AGENT");
+  // Directory, Knowledge Base and Assets management are internal-staff tools —
+  // client companies (any role, including their own ADMIN) only get their
+  // dashboard/tickets and their own employee list (/users).
+  const isInternalStaff = user.tenantType === "INTERNAL";
 
   const toolGroups = [
     {
       label: tt("groups.workspace"),
       items: [{ href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard }],
     },
-    ...(canAccessDirectory
+    ...(isInternalStaff
       ? [
           {
             label: tt("groups.infrastructure"),
@@ -112,22 +115,26 @@ export function TopNav({
           },
         ]
       : []),
-    {
-      label: tt("groups.knowledge"),
-      items: [{ href: "/knowledge-base", label: t("knowledgeBase"), icon: BookOpen }],
-    },
+    ...(isInternalStaff
+      ? [
+          {
+            label: tt("groups.knowledge"),
+            items: [{ href: "/knowledge-base", label: t("knowledgeBase"), icon: BookOpen }],
+          },
+        ]
+      : []),
     {
       label: tt("groups.management"),
       items: [
         ...(isAdmin ? [{ href: "/users", label: t("users"), icon: UsersIcon }] : []),
-        ...(canAccessDirectory ? [{ href: "/assets", label: t("assets"), icon: Boxes }] : []),
+        ...(isInternalStaff ? [{ href: "/assets", label: t("assets"), icon: Boxes }] : []),
         { href: "/settings", label: t("settings"), icon: Settings },
       ],
     },
   ];
 
   return (
-    <header className="flex h-16 flex-none items-center gap-4 border-b border-hairline bg-canvas/80 px-4 backdrop-blur-sm sm:px-6">
+    <header className="relative z-30 flex h-16 flex-none items-center gap-4 border-b border-hairline bg-canvas/80 px-4 backdrop-blur-sm sm:px-6">
       <Link href="/dashboard" className="flex items-center gap-2.5">
         <Image
           src="/brand/tic-harmony-logo.png"

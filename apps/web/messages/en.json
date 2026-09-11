@@ -147,6 +147,13 @@
     "location": "Location",
     "contact": "Contact",
     "issueDescription": "Issue Description",
+    "export": {
+      "menuLabel": "Export as PDF",
+      "category": "Category",
+      "comments": "Comments",
+      "noComments": "No public comments.",
+      "attachments": "Attachments"
+    },
     "status": {
       "OPEN": "Open",
       "IN_PROGRESS": "In progress",
@@ -177,29 +184,47 @@
     "clientsSubtitle": "Pick a client company to browse its directory.",
     "usersCount": "{count} users",
     "back": "All companies",
+    "clientsSearchPlaceholder": "Search for a company…",
+    "noClientResults": "No company matches this search.",
     "searchPlaceholder": "Search users…",
     "empty": "No client companies yet.",
     "noUsers": "This company has no users yet.",
     "newClient": "New client company",
+    "company": {
+      "rowLabel": "Company profile",
+      "sectionTitle": "Information",
+      "name": "Name",
+      "address": "Address",
+      "companyNumber": "Company registration number"
+    },
+    "edit": {
+      "button": "Edit",
+      "save": "Confirm",
+      "cancel": "Cancel",
+      "error": "Something went wrong, please try again.",
+      "disable": "Disable",
+      "enable": "Enable"
+    },
     "form": {
       "nameLabel": "Company name",
-      "slugLabel": "Workspace ID",
-      "slugHint": "Lowercase letters, numbers and dashes only — this is the ID the company will use to log in.",
       "addressLabel": "Address",
-      "adminSectionTitle": "First administrator",
-      "adminFirstNameLabel": "First name",
-      "adminLastNameLabel": "Last name",
-      "adminEmailLabel": "Email",
-      "adminDepartmentLabel": "Department",
-      "adminLocationLabel": "Location",
-      "adminPhoneLabel": "Phone",
-      "adminPasswordLabel": "Password",
+      "companyNumberLabel": "Company registration number",
       "create": "Create",
       "cancel": "Cancel"
     },
+    "addEmployee": {
+      "button": "Add employee",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "passwordLabel": "Password",
+      "submit": "Add",
+      "cancel": "Cancel",
+      "error": "Something went wrong, please try again."
+    },
     "tabs": {
       "profile": "Profile",
-      "groups": "Groups",
       "licenses": "Licenses",
       "devices": "Devices",
       "authentication": "Authentication"
@@ -208,21 +233,12 @@
       "identity": "Identity",
       "displayName": "Display Name",
       "username": "Username",
-      "title": "Title",
       "employeeId": "Employee ID",
       "email": "Email",
       "phone": "Phone",
       "organization": "Organization",
       "address": "Address",
-      "department": "Department",
       "lastLogin": "Last Login"
-    },
-    "groups": {
-      "title": "Group memberships",
-      "name": "Group name",
-      "action": "Action",
-      "addPlaceholder": "Add to group…",
-      "add": "Add"
     },
     "licenses": {
       "title": "Assigned licenses",
@@ -241,21 +257,8 @@
     },
     "authentication": {
       "actions": "Actions",
-      "resetPassword": "Reset password",
-      "lockAccount": "Lock account",
-      "resetMfa": "Reset MFA",
-      "disableAccount": "Disable account",
-      "methods": "Authentication methods",
-      "mfaStatus": "MFA status",
-      "mfaEnrolled": "Enrolled",
-      "mfaNotEnrolled": "Not enrolled",
-      "passwordExpired": "Password expired",
-      "yes": "Yes",
-      "no": "No",
-      "identityVerification": "Identity Verification",
-      "sendVerificationCode": "Send verification code"
-    },
-    "simulatedAction": "Simulated — no real change was made"
+      "resetPassword": "Reset password"
+    }
   },
   "knowledgeBase": {
     "title": "Documentation",
@@ -386,6 +389,7 @@
     "types": {
       "TICKET_ASSIGNED": "Ticket #{number} \"{title}\" was assigned to you",
       "TICKET_RESOLVED": "Your ticket #{number} \"{title}\" was resolved",
+      "TICKET_CLOSED": "Your ticket #{number} \"{title}\" was closed",
       "TICKET_COMMENT": "New comment on ticket #{number} \"{title}\""
     }
   }

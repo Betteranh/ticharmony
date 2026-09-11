@@ -13,7 +13,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('IT4U API')
     .setDescription(
-      "API REST de la plateforme IT4U (TIC Harmony) : ticketing de support IT, gestion des utilisateurs et des " +
+      'API REST de la plateforme IT4U (TIC Harmony) : ticketing de support IT, gestion des utilisateurs et des ' +
         'tenants, inventaire des équipements (assets) et base de connaissances, avec isolation multi-tenant ' +
         'appliquée par Row-Level Security PostgreSQL.',
     )

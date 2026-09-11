@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -15,8 +16,11 @@ import {
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { CreateTenantUserDto } from './dto/create-tenant-user.dto';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { CreateUserLicenseDto } from './dto/create-user-license.dto';
+import { UpdateTenantDto } from './dto/update-tenant.dto';
+import { UpdateTenantUserDto } from './dto/update-tenant-user.dto';
 import { TenantsService } from './tenants.service';
 
 @ApiTags('Tenants')
@@ -52,6 +56,34 @@ export class TenantsController {
     @Param('tenantId') tenantId: string,
   ) {
     return this.tenantsService.findClientUsers(user.tenantId, tenantId);
+  }
+
+  @Patch(':tenantId')
+  updateTenant(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('tenantId') tenantId: string,
+    @Body() dto: UpdateTenantDto,
+  ) {
+    return this.tenantsService.update(user.tenantId, tenantId, dto);
+  }
+
+  @Post(':tenantId/users')
+  createTenantUser(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('tenantId') tenantId: string,
+    @Body() dto: CreateTenantUserDto,
+  ) {
+    return this.tenantsService.createTenantUser(user.tenantId, tenantId, dto);
+  }
+
+  @Patch(':tenantId/users/:userId')
+  updateTenantUser(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('tenantId') tenantId: string,
+    @Param('userId') userId: string,
+    @Body() dto: UpdateTenantUserDto,
+  ) {
+    return this.tenantsService.updateUser(user.tenantId, tenantId, userId, dto);
   }
 
   @Post(':tenantId/users/:userId/licenses')

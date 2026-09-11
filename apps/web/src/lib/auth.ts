@@ -27,5 +27,6 @@ export async function getSession(): Promise<Person | null> {
     avatar: user.avatar,
     roles: user.roles,
     email: user.email,
+    tenantType: user.tenant?.type,
   };
 }
