@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import { FullScreenLoader } from "@/components/ui/full-screen-loader";
 
 interface Labels {
@@ -24,6 +24,7 @@ export function LoginForm({ labels }: { labels: Labels }) {
   const t = useTranslations("common");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [pendingTenants, setPendingTenants] = useState<TenantOption[] | null>(null);
 
@@ -96,15 +97,29 @@ export function LoginForm({ labels }: { labels: Labels }) {
       </Field>
 
       <Field label={labels.password}>
-        <input
-          required
-          type="password"
-          name="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg border border-hairline bg-surface px-3 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-accent/60 placeholder:text-text-tertiary"
-        />
+        <div className="relative">
+          <input
+            required
+            type={showPassword ? "text" : "password"}
+            name="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-hairline bg-surface px-3 py-2.5 pr-10 text-sm text-text-primary outline-none transition-colors focus:border-accent/60 placeholder:text-text-tertiary"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            tabIndex={-1}
+            className="absolute right-0 top-0 flex h-full w-10 items-center justify-center text-text-tertiary transition-colors hover:text-text-primary"
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" strokeWidth={1.75} />
+            ) : (
+              <Eye className="h-4 w-4" strokeWidth={1.75} />
+            )}
+          </button>
+        </div>
       </Field>
 
       {status === "error" && (
