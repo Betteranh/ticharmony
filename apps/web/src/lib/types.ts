@@ -52,6 +52,7 @@ export interface TenantUser {
   firstName: string;
   lastName: string;
   avatar: string;
+  employeeCode: string | null;
   roles: UserRole[];
   status: DirectoryUserStatus;
   createdAt: string;

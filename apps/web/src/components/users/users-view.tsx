@@ -19,8 +19,6 @@ interface Labels {
     | "firstNameLabel"
     | "lastNameLabel"
     | "emailLabel"
-    | "departmentLabel"
-    | "locationLabel"
     | "phoneLabel"
     | "passwordLabel"
     | "rolesLabel"
@@ -30,6 +28,11 @@ interface Labels {
   >;
   role: Record<UserRole, string>;
   status: Record<"ACTIVE" | "INVITED" | "DISABLED", string>;
+  edit: Record<
+    "button" | "save" | "cancel" | "error" | "disable" | "enable" | "cannotDisableSelf",
+    string
+  >;
+  detail: Record<"employeeCode", string>;
 }
 
 const STATUS_DOT: Record<"ACTIVE" | "INVITED" | "DISABLED", string> = {
@@ -41,33 +44,56 @@ const STATUS_DOT: Record<"ACTIVE" | "INVITED" | "DISABLED", string> = {
 export function UsersView({
   users,
   canManage,
+  currentUserId,
   assignableRoles,
   labels,
 }: {
   users: TenantUser[];
   canManage: boolean;
+  currentUserId: string;
   assignableRoles: UserRole[];
   labels: Labels;
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter(
-      (u) =>
-        `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q),
+    const matches = q
+      ? users.filter(
+          (u) =>
+            `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
+            u.email.toLowerCase().includes(q),
+        )
+      : users;
+    // Disabled accounts sink to the bottom rather than cluttering the top of
+    // the list — same convention already used for employees/companies in
+    // Directory.
+    return [...matches].sort(
+      (a, b) => Number(a.status === "DISABLED") - Number(b.status === "DISABLED"),
     );
   }, [users, query]);
 
+  const selected = users.find((u) => u.id === selectedId) ?? null;
+
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="font-display text-2xl font-semibold tracking-tight text-text-primary">{labels.title}</h1>
-        <p className="mt-1 text-sm text-text-secondary">{labels.subtitle}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-text-primary">{labels.title}</h1>
+          <p className="mt-1 text-sm text-text-secondary">{labels.subtitle}</p>
+        </div>
+        {canManage && (
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-canvas transition-colors hover:bg-accent-strong"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2} />
+            {labels.newUser}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-hairline bg-surface p-2">
@@ -80,15 +106,6 @@ export function UsersView({
             className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none"
           />
         </div>
-        {canManage && (
-          <button
-            onClick={() => setDialogOpen(true)}
-            className="flex shrink-0 items-center gap-1.5 rounded-lg border border-hairline px-2.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-accent/60 hover:text-text-primary"
-          >
-            <Plus className="h-3.5 w-3.5" strokeWidth={1.75} />
-            {labels.newUser}
-          </button>
-        )}
       </div>
 
       {users.length === 0 ? (
@@ -114,7 +131,10 @@ export function UsersView({
               {filtered.map((u, i) => (
                 <tr
                   key={u.id}
-                  className="animate-rise-in border-b border-hairline last:border-0"
+                  onClick={() => setSelectedId(u.id)}
+                  className={`animate-rise-in cursor-pointer border-b border-hairline transition-colors last:border-0 hover:bg-surface-hover ${
+                    u.status === "DISABLED" ? "opacity-50" : ""
+                  }`}
                   style={{ animationDelay: `${i * 25}ms` }}
                 >
                   <td className="px-5 py-3.5">
@@ -162,7 +182,219 @@ export function UsersView({
           }}
         />
       )}
+
+      {selected && (
+        <EmployeeDialog
+          user={selected}
+          canManage={canManage}
+          isSelf={selected.id === currentUserId}
+          labels={labels}
+          onClose={() => setSelectedId(null)}
+          onSaved={() => router.refresh()}
+        />
+      )}
     </div>
+  );
+}
+
+function EmployeeDialog({
+  user,
+  canManage,
+  isSelf,
+  labels,
+  onClose,
+  onSaved,
+}: {
+  user: TenantUser;
+  canManage: boolean;
+  isSelf: boolean;
+  labels: Labels;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [firstName, setFirstName] = useState(user.firstName);
+  const [lastName, setLastName] = useState(user.lastName);
+  const [email, setEmail] = useState(user.email);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmingStatus, setConfirmingStatus] = useState(false);
+
+  function startEditing() {
+    setFirstName(user.firstName);
+    setLastName(user.lastName);
+    setEmail(user.email);
+    setError(null);
+    setEditing(true);
+  }
+
+  async function saveEdit() {
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) return;
+    setSaving(true);
+    setError(null);
+    const res = await fetch(`/api/users/${user.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim(),
+      }),
+    });
+    setSaving(false);
+    if (res.ok) {
+      setEditing(false);
+      onSaved();
+    } else {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      setError(body?.error ?? labels.edit.error);
+    }
+  }
+
+  async function toggleStatus() {
+    setSaving(true);
+    const res = await fetch(`/api/users/${user.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: user.status === "ACTIVE" ? "DISABLED" : "ACTIVE" }),
+    });
+    setSaving(false);
+    setConfirmingStatus(false);
+    if (res.ok) onSaved();
+    else setError(labels.edit.error);
+  }
+
+  return (
+    <Modal title={`${user.firstName} ${user.lastName}`} onClose={onClose} widthClass="w-[420px]">
+      <div className="flex flex-col gap-4 p-5">
+        {editing ? (
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1.5">
+                <span className="text-xs font-medium text-text-secondary">
+                  {labels.form.firstNameLabel}
+                </span>
+                <input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+                />
+              </label>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-xs font-medium text-text-secondary">
+                  {labels.form.lastNameLabel}
+                </span>
+                <input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+                />
+              </label>
+            </div>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-xs font-medium text-text-secondary">{labels.form.emailLabel}</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
+              />
+            </label>
+            {error && <p className="text-xs text-priority-urgent">{error}</p>}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={saveEdit}
+                disabled={saving || !firstName.trim() || !lastName.trim() || !email.trim()}
+                className="rounded-lg bg-accent px-3.5 py-2 text-sm font-semibold text-canvas transition-colors hover:bg-accent-strong disabled:opacity-50"
+              >
+                {labels.edit.save}
+              </button>
+              <button
+                onClick={() => setEditing(false)}
+                className="rounded-lg border border-hairline px-3.5 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+              >
+                {labels.edit.cancel}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="col-span-2">
+                <p className="text-xs font-medium text-text-tertiary">{labels.columns.email}</p>
+                <p className="text-text-primary">{user.email}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-text-tertiary">{labels.detail.employeeCode}</p>
+                <p className="text-text-primary">{user.employeeCode ?? "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-text-tertiary">{labels.columns.status}</p>
+                <p className="flex items-center gap-1.5 text-text-primary">
+                  <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[user.status]}`} />
+                  {labels.status[user.status]}
+                </p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-xs font-medium text-text-tertiary">{labels.columns.roles}</p>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {user.roles.map((role) => (
+                    <span
+                      key={role}
+                      className="rounded-full border border-hairline bg-surface-raised px-2 py-0.5 text-xs font-medium text-text-primary"
+                    >
+                      {labels.role[role]}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {canManage && (
+              <div className="flex flex-col gap-2 border-t border-hairline pt-4">
+                <button
+                  onClick={startEditing}
+                  className="self-start text-xs font-medium text-accent hover:text-accent-strong"
+                >
+                  {labels.edit.button}
+                </button>
+
+                {isSelf ? (
+                  <p className="text-xs text-text-tertiary">{labels.edit.cannotDisableSelf}</p>
+                ) : confirmingStatus ? (
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={toggleStatus}
+                      disabled={saving}
+                      className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-50 ${
+                        user.status === "ACTIVE"
+                          ? "bg-priority-urgent/10 text-priority-urgent hover:bg-priority-urgent/20"
+                          : "bg-accent text-canvas hover:bg-accent-strong"
+                      }`}
+                    >
+                      {labels.edit.save}
+                    </button>
+                    <button
+                      onClick={() => setConfirmingStatus(false)}
+                      className="rounded-lg border border-hairline px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-raised"
+                    >
+                      {labels.edit.cancel}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmingStatus(true)}
+                    className="self-start rounded-lg border border-hairline px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:border-hairline-strong hover:text-text-primary"
+                  >
+                    {user.status === "ACTIVE" ? labels.edit.disable : labels.edit.enable}
+                  </button>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </Modal>
   );
 }
 
@@ -180,8 +412,6 @@ function CreateUserDialog({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [department, setDepartment] = useState("");
-  const [location, setLocation] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [roles, setRoles] = useState<UserRole[]>(
@@ -208,8 +438,6 @@ function CreateUserDialog({
         firstName,
         lastName,
         email,
-        department: department.trim() || undefined,
-        location: location.trim() || undefined,
         phone: phone.trim() || undefined,
         password,
         roles,
@@ -253,24 +481,6 @@ function CreateUserDialog({
             className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
           />
         </label>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-text-secondary">{labels.form.departmentLabel}</span>
-            <input
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-text-secondary">{labels.form.locationLabel}</span>
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full rounded-lg border border-hairline bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/60"
-            />
-          </label>
-        </div>
         <label className="flex flex-col gap-1.5">
           <span className="text-xs font-medium text-text-secondary">{labels.form.phoneLabel}</span>
           <input

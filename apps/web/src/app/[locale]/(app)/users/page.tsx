@@ -6,6 +6,7 @@ import type { UserRole } from "@/lib/types";
 import { UsersView } from "@/components/users/users-view";
 
 interface CurrentUserContext {
+  id: string;
   roles: UserRole[];
   tenant: { type: "INTERNAL" | "CLIENT" };
 }
@@ -34,6 +35,7 @@ export default async function UsersPage() {
     <UsersView
       users={users}
       canManage={canManage}
+      currentUserId={currentUser.id}
       assignableRoles={assignableRoles}
       labels={{
         title: t("title"),
@@ -52,8 +54,6 @@ export default async function UsersPage() {
           firstNameLabel: t("form.firstNameLabel"),
           lastNameLabel: t("form.lastNameLabel"),
           emailLabel: t("form.emailLabel"),
-          departmentLabel: t("form.departmentLabel"),
-          locationLabel: t("form.locationLabel"),
           phoneLabel: t("form.phoneLabel"),
           passwordLabel: t("form.passwordLabel"),
           rolesLabel: t("form.rolesLabel"),
@@ -70,6 +70,18 @@ export default async function UsersPage() {
           ACTIVE: t("status.ACTIVE"),
           INVITED: t("status.INVITED"),
           DISABLED: t("status.DISABLED"),
+        },
+        edit: {
+          button: t("edit.button"),
+          save: t("edit.save"),
+          cancel: t("edit.cancel"),
+          error: t("edit.error"),
+          disable: t("edit.disable"),
+          enable: t("edit.enable"),
+          cannotDisableSelf: t("edit.cannotDisableSelf"),
+        },
+        detail: {
+          employeeCode: t("detail.employeeCode"),
         },
       }}
     />

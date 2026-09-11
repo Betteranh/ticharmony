@@ -1,10 +1,16 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserRole } from '../../../generated/prisma/client';
 import { generateEmployeeCode } from '../../common/generate-employee-code';
+import { isUniqueConflictOn } from '../../common/prisma-errors';
 import { getRequestContext, getTenantTx } from '../../common/tenant-context';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 // Roles assignable through self-service tenant user management, by tenant type.
 // SUPER_ADMIN is deliberately excluded from both — it's a platform-bootstrap role,
@@ -105,5 +111,48 @@ export class UsersService {
         tenant: { select: { type: true } },
       },
     });
+  }
+
+  // Edit an employee's own name/email, or toggle their activation status —
+  // both self-service within the caller's own tenant (RLS via getTenantTx()),
+  // reserved to ADMIN/SUPER_ADMIN at the controller level like `create`.
+  // Deliberately no delete: a User with any ticket/comment can't be removed
+  // without breaking that foreign key, and deactivation already covers the
+  // same need everywhere else in this project (tenants, assets) — same
+  // reasoning applies here, see DECISIONS.md.
+  async update(id: string, dto: UpdateUserDto) {
+    const { userId } = getRequestContext();
+    if (dto.status === 'DISABLED' && id === userId) {
+      throw new ForbiddenException(
+        'Vous ne pouvez pas désactiver votre propre compte',
+      );
+    }
+
+    try {
+      return await getTenantTx().user.update({
+        where: { id },
+        data: {
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          email: dto.email,
+          status: dto.status,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          avatar: true,
+          employeeCode: true,
+          roles: true,
+          status: true,
+        },
+      });
+    } catch (err) {
+      if (isUniqueConflictOn(err, 'email')) {
+        throw new ConflictException('Cet email est déjà utilisé');
+      }
+      throw err;
+    }
   }
 }

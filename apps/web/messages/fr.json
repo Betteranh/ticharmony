@@ -379,13 +379,11 @@
     },
     "empty": "Aucun utilisateur pour l'instant.",
     "noResults": "Aucun utilisateur ne correspond à cette recherche.",
-    "newUser": "Nouvel utilisateur",
+    "newUser": "Nouvel employé",
     "form": {
       "firstNameLabel": "Prénom",
       "lastNameLabel": "Nom",
       "emailLabel": "Email",
-      "departmentLabel": "Service",
-      "locationLabel": "Emplacement",
       "phoneLabel": "Téléphone",
       "passwordLabel": "Mot de passe",
       "rolesLabel": "Rôles",
@@ -402,6 +400,18 @@
       "ACTIVE": "Actif",
       "INVITED": "Invité",
       "DISABLED": "Désactivé"
+    },
+    "edit": {
+      "button": "Modifier",
+      "save": "Confirmer",
+      "cancel": "Annuler",
+      "error": "Une erreur est survenue, réessayez.",
+      "disable": "Désactiver",
+      "enable": "Activer",
+      "cannotDisableSelf": "Vous ne pouvez pas désactiver votre propre compte."
+    },
+    "detail": {
+      "employeeCode": "Matricule"
     }
   },
   "settings": {

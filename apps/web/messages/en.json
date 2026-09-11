@@ -379,13 +379,11 @@
     },
     "empty": "No users yet.",
     "noResults": "No users match this search.",
-    "newUser": "New user",
+    "newUser": "New employee",
     "form": {
       "firstNameLabel": "First name",
       "lastNameLabel": "Last name",
       "emailLabel": "Email",
-      "departmentLabel": "Department",
-      "locationLabel": "Location",
       "phoneLabel": "Phone",
       "passwordLabel": "Password",
       "rolesLabel": "Roles",
@@ -402,6 +400,18 @@
       "ACTIVE": "Active",
       "INVITED": "Invited",
       "DISABLED": "Disabled"
+    },
+    "edit": {
+      "button": "Edit",
+      "save": "Confirm",
+      "cancel": "Cancel",
+      "error": "Something went wrong, please try again.",
+      "disable": "Disable",
+      "enable": "Enable",
+      "cannotDisableSelf": "You can't disable your own account."
+    },
+    "detail": {
+      "employeeCode": "Employee ID"
     }
   },
   "settings": {
