@@ -153,9 +153,12 @@ export function TicketDetail({
   }
 
   // Plain, print-style document — deliberately undesigned (no brand colors/
-  // layout beyond simple headings) and limited to public comments, so it's
-  // safe to hand to anyone regardless of who exported it.
-  async function exportToPdf() {
+  // layout beyond simple headings). Public-only export is safe to hand to
+  // anyone regardless of who exported it; the with-internal-notes variant
+  // is only ever offered to staff (see the menu below) — a CUSTOMER's own
+  // `ticket.comments` never contains internal notes in the first place,
+  // filtered server-side (see TicketsService.findOne).
+  async function exportToPdf(includeInternal: boolean) {
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const marginX = 48;
@@ -199,15 +202,18 @@ export function TicketDetail({
     write(ticket.description);
     y += 12;
 
-    const publicComments = ticket.comments.filter((c) => !c.isInternal);
-    write(`${t("export.comments")} (${publicComments.length})`, { bold: true, size: 12 });
+    const commentsToExport = includeInternal
+      ? ticket.comments
+      : ticket.comments.filter((c) => !c.isInternal);
+    write(`${t("export.comments")} (${commentsToExport.length})`, { bold: true, size: 12 });
     y += 4;
-    if (publicComments.length === 0) {
-      write(t("export.noComments"), { size: 9 });
+    if (commentsToExport.length === 0) {
+      write(t(includeInternal ? "export.noCommentsAny" : "export.noComments"), { size: 9 });
     } else {
-      for (const comment of publicComments) {
+      for (const comment of commentsToExport) {
         write(
-          `${comment.author.firstName} ${comment.author.lastName} — ${new Date(comment.createdAt).toLocaleString(locale)}`,
+          `${comment.author.firstName} ${comment.author.lastName} — ${new Date(comment.createdAt).toLocaleString(locale)}` +
+            (comment.isInternal ? `  [${t("export.internalNote")}]` : ""),
           { bold: true, size: 9 },
         );
         write(comment.body, { size: 10 });
@@ -221,7 +227,7 @@ export function TicketDetail({
       }
     }
 
-    doc.save(`ticket-${ticket.number}.pdf`);
+    doc.save(includeInternal ? `ticket-${ticket.number}-complet.pdf` : `ticket-${ticket.number}.pdf`);
   }
 
   return (
@@ -258,17 +264,33 @@ export function TicketDetail({
                 <MoreHorizontal className="h-4 w-4" strokeWidth={1.75} />
               </button>
               {optionsOpen && (
-                <div className="absolute right-0 top-[calc(100%+4px)] z-10 w-48 overflow-hidden rounded-lg border border-hairline bg-surface shadow-xl shadow-black/40">
+                <div className="absolute right-0 top-[calc(100%+4px)] z-10 w-56 overflow-hidden rounded-lg border border-hairline bg-surface shadow-xl shadow-black/40">
                   <button
                     onClick={() => {
                       setOptionsOpen(false);
-                      exportToPdf();
+                      exportToPdf(false);
                     }}
                     className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary"
                   >
                     <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
                     {t("export.menuLabel")}
                   </button>
+                  {/* Only staff can ever export internal notes — a CUSTOMER's
+                      own ticket.comments never contains them in the first
+                      place (filtered server-side), so the option would be
+                      pointless (and confusing) to show them. */}
+                  {isStaff && (
+                    <button
+                      onClick={() => {
+                        setOptionsOpen(false);
+                        exportToPdf(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary"
+                    >
+                      <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
+                      {t("export.menuLabelWithInternal")}
+                    </button>
+                  )}
                   {isStaff && (
                     <button
                       onClick={() => {

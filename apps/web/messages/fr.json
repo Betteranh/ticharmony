@@ -150,9 +150,12 @@
     "issueDescription": "Description du problème",
     "export": {
       "menuLabel": "Exporter en PDF",
+      "menuLabelWithInternal": "Exporter en PDF (avec notes internes)",
       "category": "Catégorie",
       "comments": "Commentaires",
       "noComments": "Aucun commentaire public.",
+      "noCommentsAny": "Aucun commentaire.",
+      "internalNote": "Note interne",
       "attachments": "Pièces jointes"
     },
     "status": {

@@ -150,9 +150,12 @@
     "issueDescription": "Issue Description",
     "export": {
       "menuLabel": "Export as PDF",
+      "menuLabelWithInternal": "Export as PDF (with internal notes)",
       "category": "Category",
       "comments": "Comments",
       "noComments": "No public comments.",
+      "noCommentsAny": "No comments.",
+      "internalNote": "Internal note",
       "attachments": "Attachments"
     },
     "status": {
